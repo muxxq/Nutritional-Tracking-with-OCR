@@ -1,0 +1,6 @@
+@NutriScan.WebApi_HostAddress = http://localhost:5007
+
+GET {{NutriScan.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
