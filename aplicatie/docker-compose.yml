@@ -1,0 +1,96 @@
+services:
+  # -------------------------------------------------------------
+  # 1. BAZA DE DATE POSTGRESQL
+  # -------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: nutriscan-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: nutriscan_db
+      POSTGRES_USER: nutriscan_user
+      POSTGRES_PASSWORD: nutriscan_secret_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nutriscan_user -d nutriscan_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nutriscan-network
+
+  # -------------------------------------------------------------
+  # 2. MICROSERVICIU OCR (PYTHON FASTAPI)
+  # -------------------------------------------------------------
+  ocr-service:
+    build:
+      context: ./ocr-service
+      dockerfile: Dockerfile
+    container_name: nutriscan-ocr
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - APP_ENV=development
+    volumes:
+      - ./ocr-service:/app
+    networks:
+      - nutriscan-network
+
+  # -------------------------------------------------------------
+  # 3. BACKEND CORE (.NET 8 WEB API)
+  # -------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nutriscan-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ocr-service:
+        condition: service_started
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=nutriscan_db;Username=nutriscan_user;Password=nutriscan_secret_password
+      - OcrService__BaseUrl=http://ocr-service:8000
+      - Jwt__Secret=cheie_secreta_super_sigura_pentru_licenta_2026_nutriscan_jwt_token_key!
+      - Jwt__Issuer=NutriScanApi
+      - Jwt__Audience=NutriScanClient
+    volumes:
+      - ./backend:/app
+    networks:
+      - nutriscan-network
+
+  # -------------------------------------------------------------
+  # 4. FRONTEND CLIENT (REACT PWA)
+  # -------------------------------------------------------------
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: nutriscan-client
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    networks:
+      - nutriscan-network
+
+networks:
+  nutriscan-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

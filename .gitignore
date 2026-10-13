@@ -1,0 +1,54 @@
+# OS Files
+.DS_Store
+Thumbs.db
+*.tmp
+*.~lock.*
+
+# IDE / Editor
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# .NET Build Artifacts
+**/bin/
+**/obj/
+**/out/
+*.trx
+
+# Node / React
+**/node_modules/
+**/dist/
+**/build/
+.npm
+.eslintcache
+
+# Python / FastApi / OCR
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+**/venv/
+**/.venv/
+**/env/
+**/.env
+build/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Docker Volumes
+postgres_data/

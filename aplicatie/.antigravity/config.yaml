@@ -1,0 +1,25 @@
+agent:
+  name: "thesis-enterprise-lead"
+  instructions_file: "AGENTS.md"
+  language: "ro"
+  code_language: "en"
+
+workflow:
+  require_plan_approval: true   # Agentul trebuie să îți ceară aprobarea pe plan înainte să editeze fișiere
+  auto_run_tests: true          # Rulează automat testele după modificări de cod
+
+permissions:
+  allow_read:
+    - "**/*"
+  allow_write:
+    - "src/**"
+    - "tests/**"
+    - "docs/**"
+  require_confirmation_commands:
+    - "git push*"
+    - "git merge*"
+    - "dotnet ef database update*"
+    - "docker compose up*"
+  deny_files:
+    - ".env*"
+    - "**/appsettings.Production.json"
