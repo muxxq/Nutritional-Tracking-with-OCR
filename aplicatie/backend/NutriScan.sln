@@ -1,0 +1,64 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8AA9A7BA-3E20-49B5-83C2-A925A9A1172A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NutriScan.Domain", "src\Domain\NutriScan.Domain.csproj", "{CF76B7FE-5316-4718-A547-C6CF8A801F14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NutriScan.Application", "src\Application\NutriScan.Application.csproj", "{0BD16BCD-9D37-4D94-9DAC-D8F89E3C38BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NutriScan.Infrastructure", "src\Infrastructure\NutriScan.Infrastructure.csproj", "{D5DB3A1B-E863-4F9F-9140-E2ED10F864EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NutriScan.WebApi", "src\WebApi\NutriScan.WebApi.csproj", "{EB3B63D7-77D2-471F-A7C3-7FF26DD66685}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D0152017-0EAE-4119-B0B8-F4217CE90B2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NutriScan.Domain.UnitTests", "tests\Domain.UnitTests\NutriScan.Domain.UnitTests.csproj", "{96B7770A-745B-4DAF-9CAC-09FB9A9F924F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NutriScan.Application.UnitTests", "tests\Application.UnitTests\NutriScan.Application.UnitTests.csproj", "{071179CB-9BBF-44F7-8D36-714DD961B671}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CF76B7FE-5316-4718-A547-C6CF8A801F14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF76B7FE-5316-4718-A547-C6CF8A801F14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF76B7FE-5316-4718-A547-C6CF8A801F14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF76B7FE-5316-4718-A547-C6CF8A801F14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BD16BCD-9D37-4D94-9DAC-D8F89E3C38BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BD16BCD-9D37-4D94-9DAC-D8F89E3C38BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BD16BCD-9D37-4D94-9DAC-D8F89E3C38BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BD16BCD-9D37-4D94-9DAC-D8F89E3C38BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5DB3A1B-E863-4F9F-9140-E2ED10F864EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5DB3A1B-E863-4F9F-9140-E2ED10F864EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5DB3A1B-E863-4F9F-9140-E2ED10F864EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5DB3A1B-E863-4F9F-9140-E2ED10F864EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB3B63D7-77D2-471F-A7C3-7FF26DD66685}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB3B63D7-77D2-471F-A7C3-7FF26DD66685}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB3B63D7-77D2-471F-A7C3-7FF26DD66685}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB3B63D7-77D2-471F-A7C3-7FF26DD66685}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96B7770A-745B-4DAF-9CAC-09FB9A9F924F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96B7770A-745B-4DAF-9CAC-09FB9A9F924F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96B7770A-745B-4DAF-9CAC-09FB9A9F924F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96B7770A-745B-4DAF-9CAC-09FB9A9F924F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{071179CB-9BBF-44F7-8D36-714DD961B671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{071179CB-9BBF-44F7-8D36-714DD961B671}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{071179CB-9BBF-44F7-8D36-714DD961B671}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{071179CB-9BBF-44F7-8D36-714DD961B671}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CF76B7FE-5316-4718-A547-C6CF8A801F14} = {8AA9A7BA-3E20-49B5-83C2-A925A9A1172A}
+		{0BD16BCD-9D37-4D94-9DAC-D8F89E3C38BA} = {8AA9A7BA-3E20-49B5-83C2-A925A9A1172A}
+		{D5DB3A1B-E863-4F9F-9140-E2ED10F864EF} = {8AA9A7BA-3E20-49B5-83C2-A925A9A1172A}
+		{EB3B63D7-77D2-471F-A7C3-7FF26DD66685} = {8AA9A7BA-3E20-49B5-83C2-A925A9A1172A}
+		{96B7770A-745B-4DAF-9CAC-09FB9A9F924F} = {D0152017-0EAE-4119-B0B8-F4217CE90B2C}
+		{071179CB-9BBF-44F7-8D36-714DD961B671} = {D0152017-0EAE-4119-B0B8-F4217CE90B2C}
+	EndGlobalSection
+EndGlobal
