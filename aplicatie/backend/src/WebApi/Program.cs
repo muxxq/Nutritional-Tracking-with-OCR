@@ -1,6 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using NutriScan.Application;
 using NutriScan.Infrastructure;
+using NutriScan.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +65,26 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+// Auto-migrate and seed when PostgreSQL is accessible
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        if (context.Database.IsRelational())
+        {
+            await context.Database.MigrateAsync();
+            await ApplicationDbContextSeed.SeedInitialDataAsync(context);
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogWarning(ex, "Could not automatically migrate or seed database on startup. Ensure PostgreSQL container is running.");
+    }
+}
 
 // Enable Swagger in Development and Docker environments
 app.UseSwagger();
