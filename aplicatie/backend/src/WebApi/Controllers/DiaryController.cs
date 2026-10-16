@@ -49,7 +49,7 @@ public class DiaryController(ISender sender) : ControllerBase
         }
 
         var entry = await sender.Send(
-            new AddDiaryEntryCommand(userId, r.FoodId, r.Date, r.MealType, r.QuantityGrams, r.Servings), cancellationToken);
+            new AddDiaryEntryCommand(userId, r.FoodId, null, r.Date, r.MealType, r.QuantityGrams, r.Servings), cancellationToken);
         return Created($"/api/diary/entries/{entry.Id}", entry);
     }
 

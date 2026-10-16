@@ -9,13 +9,22 @@ public sealed class UpdateDiaryEntryCommandHandler(IApplicationDbContext db, IDa
 {
     public async Task<DiaryEntryDto> Handle(UpdateDiaryEntryCommand request, CancellationToken cancellationToken)
     {
-        // An archived food still backs the entries logged before it was archived, so they stay editable.
+        // An archived food or recipe still backs the entries logged before it was archived, so they stay editable.
         var entry = await db.LoadOwnAsync(request.UserId, request.EntryId, cancellationToken);
 
-        entry.Apply(request, entry.FoodItem!);
+        // The kind can't change (ADR-005 D7); a recipe entry is recalculated from the current recipe, even archived.
+        if (entry.IsRecipe)
+        {
+            entry.Apply(request, entry.Recipe!);
+        }
+        else
+        {
+            entry.Apply(request, entry.FoodItem!);
+        }
+
         entry.UpdatedAtUtc = clock.UtcNow;
         await db.SaveOrNotFoundAsync(cancellationToken);
 
-        return DiaryEntryDto.From(entry, entry.FoodItem!);
+        return DiaryEntryDto.From(entry);
     }
 }

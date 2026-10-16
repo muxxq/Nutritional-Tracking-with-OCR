@@ -198,7 +198,7 @@ public class DiaryCommandHandlerTests : IDisposable
         var dto = await Update(_me, entry.Id, grams: 50);
 
         // Assert
-        dto.Food.IsArchived.Should().BeTrue();
+        dto.Food!.IsArchived.Should().BeTrue();
         dto.Nutrients.Calories.Should().Be(194.5);
     }
 
