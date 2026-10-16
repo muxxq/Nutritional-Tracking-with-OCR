@@ -1,8 +1,13 @@
 using NutriScan.Domain.Common;
 using NutriScan.Domain.Enums;
+using NutriScan.Domain.Nutrition;
 
 namespace NutriScan.Domain.Entities;
 
+/// <summary>
+/// A food or a recipe planned for a meal: exactly one of <see cref="FoodItemId"/> / <see cref="RecipeId"/> is set,
+/// enforced by CHECK constraints (ADR-007 D1). Values are computed on read, like a recipe's (D2).
+/// </summary>
 public class PlannedMeal : BaseEntity, IAuditableEntity
 {
     public Guid UserId { get; set; }
@@ -17,11 +22,27 @@ public class PlannedMeal : BaseEntity, IAuditableEntity
     public Guid? RecipeId { get; set; }
     public Recipe? Recipe { get; set; }
 
-    public double QuantityGrams { get; set; }
-    public bool IsTransferredToDiary { get; set; } = false;
+    /// <summary>Grams of a planned food; null for a planned recipe, which is planned in servings only.</summary>
+    public double? QuantityGrams { get; set; }
+
+    /// <summary>Servings: optional for a food (grams stay the source of truth), required for a recipe.</summary>
+    public double? Servings { get; set; }
+
+    /// <summary>The diary entry "I ate this" created; null again if that entry is deleted (ADR-007 D6).</summary>
+    public Guid? DiaryEntryId { get; set; }
+    public DiaryEntry? DiaryEntry { get; set; }
 
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAtUtc { get; set; }
+
+    public bool IsRecipe => RecipeId is not null;
+
+    /// <summary>
+    /// Unrounded values from the current food or recipe. The food, or the recipe with its ingredients' foods, must be loaded.
+    /// </summary>
+    public Macros Nutrients() => IsRecipe
+        ? RecipeNutrition.Of(Recipe!).PerServing * Servings!.Value
+        : Macros.Of(FoodItem!, QuantityGrams!.Value);
 }
 
 public class ShoppingListItem : BaseEntity, IAuditableEntity
