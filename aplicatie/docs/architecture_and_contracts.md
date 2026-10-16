@@ -127,11 +127,13 @@ erDiagram
         date ConsumedDate
         int MealType
         float QuantityGrams
+        float Servings
         float CalculatedCalories
         float CalculatedProteins
         float CalculatedCarbs
         float CalculatedFats
         timestamp CreatedAtUtc
+        timestamp UpdatedAtUtc
     }
 
     RECIPES {
@@ -356,3 +358,23 @@ Decizii: [ADR-004](adr/ADR-004-food-catalog.md). Design: [spec](specs/2026-10-16
 * **Corpul la creare/editare:** `{ name, brand?, barcode?, servingSizeGrams?, calories, proteins, carbohydrates, sugars?, fats, saturatedFats?, fiber?, saltGrams? }`, toate per 100 g.
 * **`FoodDto`:** câmpurile de mai sus grupate în `per100g`, plus `isVerified`, `isOwn` și `energyWarning` (FR-06, null dacă valorile sunt coerente).
 * **Vizibilitate:** alimentele globale sunt văzute de toți și nu pot fi modificate (403); cele personale sunt văzute doar de autor (404 pentru alții).
+
+---
+
+## 8. Jurnalul Alimentar
+
+Decizii: [ADR-005](adr/ADR-005-food-diary.md). Design: [spec](specs/2026-10-16-food-diary-design.md).
+
+| Metodă și rută | Succes | Erori |
+|---|---|---|
+| `GET /api/diary/days/{yyyy-MM-dd}` | 200 `DiaryDayDto` | 400, 401 |
+| `GET /api/diary/entries/{id}` | 200 `DiaryEntryDto` | 401, 404 |
+| `POST /api/diary/entries` | 201 `DiaryEntryDto` | 400, 401, 404 |
+| `PUT /api/diary/entries/{id}` | 200 `DiaryEntryDto` | 400, 401, 404 |
+| `DELETE /api/diary/entries/{id}` | 204 | 401, 404 |
+| `GET /api/diary/recent-foods?limit=10` | 200 `RecentFoodDto[]` | 400, 401 |
+
+* **Corpul la adăugare:** `{ foodId, date, mealType, quantityGrams?, servings? }`, cu exact una dintre cantități; la editare, aceleași câmpuri fără `foodId`. `mealType` ∈ `breakfast`, `lunch`, `dinner`, `snack`.
+* **`DiaryEntryDto`:** `{ id, date, mealType, quantityGrams, servings, food: { id, name, brand, isArchived }, nutrients: { calories, proteins, carbs, fats } }`.
+* **`DiaryDayDto`:** `{ date, meals[4]: { mealType, entries[], totals }, totals, targets, remaining, isProfileComplete }`. Mesele apar mereu, în ordinea de mai sus; `remaining = targets − totals` poate fi negativ.
+* **Snapshot:** valorile nutriționale ale unei intrări se calculează la salvare și nu se schimbă când alimentul este editat ulterior; se recalculează doar la editarea intrării.
