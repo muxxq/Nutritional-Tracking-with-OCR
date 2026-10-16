@@ -14,10 +14,7 @@ internal static class ProfileLoader
         await db.Users.SingleOrDefaultAsync(u => u.Id == userId, cancellationToken)
         ?? throw new UnauthorizedException(AuthErrors.InvalidSession);
 
-    public static NutritionTargets CalculateTargets(User user, DateOnly today)
-    {
-        var result = NutritionTargetCalculator.Calculate(user, today);
-        return result.Targets
-            ?? throw new InvalidOperationException($"Stored targets for user {user.Id} are inconsistent: {result.Error}");
-    }
+    /// <summary>Reads never fail because of stored overrides: infeasible ones fall back to calculated targets.</summary>
+    public static NutritionTargets CalculateTargets(User user, DateOnly today) =>
+        NutritionTargetCalculator.CalculateBestEffort(user, today);
 }
