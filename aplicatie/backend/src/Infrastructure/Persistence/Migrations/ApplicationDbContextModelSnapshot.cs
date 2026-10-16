@@ -241,6 +241,48 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                     b.ToTable("RecipeIngredients");
                 });
 
+            modelBuilder.Entity("NutriScan.Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("FamilyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ReplacedByTokenId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("RevokedAtUtc")
+                        .IsConcurrencyToken()
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FamilyId");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("NutriScan.Domain.Entities.ShoppingListItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -294,6 +336,12 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<int>("FailedLoginAttempts")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -313,15 +361,12 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<DateTime?>("LockoutEndUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("RefreshTokenExpiryTime")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("TargetCalories")
                         .HasColumnType("integer");
@@ -433,6 +478,17 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                     b.Navigation("Recipe");
                 });
 
+            modelBuilder.Entity("NutriScan.Domain.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("NutriScan.Domain.Entities.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("NutriScan.Domain.Entities.ShoppingListItem", b =>
                 {
                     b.HasOne("NutriScan.Domain.Entities.User", "User")
@@ -467,6 +523,8 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                     b.Navigation("PlannedMeals");
 
                     b.Navigation("Recipes");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("ShoppingListItems");
                 });
