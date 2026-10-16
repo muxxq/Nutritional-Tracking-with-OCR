@@ -82,6 +82,7 @@ public class DiaryTests(NutriScanApiFactory factory) : IAsyncLifetime
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         var entry = await JsonAsync(response);
         response.Headers.Location!.ToString().Should().EndWith($"/api/diary/entries/{entry.GetProperty("id").GetString()}");
+        entry.GetProperty("kind").GetString().Should().Be("food");
         entry.GetProperty("mealType").GetString().Should().Be("breakfast");
         Number(entry, "nutrients.calories").Should().Be(778);
         Number(entry, "nutrients.proteins").Should().Be(33.8);
