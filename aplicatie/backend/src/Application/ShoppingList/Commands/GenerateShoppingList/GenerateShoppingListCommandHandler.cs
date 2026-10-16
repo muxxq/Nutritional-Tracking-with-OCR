@@ -54,7 +54,7 @@ public sealed class GenerateShoppingListCommandHandler(IApplicationDbContext db,
         }
 
         // One SaveChanges: the old lines go and the new ones arrive in the same transaction.
-        await db.SaveChangesAsync(cancellationToken);
+        await db.SaveOrConflictAsync(cancellationToken);
 
         return ShoppingListDto.From(items);
     }

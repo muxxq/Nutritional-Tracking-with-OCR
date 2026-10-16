@@ -12,7 +12,7 @@ public sealed class SetShoppingListItemPurchasedCommandHandler(IApplicationDbCon
         var item = await db.LoadOwnAsync(request.UserId, request.ItemId, cancellationToken);
         item.IsPurchased = request.IsPurchased;
         item.UpdatedAtUtc = clock.UtcNow;
-        await db.SaveChangesAsync(cancellationToken);
+        await db.SaveOrNotFoundAsync(cancellationToken);
 
         return ShoppingListItemDto.From(item);
     }

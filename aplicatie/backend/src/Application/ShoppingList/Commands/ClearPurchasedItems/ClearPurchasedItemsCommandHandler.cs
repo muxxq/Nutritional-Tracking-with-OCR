@@ -13,6 +13,6 @@ public sealed class ClearPurchasedItemsCommandHandler(IApplicationDbContext db) 
             .ToListAsync(cancellationToken);
 
         db.ShoppingListItems.RemoveRange(purchased);
-        await db.SaveChangesAsync(cancellationToken);
+        await db.SaveDeletesAsync(cancellationToken);
     }
 }
