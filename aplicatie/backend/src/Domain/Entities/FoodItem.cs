@@ -1,4 +1,5 @@
 using NutriScan.Domain.Common;
+using NutriScan.Domain.Enums;
 using NutriScan.Domain.Nutrition;
 
 namespace NutriScan.Domain.Entities;
@@ -39,6 +40,9 @@ public class FoodItem : BaseEntity, IAuditableEntity
 
     /// <summary>Typical portion (e.g. 30 g of cereal); nutrition values below are always per 100 g.</summary>
     public double? ServingSizeGrams { get; set; }
+
+    /// <summary>Store aisle, used to group the shopping list.</summary>
+    public FoodCategory Category { get; set; } = FoodCategory.Other;
 
     // Nutrition values per 100 g
     public double Calories { get; set; }

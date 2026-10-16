@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NutriScan.Domain.Entities;
+using NutriScan.Domain.Enums;
 
 namespace NutriScan.Infrastructure.Persistence;
 
@@ -17,6 +18,7 @@ public static class ApplicationDbContextSeed
             new()
             {
                 Name = "Piept de pui fără piele (crud)",
+                Category = FoodCategory.MeatFish,
                 Brand = "Generic",
                 Calories = 120.0,
                 Proteins = 22.5,
@@ -29,6 +31,7 @@ public static class ApplicationDbContextSeed
             new()
             {
                 Name = "Fulgi de ovăz integrali",
+                Category = FoodCategory.Grains,
                 Brand = "Generic",
                 Calories = 389.0,
                 Proteins = 16.9,
@@ -41,6 +44,7 @@ public static class ApplicationDbContextSeed
             new()
             {
                 Name = "Orez alb basmati (crud)",
+                Category = FoodCategory.Grains,
                 Brand = "Generic",
                 Calories = 356.0,
                 Proteins = 7.1,
@@ -53,6 +57,7 @@ public static class ApplicationDbContextSeed
             new()
             {
                 Name = "Ou de găină întreg",
+                Category = FoodCategory.Dairy,
                 Brand = "Generic",
                 Calories = 143.0,
                 Proteins = 12.6,
@@ -65,6 +70,7 @@ public static class ApplicationDbContextSeed
             new()
             {
                 Name = "Banană proaspătă",
+                Category = FoodCategory.FruitsVegetables,
                 Brand = "Generic",
                 Calories = 89.0,
                 Proteins = 1.1,
@@ -77,6 +83,7 @@ public static class ApplicationDbContextSeed
             new()
             {
                 Name = "File de somon proaspăt",
+                Category = FoodCategory.MeatFish,
                 Brand = "Generic",
                 Calories = 208.0,
                 Proteins = 20.4,
@@ -89,6 +96,7 @@ public static class ApplicationDbContextSeed
             new()
             {
                 Name = "Broccoli crud",
+                Category = FoodCategory.FruitsVegetables,
                 Brand = "Generic",
                 Calories = 34.0,
                 Proteins = 2.8,
@@ -101,6 +109,7 @@ public static class ApplicationDbContextSeed
             new()
             {
                 Name = "Ulei de măsline extravirgin",
+                Category = FoodCategory.Pantry,
                 Brand = "Generic",
                 Calories = 884.0,
                 Proteins = 0.0,
@@ -113,6 +122,7 @@ public static class ApplicationDbContextSeed
             new()
             {
                 Name = "Iaurt grecesc 2% grăsime",
+                Category = FoodCategory.Dairy,
                 Brand = "Generic",
                 Calories = 73.0,
                 Proteins = 10.0,
@@ -125,6 +135,7 @@ public static class ApplicationDbContextSeed
             new()
             {
                 Name = "Migdale crude",
+                Category = FoodCategory.Pantry,
                 Brand = "Generic",
                 Calories = 579.0,
                 Proteins = 21.2,
