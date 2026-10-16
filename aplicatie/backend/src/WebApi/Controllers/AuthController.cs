@@ -2,7 +2,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.IdentityModel.JsonWebTokens;
 using NutriScan.Application.Auth;
 using NutriScan.Application.Auth.Commands.Login;
 using NutriScan.Application.Auth.Commands.Logout;
@@ -81,12 +80,9 @@ public class AuthController(ISender sender, ITokenService tokens) : ControllerBa
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Me(CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value, out var userId))
-        {
-            return Unauthorized();
-        }
-
-        return Ok(await sender.Send(new GetCurrentUserQuery(userId), cancellationToken));
+        return User.GetUserId() is { } userId
+            ? Ok(await sender.Send(new GetCurrentUserQuery(userId), cancellationToken))
+            : Unauthorized();
     }
 
     private AuthResponse SignIn(AuthResult result)
