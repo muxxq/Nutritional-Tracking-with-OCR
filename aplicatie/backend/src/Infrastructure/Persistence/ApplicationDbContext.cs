@@ -63,13 +63,16 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             entity.Property(f => f.Brand).HasMaxLength(150);
             entity.Property(f => f.Barcode).HasMaxLength(64);
             entity.HasIndex(f => f.Barcode);
-            entity.Property(f => f.SearchText).HasMaxLength(400).IsRequired();
+            // name (≤ 250) + " " + brand (≤ 150)
+            entity.Property(f => f.SearchText).HasMaxLength(401).IsRequired();
             entity.HasIndex(f => f.SearchText);
 
+            // Not SET NULL: a null creator means "global", so deleting a user must never publish their private foods.
+            // Account deletion has to archive/anonymise or delete the user's foods explicitly.
             entity.HasOne(f => f.CreatedByUser)
                 .WithMany()
                 .HasForeignKey(f => f.CreatedByUserId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         // DiaryEntry

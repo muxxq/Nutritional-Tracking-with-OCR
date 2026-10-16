@@ -124,8 +124,8 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("SearchText")
                         .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                        .HasMaxLength(401)
+                        .HasColumnType("character varying(401)");
 
                     b.Property<double?>("ServingSizeGrams")
                         .HasColumnType("double precision");
@@ -428,7 +428,7 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                     b.HasOne("NutriScan.Domain.Entities.User", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CreatedByUser");
                 });

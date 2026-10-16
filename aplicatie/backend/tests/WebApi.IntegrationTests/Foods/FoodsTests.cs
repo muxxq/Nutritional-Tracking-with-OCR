@@ -111,6 +111,43 @@ public class FoodsTests(NutriScanApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Create_MaxLengthNameAndBrand_Returns201()
+    {
+        // Arrange: SearchText = name + " " + brand = 250 + 1 + 150 characters
+        var client = await SignedInClientAsync();
+        var body = new { name = new string('a', 250), brand = new string('b', 150), calories = 100, proteins = 1, carbohydrates = 20, fats = 1 };
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/foods", body);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    [Fact]
+    public async Task DeletingUser_WithPrivateFoods_IsRefusedSoFoodsNeverBecomeGlobal()
+    {
+        // Arrange: a private food; "creator = null" means global, so the FK must not be SET NULL
+        var ana = await SignedInClientAsync("ana@exemplu.ro");
+        var foodId = Guid.Parse(await CreateAsync(ana, Oats()));
+
+        // Act
+        Func<Task> deleteUser = async () =>
+        {
+            using var scope = factory.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            db.Users.Remove(await db.Users.SingleAsync());
+            await db.SaveChangesAsync();
+        };
+
+        // Assert
+        await deleteUser.Should().ThrowAsync<DbUpdateException>();
+        using var verify = factory.Services.CreateScope();
+        var food = await verify.ServiceProvider.GetRequiredService<ApplicationDbContext>().FoodItems.SingleAsync(f => f.Id == foodId);
+        food.CreatedByUserId.Should().NotBeNull();
+    }
+
+    [Fact]
     public async Task Update_OwnFood_Returns200()
     {
         // Arrange
