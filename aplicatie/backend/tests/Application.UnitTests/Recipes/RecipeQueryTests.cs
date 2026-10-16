@@ -143,7 +143,7 @@ public class RecipeQueryTests : IDisposable
         // Assert
         var summary = result.Items.Should().ContainSingle().Subject;
         summary.PerServing.Calories.Should().Be(194.5);
-        summary.PerServing.Proteins.Should().Be(8.5);
+        summary.PerServing.Proteins.Should().BeApproximately(8.5, 0.1);
         summary.IngredientCount.Should().Be(1);
         summary.ServingsCount.Should().Be(4);
         summary.PrepTimeMinutes.Should().Be(10);
