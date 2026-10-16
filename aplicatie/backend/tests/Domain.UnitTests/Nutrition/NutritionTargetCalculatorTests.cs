@@ -1,0 +1,326 @@
+using FluentAssertions;
+using NutriScan.Domain.Entities;
+using NutriScan.Domain.Enums;
+using NutriScan.Domain.Nutrition;
+using Xunit;
+
+namespace NutriScan.Domain.UnitTests.Nutrition;
+
+/// <summary>Reference cases R1–R5 come from spec §3.6 and were computed by hand.</summary>
+public class NutritionTargetCalculatorTests
+{
+    private static readonly DateOnly Today = new(2026, 10, 16);
+
+    private static DateOnly BornYearsAgo(int years) => Today.AddYears(-years).AddDays(-1);
+
+    // R1: woman, 62 kg, 168 cm, 28 years, moderately active, losing weight
+    private static User R1() => new()
+    {
+        Gender = Gender.Female, WeightKg = 62, HeightCm = 168, BirthDate = BornYearsAgo(28),
+        ActivityLevel = ActivityLevel.ModeratelyActive, Goal = NutritionGoal.LoseWeight
+    };
+
+    private static NutritionTargets Valid(User user)
+    {
+        var result = NutritionTargetCalculator.Calculate(user, Today);
+        result.IsValid.Should().BeTrue(result.Error);
+        return result.Targets!;
+    }
+
+    private static void ShouldBe(NutritionTargets t, int? bmr, int? tdee, double kcal, double p, double c, double f)
+    {
+        t.Bmr.Should().Be(bmr);
+        t.Tdee.Should().Be(tdee);
+        t.Calories.Value.Should().Be(kcal);
+        t.ProteinsGrams.Value.Should().Be(p);
+        t.CarbsGrams.Value.Should().Be(c);
+        t.FatsGrams.Value.Should().Be(f);
+    }
+
+    [Fact]
+    public void Calculate_R1_WomanLosingWeight()
+    {
+        // Act
+        var t = Valid(R1());
+
+        // Assert
+        ShouldBe(t, 1369, 2122, 1700, 124, 195, 47);
+        t.Calories.Source.Should().Be(TargetSource.Calculated);
+        t.CarbsGrams.Source.Should().Be(TargetSource.Calculated);
+    }
+
+    [Fact]
+    public void Calculate_R2_ManualProteins_CarbsAbsorbDifference()
+    {
+        // Arrange
+        var user = R1();
+        user.ProteinsGramsOverride = 140;
+
+        // Act
+        var t = Valid(user);
+
+        // Assert
+        ShouldBe(t, 1369, 2122, 1700, 140, 179, 47);
+        t.ProteinsGrams.Source.Should().Be(TargetSource.Manual);
+    }
+
+    [Fact]
+    public void Calculate_R3_ManualCalories_MacrosFollow()
+    {
+        // Arrange
+        var user = R1();
+        user.CaloriesOverride = 1800;
+
+        // Act
+        var t = Valid(user);
+
+        // Assert
+        ShouldBe(t, 1369, 2122, 1800, 124, 214, 50);
+        t.Calories.Source.Should().Be(TargetSource.Manual);
+    }
+
+    [Fact]
+    public void Calculate_R4_ManSedentaryMaintaining()
+    {
+        // Arrange
+        var user = new User
+        {
+            Gender = Gender.Male, WeightKg = 80, HeightCm = 180, BirthDate = BornYearsAgo(30),
+            ActivityLevel = ActivityLevel.Sedentary, Goal = NutritionGoal.MaintainWeight
+        };
+
+        // Act
+        var t = Valid(user);
+
+        // Assert
+        ShouldBe(t, 1780, 2136, 2140, 128, 273, 59);
+    }
+
+    [Fact]
+    public void Calculate_R5_SafetyFloorForWomen()
+    {
+        // Arrange
+        var user = new User
+        {
+            Gender = Gender.Female, WeightKg = 45, HeightCm = 150, BirthDate = BornYearsAgo(60),
+            ActivityLevel = ActivityLevel.Sedentary, Goal = NutritionGoal.LoseWeight
+        };
+
+        // Act
+        var t = Valid(user);
+
+        // Assert
+        ShouldBe(t, 927, 1112, 1200, 90, 135, 33);
+    }
+
+    [Fact]
+    public void Calculate_BmiAbove25_ProteinUsesReferenceWeight()
+    {
+        // Arrange: BMI 46.9; reference weight at BMI 25 is 25 × 1.6² = 64 kg
+        var user = new User
+        {
+            Gender = Gender.Female, WeightKg = 120, HeightCm = 160, BirthDate = BornYearsAgo(40),
+            ActivityLevel = ActivityLevel.Sedentary, Goal = NutritionGoal.LoseWeight
+        };
+
+        // Act
+        var t = Valid(user);
+
+        // Assert
+        t.ProteinsGrams.Value.Should().Be(128);
+    }
+
+    [Fact]
+    public void Calculate_ExtremeButValidProfile_KeepsCarbsNonNegative()
+    {
+        // Arrange: limits allowed by validation (300 kg, 100 cm, 100 years)
+        var user = new User
+        {
+            Gender = Gender.Female, WeightKg = 300, HeightCm = 100, BirthDate = BornYearsAgo(100),
+            ActivityLevel = ActivityLevel.Sedentary, Goal = NutritionGoal.LoseWeight
+        };
+
+        // Act
+        var t = Valid(user);
+
+        // Assert
+        t.CarbsGrams.Value.Should().BeGreaterThanOrEqualTo(0);
+    }
+
+    [Fact]
+    public void Calculate_ManualCarbs_FatsAbsorbDifference()
+    {
+        // Arrange
+        var user = R1();
+        user.CarbsGramsOverride = 150;
+
+        // Act
+        var t = Valid(user);
+
+        // Assert
+        t.CarbsGrams.Should().Be(new TargetValue(150, TargetSource.Manual));
+        t.FatsGrams.Should().Be(new TargetValue(67, TargetSource.Calculated));
+    }
+
+    [Fact]
+    public void Calculate_ManualCarbsAndFatsWithoutCalories_DerivesCalories()
+    {
+        // Arrange
+        var user = R1();
+        user.CarbsGramsOverride = 200;
+        user.FatsGramsOverride = 60;
+
+        // Act
+        var t = Valid(user);
+
+        // Assert
+        t.Calories.Should().Be(new TargetValue(1840, TargetSource.Calculated));
+    }
+
+    [Fact]
+    public void Calculate_AllManualWithinTolerance_IsValid()
+    {
+        // Arrange
+        var user = R1();
+        (user.CaloriesOverride, user.ProteinsGramsOverride, user.CarbsGramsOverride, user.FatsGramsOverride) = (2000, 150, 200, 65);
+
+        // Act
+        var t = Valid(user);
+
+        // Assert
+        ShouldBe(t, 1369, 2122, 2000, 150, 200, 65);
+    }
+
+    [Fact]
+    public void Calculate_AllManualBeyondTolerance_ReturnsError()
+    {
+        // Arrange
+        var user = R1();
+        (user.CaloriesOverride, user.ProteinsGramsOverride, user.CarbsGramsOverride, user.FatsGramsOverride) = (2000, 100, 100, 30);
+
+        // Act
+        var result = NutritionTargetCalculator.Calculate(user, Today);
+
+        // Assert
+        result.IsValid.Should().BeFalse();
+        result.Error.Should().Contain("15%");
+    }
+
+    [Fact]
+    public void Calculate_ManualProteinsExceedCalories_ReturnsError()
+    {
+        // Arrange
+        var user = R1();
+        user.CaloriesOverride = 1000;
+        user.ProteinsGramsOverride = 300;
+
+        // Act
+        var result = NutritionTargetCalculator.Calculate(user, Today);
+
+        // Assert
+        result.IsValid.Should().BeFalse();
+        result.Error.Should().Contain("negativ");
+    }
+
+    [Fact]
+    public void CalculateBestEffort_OverridesInfeasibleAfterBirthday_FallsBackToCalculated()
+    {
+        // Arrange: 318 g protein leaves +0.75 g carbs at 28 years (1700 kcal), −1.1 g at 29 (1690 kcal)
+        var user = R1();
+        user.ProteinsGramsOverride = 318;
+        NutritionTargetCalculator.Calculate(user, Today).IsValid.Should().BeTrue();
+        var nextYear = Today.AddYears(1);
+
+        // Act
+        var t = NutritionTargetCalculator.CalculateBestEffort(user, nextYear);
+
+        // Assert
+        NutritionTargetCalculator.Calculate(user, nextYear).IsValid.Should().BeFalse();
+        t.ProteinsGrams.Source.Should().Be(TargetSource.Calculated);
+        t.CarbsGrams.Value.Should().BeGreaterThanOrEqualTo(0);
+        user.ProteinsGramsOverride.Should().Be(318, "a read must not change the stored overrides");
+    }
+
+    [Fact]
+    public void CalculateBestEffort_FeasibleOverrides_KeepsThem()
+    {
+        // Arrange
+        var user = R1();
+        user.ProteinsGramsOverride = 140;
+
+        // Act
+        var t = NutritionTargetCalculator.CalculateBestEffort(user, Today);
+
+        // Assert
+        t.ProteinsGrams.Should().Be(new TargetValue(140, TargetSource.Manual));
+    }
+
+    [Fact]
+    public void Calculate_IncompleteProfile_ReturnsDefaults()
+    {
+        // Act
+        var t = Valid(new User());
+
+        // Assert
+        ShouldBe(t, null, null, 2000, 150, 200, 65);
+        t.Calories.Source.Should().Be(TargetSource.Default);
+        t.FatsGrams.Source.Should().Be(TargetSource.Default);
+    }
+
+    [Fact]
+    public void Calculate_IncompleteProfileWithManualCalories_MixesManualAndDefault()
+    {
+        // Act
+        var t = Valid(new User { CaloriesOverride = 1800 });
+
+        // Assert
+        t.Calories.Should().Be(new TargetValue(1800, TargetSource.Manual));
+        t.ProteinsGrams.Should().Be(new TargetValue(150, TargetSource.Default));
+    }
+
+    [Theory]
+    [InlineData(1000, 300.0, null)]  // 1200 kcal of protein alone in a 1000 kcal target
+    [InlineData(null, 600.0, null)]  // 2400 kcal of protein in the 2000 kcal default
+    [InlineData(1200, 100.0, 200.0)] // 1200 kcal of protein + carbs, fine; plus fats below
+    public void Calculate_IncompleteProfileManualMacrosExceedCalories_ReturnsError(int? calories, double? proteins, double? carbs)
+    {
+        // Arrange
+        var user = new User
+        {
+            CaloriesOverride = calories, ProteinsGramsOverride = proteins, CarbsGramsOverride = carbs,
+            FatsGramsOverride = carbs is null ? null : 60  // 540 kcal → 1740 kcal against 1200
+        };
+
+        // Act
+        var result = NutritionTargetCalculator.Calculate(user, Today);
+
+        // Assert
+        result.IsValid.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Calculate_IncompleteProfileManualMacrosWithinCalories_IsValid()
+    {
+        // Act
+        var result = NutritionTargetCalculator.Calculate(new User { CaloriesOverride = 1800, ProteinsGramsOverride = 150 }, Today);
+
+        // Assert
+        result.IsValid.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Calculate_IncompleteProfileAllManualInconsistent_ReturnsError()
+    {
+        // Arrange
+        var user = new User
+        {
+            CaloriesOverride = 2000, ProteinsGramsOverride = 100, CarbsGramsOverride = 100, FatsGramsOverride = 30
+        };
+
+        // Act
+        var result = NutritionTargetCalculator.Calculate(user, Today);
+
+        // Assert
+        result.IsValid.Should().BeFalse();
+    }
+}

@@ -9,18 +9,18 @@ public class User : BaseEntity, IAuditableEntity
     public string PasswordHash { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
-    public DateTime? BirthDate { get; set; }
+    public DateOnly? BirthDate { get; set; }
     public double HeightCm { get; set; }
     public double WeightKg { get; set; }
     public Gender Gender { get; set; } = Gender.Male;
     public ActivityLevel ActivityLevel { get; set; } = ActivityLevel.ModeratelyActive;
     public NutritionGoal Goal { get; set; } = NutritionGoal.MaintainWeight;
 
-    // Daily nutritional targets
-    public int TargetCalories { get; set; } = 2000;
-    public double TargetProteinsGrams { get; set; } = 150;
-    public double TargetCarbsGrams { get; set; } = 200;
-    public double TargetFatsGrams { get; set; } = 65;
+    // Manual overrides of the daily targets; null means "calculate from the profile"
+    public int? CaloriesOverride { get; set; }
+    public double? ProteinsGramsOverride { get; set; }
+    public double? CarbsGramsOverride { get; set; }
+    public double? FatsGramsOverride { get; set; }
 
     // Brute-force protection
     public const int MaxFailedLoginAttempts = 5;
@@ -32,7 +32,19 @@ public class User : BaseEntity, IAuditableEntity
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAtUtc { get; set; }
 
-    public bool IsProfileComplete => HeightCm > 0 && WeightKg > 0;
+    public bool IsProfileComplete => HeightCm > 0 && WeightKg > 0 && BirthDate is not null;
+
+    /// <summary>Completed years on <paramref name="today"/>; someone born on 29 February ages on 1 March in common years.</summary>
+    public int? AgeOn(DateOnly today)
+    {
+        if (BirthDate is not { } birth)
+        {
+            return null;
+        }
+
+        var age = today.Year - birth.Year;
+        return (today.Month, today.Day).CompareTo((birth.Month, birth.Day)) < 0 ? age - 1 : age;
+    }
 
     public bool IsLockedOut(DateTime nowUtc) => LockoutEndUtc > nowUtc;
 
