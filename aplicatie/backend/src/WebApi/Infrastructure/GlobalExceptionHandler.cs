@@ -28,6 +28,8 @@ public sealed class GlobalExceptionHandler(
             },
             ConflictException => new ProblemDetails { Status = StatusCodes.Status409Conflict, Title = exception.Message },
             UnauthorizedException => new ProblemDetails { Status = StatusCodes.Status401Unauthorized, Title = exception.Message },
+            ForbiddenException => new ProblemDetails { Status = StatusCodes.Status403Forbidden, Title = exception.Message },
+            NotFoundException => new ProblemDetails { Status = StatusCodes.Status404NotFound, Title = exception.Message },
             _ => new ProblemDetails { Status = StatusCodes.Status500InternalServerError, Title = "A apărut o eroare neașteptată" }
         };
 
