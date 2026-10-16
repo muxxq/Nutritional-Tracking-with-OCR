@@ -109,10 +109,14 @@ erDiagram
         float Proteins
         float Carbohydrates
         float Fats
+        float Sugars
+        float SaturatedFats
         float Fiber
-        float Sodium
+        float SaltGrams
+        string SearchText
         boolean IsVerified
         uuid CreatedByUserId FK
+        timestamp ArchivedAtUtc
         timestamp CreatedAtUtc
     }
 
@@ -334,3 +338,21 @@ flowchart LR
     PR --> C
     G --> C
 ```
+
+---
+
+## 7. Catalogul de Alimente
+
+Decizii: [ADR-004](adr/ADR-004-food-catalog.md). Design: [spec](specs/2026-10-16-food-catalog-design.md).
+
+| Metodă și rută | Succes | Erori |
+|---|---|---|
+| `GET /api/foods?query=&scope=all\|mine&page=1&pageSize=20` | 200 `{ items, page, pageSize, totalCount }` | 400, 401 |
+| `GET /api/foods/{id}` | 200 `FoodDto` | 401, 404 |
+| `POST /api/foods` | 201 `FoodDto` | 400, 401 |
+| `PUT /api/foods/{id}` | 200 `FoodDto` | 400, 401, 403, 404 |
+| `DELETE /api/foods/{id}` (arhivare) | 204 | 401, 403, 404 |
+
+* **Corpul la creare/editare:** `{ name, brand?, barcode?, servingSizeGrams?, calories, proteins, carbohydrates, sugars?, fats, saturatedFats?, fiber?, saltGrams? }`, toate per 100 g.
+* **`FoodDto`:** câmpurile de mai sus grupate în `per100g`, plus `isVerified`, `isOwn` și `energyWarning` (FR-06, null dacă valorile sunt coerente).
+* **Vizibilitate:** alimentele globale sunt văzute de toți și nu pot fi modificate (403); cele personale sunt văzute doar de autor (404 pentru alții).
