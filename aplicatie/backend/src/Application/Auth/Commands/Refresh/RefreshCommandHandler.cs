@@ -53,7 +53,21 @@ public sealed class RefreshCommandHandler(
 
         var issued = issuer.Issue(current.User, current.FamilyId);
         current.Revoke(now, issued.RefreshToken.Id);
-        await db.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            // Another request rotated this token after we read it: the same token was presented twice.
+            db.ChangeTracker.Clear();
+            await RevokeFamilyAsync(current.FamilyId, now, cancellationToken);
+            logger.LogWarning(
+                "Concurrent refresh token reuse for user {UserId}, family {FamilyId}; family revoked",
+                current.UserId, current.FamilyId);
+            throw new UnauthorizedException(AuthErrors.InvalidSession);
+        }
 
         return issued.Result;
     }
