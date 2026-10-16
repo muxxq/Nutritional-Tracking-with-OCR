@@ -12,8 +12,8 @@ using NutriScan.Infrastructure.Persistence;
 namespace NutriScan.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261016131020_RefreshTokenRevocationConcurrency")]
-    partial class RefreshTokenRevocationConcurrency
+    [Migration("20261016131421_AuthConcurrencyTokens")]
+    partial class AuthConcurrencyTokens
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -340,6 +340,7 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.Property<int>("FailedLoginAttempts")
+                        .IsConcurrencyToken()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(0);

@@ -33,7 +33,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             entity.Property(u => u.FirstName).HasMaxLength(100).IsRequired();
             entity.Property(u => u.LastName).HasMaxLength(100).IsRequired();
             entity.Property(u => u.PasswordHash).IsRequired();
-            entity.Property(u => u.FailedLoginAttempts).HasDefaultValue(0);
+            // Optimistic concurrency: parallel failed logins must not overwrite each other's increment.
+            entity.Property(u => u.FailedLoginAttempts).HasDefaultValue(0).IsConcurrencyToken();
             entity.Ignore(u => u.IsProfileComplete);
         });
 

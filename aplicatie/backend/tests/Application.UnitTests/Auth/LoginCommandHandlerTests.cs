@@ -80,6 +80,30 @@ public class LoginCommandHandlerTests : IDisposable
     }
 
     [Fact]
+    public async Task Handle_ConcurrentWrongPasswords_CountsEveryAttempt()
+    {
+        // Arrange: this request has read the user with 0 failures...
+        await _ctx.SeedUserAsync();
+        await _ctx.Db.Users.SingleAsync();
+
+        // ...while a concurrent wrong-password request commits first.
+        await using (var other = _ctx.CreateContext())
+        {
+            var issuer = new AuthSessionIssuer(other, _ctx.Tokens.Object, _ctx.Clock.Object);
+            await new LoginCommandHandler(other, _ctx.Hasher.Object, issuer, _ctx.Clock.Object)
+                .Handle(new LoginCommand("ana@exemplu.ro", "gresita"), CancellationToken.None)
+                .Invoking(t => t).Should().ThrowAsync<UnauthorizedException>();
+        }
+
+        // Act
+        await FailLoginAsync(1);
+
+        // Assert: both failures are counted, none is lost.
+        await using var verify = _ctx.CreateContext();
+        (await verify.Users.SingleAsync()).FailedLoginAttempts.Should().Be(2);
+    }
+
+    [Fact]
     public async Task Handle_FifthWrongPassword_LocksAccount()
     {
         // Arrange

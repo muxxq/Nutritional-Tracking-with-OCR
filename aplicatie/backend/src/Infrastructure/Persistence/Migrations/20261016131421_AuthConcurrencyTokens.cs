@@ -5,7 +5,7 @@
 namespace NutriScan.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class RefreshTokenRevocationConcurrency : Migration
+    public partial class AuthConcurrencyTokens : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
