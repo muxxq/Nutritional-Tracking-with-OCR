@@ -35,7 +35,7 @@ public sealed class GetDiaryDayQueryHandler(IApplicationDbContext db, IDateTimeP
             request.Date,
             Enum.GetValues<MealType>()
                 .Select((meal, i) => new DiaryMealDto(
-                    meal, meals[i].Select(e => DiaryEntryDto.From(e, e.FoodItem)).ToList(), mealTotals[i].Rounded()))
+                    meal, meals[i].Select(e => DiaryEntryDto.From(e, e.FoodItem!)).ToList(), mealTotals[i].Rounded()))
                 .ToList(),
             dayTotal.Rounded(),
             targets.Rounded(),

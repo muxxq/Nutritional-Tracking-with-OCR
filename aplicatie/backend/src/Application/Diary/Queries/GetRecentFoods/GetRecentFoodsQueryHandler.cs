@@ -15,7 +15,7 @@ public sealed class GetRecentFoodsQueryHandler(IApplicationDbContext db)
     {
         var latest = await db.DiaryEntries
             .Include(d => d.FoodItem)
-            .Where(d => d.UserId == request.UserId && d.FoodItem.ArchivedAtUtc == null)
+            .Where(d => d.UserId == request.UserId && d.FoodItemId != null && d.FoodItem!.ArchivedAtUtc == null)
             .OrderByDescending(d => d.CreatedAtUtc)
             .Take(Window)
             .ToListAsync(cancellationToken);
@@ -25,7 +25,7 @@ public sealed class GetRecentFoodsQueryHandler(IApplicationDbContext db)
             .GroupBy(d => d.FoodItemId)
             .Select(g => g.First())
             .Take(request.Limit)
-            .Select(e => new RecentFoodDto(DiaryFoodDto.From(e.FoodItem), e.QuantityGrams, e.Servings, e.CreatedAtUtc))
+            .Select(e => new RecentFoodDto(DiaryFoodDto.From(e.FoodItem!), e.QuantityGrams!.Value, e.Servings, e.CreatedAtUtc))
             .ToList();
     }
 }

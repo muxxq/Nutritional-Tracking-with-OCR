@@ -12,10 +12,10 @@ public sealed class UpdateDiaryEntryCommandHandler(IApplicationDbContext db, IDa
         // An archived food still backs the entries logged before it was archived, so they stay editable.
         var entry = await db.LoadOwnAsync(request.UserId, request.EntryId, cancellationToken);
 
-        entry.Apply(request, entry.FoodItem);
+        entry.Apply(request, entry.FoodItem!);
         entry.UpdatedAtUtc = clock.UtcNow;
         await db.SaveOrNotFoundAsync(cancellationToken);
 
-        return DiaryEntryDto.From(entry, entry.FoodItem);
+        return DiaryEntryDto.From(entry, entry.FoodItem!);
     }
 }

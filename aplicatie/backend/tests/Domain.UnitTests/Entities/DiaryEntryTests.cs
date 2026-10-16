@@ -45,4 +45,18 @@ public class DiaryEntryTests
         entry.FoodItem.Should().BeNull();
         entry.CalculatedCalories.Should().BeApproximately(778.0, 1e-9);
     }
+
+    [Fact]
+    public void RecalculateNutrients_Recipe_UsesPerServingTimesServings()
+    {
+        // Arrange: FR-09 recipe (194.5 kcal per serving), 1.5 servings
+        var entry = new DiaryEntry { Servings = 1.5 };
+
+        // Act
+        entry.RecalculateNutrients(NutriScan.Domain.UnitTests.Nutrition.RecipeTestData.SrsRecipe());
+
+        // Assert: unrounded snapshot
+        entry.CalculatedCalories.Should().Be(291.75);
+        entry.CalculatedProteins.Should().BeApproximately(12.675, 1e-9);
+    }
 }

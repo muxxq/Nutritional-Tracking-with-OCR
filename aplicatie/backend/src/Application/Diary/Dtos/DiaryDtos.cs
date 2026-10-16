@@ -32,7 +32,7 @@ public sealed record DiaryEntryDto(
     DiaryFoodDto Food, NutrientsDto Nutrients)
 {
     public static DiaryEntryDto From(DiaryEntry entry, FoodItem food) => new(
-        entry.Id, entry.ConsumedDate, entry.MealType, entry.QuantityGrams, entry.Servings,
+        entry.Id, entry.ConsumedDate, entry.MealType, entry.QuantityGrams!.Value, entry.Servings,
         DiaryFoodDto.From(food), NutrientsDto.Of(entry).Rounded());
 }
 
