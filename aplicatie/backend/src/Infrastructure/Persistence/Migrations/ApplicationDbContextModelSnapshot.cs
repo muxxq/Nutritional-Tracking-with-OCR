@@ -55,6 +55,9 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                     b.Property<double>("QuantityGrams")
                         .HasColumnType("double precision");
 
+                    b.Property<double?>("Servings")
+                        .HasColumnType("double precision");
+
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
