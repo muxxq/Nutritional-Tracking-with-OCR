@@ -55,6 +55,40 @@ public class FoodsTests(NutriScanApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Food_CategoryRoundTrip()
+    {
+        // Arrange
+        var client = await SignedInClientAsync();
+
+        // Act
+        var created = await JsonAsync(await client.PostAsJsonAsync("/api/foods", Oats()));
+        var id = created.GetProperty("id").GetString();
+        var updated = await JsonAsync(await client.PutAsJsonAsync($"/api/foods/{id}", new
+        {
+            name = "Lapte", calories = 46, proteins = 3.4, carbohydrates = 4.8, fats = 1.5, category = "dairy"
+        }));
+
+        // Assert
+        created.GetProperty("category").GetString().Should().Be("other");
+        updated.GetProperty("category").GetString().Should().Be("dairy");
+    }
+
+    [Fact]
+    public async Task SeedFoods_HaveCategories()
+    {
+        // Arrange
+        var client = await SignedInClientAsync();
+        var search = await JsonAsync(await client.GetAsync("/api/foods?query=piept%20pui%20fara%20piele"));
+        var id = search.GetProperty("items")[0].GetProperty("id").GetString();
+
+        // Act
+        var food = await JsonAsync(await client.GetAsync($"/api/foods/{id}"));
+
+        // Assert
+        food.GetProperty("category").GetString().Should().Be("meatFish");
+    }
+
+    [Fact]
     public async Task Create_ThenSearch_OnlyAuthorSeesIt()
     {
         // Arrange
