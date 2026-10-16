@@ -7,6 +7,7 @@ using NutriScan.Application.Foods.Commands.UpdateFood;
 using NutriScan.Application.Foods.Queries.GetFood;
 using NutriScan.Application.UnitTests.Auth;
 using NutriScan.Domain.Entities;
+using NutriScan.Domain.Enums;
 
 namespace NutriScan.Application.UnitTests.Foods;
 
@@ -82,6 +83,44 @@ public class FoodCommandHandlerTests : IDisposable
         dto.Name.Should().Be("Ovăz nou");
         food.SearchText.Should().Be("ovaz nou generic");
         food.Calories.Should().Be(389);
+    }
+
+    [Fact]
+    public async Task Create_WithoutCategory_IsOther()
+    {
+        // Act
+        var dto = await new CreateFoodCommandHandler(_ctx.Db).Handle(FoodTestData.Oats(_me), CancellationToken.None);
+
+        // Assert
+        dto.Category.Should().Be(FoodCategory.Other);
+        (await _ctx.Db.FoodItems.SingleAsync()).Category.Should().Be(FoodCategory.Other);
+    }
+
+    [Fact]
+    public async Task Create_WithCategory_Stores()
+    {
+        // Act
+        var dto = await new CreateFoodCommandHandler(_ctx.Db).Handle(
+            FoodTestData.Oats(_me) with { Category = FoodCategory.Dairy }, CancellationToken.None);
+
+        // Assert
+        dto.Category.Should().Be(FoodCategory.Dairy);
+    }
+
+    [Fact]
+    public async Task Update_ChangesCategory()
+    {
+        // Arrange
+        var food = await AddAsync(FoodTestData.Food("Vechi", _me));
+
+        // Act
+        var dto = await new UpdateFoodCommandHandler(_ctx.Db).Handle(
+            UpdateFoodCommand.From(food.Id, FoodTestData.Oats(_me) with { Category = FoodCategory.FruitsVegetables }),
+            CancellationToken.None);
+
+        // Assert
+        dto.Category.Should().Be(FoodCategory.FruitsVegetables);
+        food.Category.Should().Be(FoodCategory.FruitsVegetables);
     }
 
     [Fact]
