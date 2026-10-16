@@ -2,13 +2,18 @@ using Microsoft.EntityFrameworkCore;
 using NutriScan.Application.Common.Interfaces;
 using NutriScan.Domain.Common;
 using NutriScan.Domain.Entities;
+using NutriScan.Infrastructure.Common;
 
 namespace NutriScan.Infrastructure.Persistence;
 
 public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    private readonly IDateTimeProvider _clock;
+
+    /// <param name="clock">Source of audit timestamps; the system clock when omitted (design-time tooling).</param>
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDateTimeProvider? clock = null) : base(options)
     {
+        _clock = clock ?? new SystemDateTimeProvider();
     }
 
     public DbSet<User> Users => Set<User>();
@@ -161,10 +166,10 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Entity.CreatedAtUtc = DateTime.UtcNow;
+                    entry.Entity.CreatedAtUtc = _clock.UtcNow;
                     break;
                 case EntityState.Modified:
-                    entry.Entity.UpdatedAtUtc = DateTime.UtcNow;
+                    entry.Entity.UpdatedAtUtc = _clock.UtcNow;
                     break;
             }
         }
