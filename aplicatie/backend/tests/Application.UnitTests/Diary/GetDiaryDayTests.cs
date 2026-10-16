@@ -159,7 +159,7 @@ public class GetDiaryDayTests : IDisposable
         var day = await GetDay(user.Id);
 
         // Assert
-        day.Meals[0].Entries.Should().ContainSingle().Which.Food.IsArchived.Should().BeTrue();
+        day.Meals[0].Entries.Should().ContainSingle().Which.Food!.IsArchived.Should().BeTrue();
         day.Totals.Calories.Should().Be(389);
     }
 
