@@ -10,6 +10,6 @@ public sealed class DeleteDiaryEntryCommandHandler(IApplicationDbContext db) : I
         // A physical delete: nothing references a diary entry, unlike a food.
         var entry = await db.LoadOwnAsync(request.UserId, request.EntryId, cancellationToken);
         db.DiaryEntries.Remove(entry);
-        await db.SaveChangesAsync(cancellationToken);
+        await db.SaveOrNotFoundAsync(cancellationToken);
     }
 }

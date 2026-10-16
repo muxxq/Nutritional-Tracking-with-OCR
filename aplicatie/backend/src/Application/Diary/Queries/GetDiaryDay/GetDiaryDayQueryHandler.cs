@@ -39,7 +39,8 @@ public sealed class GetDiaryDayQueryHandler(IApplicationDbContext db, IDateTimeP
                 .ToList(),
             dayTotal.Rounded(),
             targets.Rounded(),
-            (targets - dayTotal).Rounded(),
+            // From the displayed values, so totals + remaining always add up to the target on screen.
+            (targets.Rounded() - dayTotal.Rounded()).Rounded(),
             user.IsProfileComplete);
     }
 }

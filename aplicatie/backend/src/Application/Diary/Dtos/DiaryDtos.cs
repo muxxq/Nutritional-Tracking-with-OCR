@@ -18,7 +18,8 @@ public sealed record NutrientsDto(double Calories, double Proteins, double Carbs
     public static NutrientsDto operator -(NutrientsDto a, NutrientsDto b) =>
         new(a.Calories - b.Calories, a.Proteins - b.Proteins, a.Carbs - b.Carbs, a.Fats - b.Fats);
 
-    private static double Round(double value) => Math.Round(value, 1, MidpointRounding.AwayFromZero);
+    // "+ 0.0" turns -0 (e.g. 0.03 kcal over target) into 0, which JSON would otherwise print as "-0".
+    private static double Round(double value) => Math.Round(value, 1, MidpointRounding.AwayFromZero) + 0.0;
 }
 
 public sealed record DiaryFoodDto(Guid Id, string Name, string? Brand, bool IsArchived)

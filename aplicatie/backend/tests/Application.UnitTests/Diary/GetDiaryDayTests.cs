@@ -109,6 +109,22 @@ public class GetDiaryDayTests : IDisposable
     }
 
     [Fact]
+    public async Task GetDay_RemainingAddsUpWithDisplayedTotals()
+    {
+        // Arrange: 2.25 g fat rounds up to 2.3, so the remaining 44.75 must show 44.7, not 44.8
+        var user = await SeedR1UserAsync();
+        var food = await AddFoodAsync(new FoodItem { Name = "Iaurt", Calories = 60, Proteins = 4, Carbohydrates = 5, Fats = 2.25 });
+        await LogAsync(user.Id, food, 100, MealType.Snack);
+
+        // Act
+        var day = await GetDay(user.Id);
+
+        // Assert
+        day.Totals.Fats.Should().Be(2.3);
+        day.Remaining.Fats.Should().Be(44.7);
+    }
+
+    [Fact]
     public async Task GetDay_IgnoresOtherDaysAndOtherUsers()
     {
         // Arrange

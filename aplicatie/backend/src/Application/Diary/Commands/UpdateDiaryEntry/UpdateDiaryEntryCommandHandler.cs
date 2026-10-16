@@ -14,7 +14,7 @@ public sealed class UpdateDiaryEntryCommandHandler(IApplicationDbContext db, IDa
 
         entry.Apply(request, entry.FoodItem);
         entry.UpdatedAtUtc = clock.UtcNow;
-        await db.SaveChangesAsync(cancellationToken);
+        await db.SaveOrNotFoundAsync(cancellationToken);
 
         return DiaryEntryDto.From(entry, entry.FoodItem);
     }
