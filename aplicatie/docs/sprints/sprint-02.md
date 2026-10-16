@@ -1,7 +1,7 @@
 # 🏃‍♂️ Sprint 2 — Backend Core: Autentificare
 **Faza din roadmap:** Faza 2: Backend core (săptămânile 3–7)
 **Branch:** `feature/NUT-auth-jwt`
-**Status:** 🟡 În desfășurare (autentificarea backend este finalizată)
+**Status:** 🟡 În desfășurare (autentificarea și profilul sunt finalizate în backend)
 
 ---
 
@@ -49,6 +49,26 @@ dotnet test
 
 ---
 
+## 📋 Story: Profil și ținte nutriționale (FR-02) — ✅ Backend finalizat
+
+> Ca utilizator NutriScan, vreau să îmi completez profilul fizic și să primesc automat ținte zilnice de calorii și macronutrienți potrivite obiectivului meu, pe care să le pot ajusta manual.
+
+**Documente:** [spec](../specs/2026-10-16-profile-targets-design.md) · [plan](../plans/2026-10-16-profile-targets.md) · [ADR-003](../adr/ADR-003-nutrition-target-calculation.md)
+
+| AC | Descriere | Acoperit de |
+|---|---|---|
+| AC1 | Profil nou → ținte `default` | `GetProfile_AfterRegister_ReturnsDefaults` |
+| AC2 | Profil R1 → 1700 kcal, 124 / 195 / 47 g | `UpdateProfile_R1_ReturnsCalculatedTargets`, `Calculate_R1_WomanLosingWeight` |
+| AC3 | `isProfileComplete` și în `/api/auth/me` | `UpdateProfile_MakesAuthMeProfileComplete` |
+| AC4 | Suprascriere și revenire la calculat | `UpdateTargets_ManualProteins_RecalculatesCarbs` |
+| AC5 | Schimbarea greutății păstrează țintele manuale | `UpdateProfile_KeepsManualTargets` |
+| AC6 | Date invalide → 400 | `UpdateProfile_InvalidValues_Returns400` + validatoare |
+| AC7 | Suprascrieri imposibile → 400 | `UpdateTargets_Impossible_Returns400` |
+| AC8 | Doar propriul profil, cu token | `Profile_WithoutToken_Returns401`, `Profile_TwoUsers_SeeOnlyTheirOwn` |
+| AC9 | Enum-uri ca text | `UpdateProfile_R1_ReturnsCalculatedTargets` |
+
+**Realizări:** `NutritionTargetCalculator` (funcție pură în Domain), migrarea `ProfileTargetOverrides`, `GetProfile` / `UpdateProfile` / `UpdateTargets`, `ProfileController`, enum-uri ca text la nivel global. **158 de teste backend, toate trec.**
+
 ## ⏭️ Următorii pași din sprint
-* Modulul Profil: `PUT /api/profile` și calculul BMR/TDEE (completează onboarding-ul pornit de `isProfileComplete`).
+* Modulul Catalog Alimente: CRUD `FoodItem` cu introducere manuală și căutare după nume.
 * Ecranele de login, înregistrare și onboarding din client (Faza 3), cu un singur refresh în zbor.
