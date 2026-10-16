@@ -47,6 +47,7 @@ Planificatorul săptămânal și transferul „Am mâncat asta” (FR-10, FR-11,
 
 ### 3.1 `Recipe`
 - Câmpuri noi: `PrepTimeMinutes` (`int?`, afișat de ecranul existent din client) și `ArchivedAtUtc` (`DateTime?`, setter privat).
+- `SearchText`: nume fără diacritice, cu litere mici, recalculat la setarea numelui (`TextNormalizer.ForSearch`), ca la `FoodItem`.
 - `Archive(DateTime nowUtc)` și `IsVisibleTo(Guid userId) => ArchivedAtUtc is null && UserId == userId`, după modelul `FoodItem`.
 
 ### 3.2 `RecipeNutrition` (Domain/Nutrition)
@@ -104,7 +105,7 @@ Regulile care nu depind de baza de date stau în validatoare FluentValidation. V
 ## 4. Persistență
 
 Migrarea `Recipes`:
-- `Recipes`: `AddColumn PrepTimeMinutes` (`integer`, nullable), `AddColumn ArchivedAtUtc` (`timestamp with time zone`, nullable); `Description` ≤ 1000.
+- `Recipes`: `AddColumn PrepTimeMinutes` (`integer`, nullable), `AddColumn ArchivedAtUtc` (`timestamp with time zone`, nullable), `AddColumn SearchText` (`character varying(200)`, cu index; tabelul e gol până acum, deci valoarea implicită `''` nu afectează date reale); `Description` ≤ 1000.
 - `RecipeIngredients`: index unic `(RecipeId, FoodItemId)`.
 - `DiaryEntries`: `FoodItemId` și `QuantityGrams` devin nullable; `AddColumn RecipeId` (`uuid`, nullable) cu cheie străină spre `Recipes`, `ON DELETE RESTRICT`, și index.
 - Constrângeri `CHECK` pe `DiaryEntries`:
