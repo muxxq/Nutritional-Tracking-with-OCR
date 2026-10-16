@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NutriScan.Application.Common.Models;
 using NutriScan.Application.Common.Interfaces;
 using NutriScan.Application.Diary.Dtos;
 using NutriScan.Application.Profile;
@@ -16,6 +17,7 @@ public sealed class GetDiaryDayQueryHandler(IApplicationDbContext db, IDateTimeP
 
         var entries = await db.DiaryEntries
             .Include(d => d.FoodItem)
+            .Include(d => d.Recipe)
             .Where(d => d.UserId == request.UserId && d.ConsumedDate == request.Date)
             .OrderBy(d => d.CreatedAtUtc)
             .ToListAsync(cancellationToken);
@@ -35,7 +37,7 @@ public sealed class GetDiaryDayQueryHandler(IApplicationDbContext db, IDateTimeP
             request.Date,
             Enum.GetValues<MealType>()
                 .Select((meal, i) => new DiaryMealDto(
-                    meal, meals[i].Select(e => DiaryEntryDto.From(e, e.FoodItem)).ToList(), mealTotals[i].Rounded()))
+                    meal, meals[i].Select(e => DiaryEntryDto.From(e)).ToList(), mealTotals[i].Rounded()))
                 .ToList(),
             dayTotal.Rounded(),
             targets.Rounded(),

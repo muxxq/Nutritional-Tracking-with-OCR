@@ -43,6 +43,7 @@ public class NutriScanApiFactory : WebApplicationFactory<Program>, IAsyncLifetim
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         await db.DiaryEntries.ExecuteDeleteAsync();
+        await db.Recipes.ExecuteDeleteAsync();  // ingredients cascade; they reference foods, deleted next
         await db.FoodItems.Where(f => f.CreatedByUserId != null).ExecuteDeleteAsync();  // keep the global seed
         await db.RefreshTokens.ExecuteDeleteAsync();
         await db.Users.ExecuteDeleteAsync();

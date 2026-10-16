@@ -82,8 +82,8 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
   * [x] Modul Profil Utilizator: calcul automat rată metabolică bazală (BMR) și necesar caloric zilnic (TDEE) prin formula Mifflin-St Jeor; distribuție macronutrienți conform obiectivului (slăbire, menținere, hipertrofie).
   * [x] Modul Catalog Alimente: CRUD `FoodItem` cu **introducere manuală** a valorilor nutriționale per 100g și căutare după nume.
   * [x] Modul Jurnal Alimentar: Comenzi & Interogări MediatR pentru adăugare, editare, ștergere și vizualizare pe cele 4 mese principale, cu totaluri zilnice față de ținte (statisticile săptămânale/lunare FR-08 rămân de făcut).
-  * [ ] Reguli de validare energetică în `FluentValidation` (ex: avertisment dacă diferența dintre calorii și formula `4P + 4C + 9G` > 15%).
-  * [ ] Modul Rețetar & Planificator Săptămânal: agregare ingrediente, recalcul nutrienți per porție, planificare pe zile.
+  * [x] Reguli de validare energetică (avertisment dacă diferența dintre calorii și formula `4P + 4C + 9G` > 15%): implementată ca avertisment în Domain (`EnergyCheck`), nu ca eroare `FluentValidation`, pentru că fibrele, alcoolul și poliolii pot explica legitim diferența.
+  * [ ] Modul Rețetar & Planificator Săptămânal: agregare ingrediente, recalcul nutrienți per porție, planificare pe zile. **Rețetar ✅** (FR-09: CRUD cu arhivare, valori totale și per porție calculate la citire, rețete în jurnal în porții, ADR-006); **planificator în lucru** (FR-10, FR-11).
   * [ ] Generator automat Listă de Cumpărături (agregare cantități identice din mesele planificate).
   * [ ] Contract `IOcrService` în Application cu implementare stub în Infrastructure (pregătire pentru Faza 4).
   * [ ] Teste unitare (xUnit, FluentAssertions, Moq) pentru Handlers & Domain Rules; Teste de integrare cu Testcontainers Postgres.
@@ -210,7 +210,8 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
 ---
 
 ## 🚦 Pasul Următor (Sprint 2 — Faza 2: Backend Core)
-1. **Autentificare**: înregistrare/login, hashing PBKDF2, JWT Access Token + Refresh Token rotativ.
-2. **Primul flux CQRS complet**: comenzi & interogări MediatR pentru Jurnalul Alimentar, cu validare FluentValidation și teste xUnit.
-3. **Catalog Alimente**: CRUD `FoodItem` cu introducere manuală a valorilor per 100g.
-4. **În paralel**: începerea colectării fotografiilor de etichete pentru dataset-ul OCR.
+Gata în Faza 2: autentificare (JWT + refresh token rotativ), profil și ținte, catalog de alimente, jurnal alimentar, rețetar (ADR-002 – ADR-006).
+1. **Planificator săptămânal** (FR-10) și transferul „Am mâncat asta” în jurnal (FR-11), refolosind snapshot-ul din jurnal și intrările-rețetă.
+2. **Listă de cumpărături** (FR-12): agregarea ingredientelor din mesele planificate.
+3. **Contract `IOcrService`** cu stub în Infrastructure, apoi trecerea la clientul integrat (Faza 3).
+4. **În paralel**: colectarea fotografiilor de etichete pentru dataset-ul OCR.

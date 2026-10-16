@@ -94,7 +94,24 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             entity.HasOne(d => d.FoodItem)
                 .WithMany(f => f.DiaryEntries)
                 .HasForeignKey(d => d.FoodItemId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Recipes are archived, never deleted; RESTRICT only guards against an accidental hard delete.
+            entity.HasOne(d => d.Recipe)
+                .WithMany()
+                .HasForeignKey(d => d.RecipeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // A food or a recipe, never both or neither; recipes are logged in servings (ADR-006 D2, D3).
+            // Enforced here too, so a write that bypasses the API cannot store an incoherent entry.
+            entity.ToTable(t =>
+            {
+                t.HasCheckConstraint("CK_DiaryEntries_FoodXorRecipe", "(\"FoodItemId\" IS NULL) <> (\"RecipeId\" IS NULL)");
+                t.HasCheckConstraint("CK_DiaryEntries_QuantityByKind",
+                    "(\"FoodItemId\" IS NOT NULL AND \"QuantityGrams\" IS NOT NULL) " +
+                    "OR (\"RecipeId\" IS NOT NULL AND \"QuantityGrams\" IS NULL AND \"Servings\" IS NOT NULL)");
+            });
         });
 
         // Recipe & RecipeIngredient
@@ -102,6 +119,9 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         {
             entity.HasKey(r => r.Id);
             entity.Property(r => r.Name).HasMaxLength(200).IsRequired();
+            entity.Property(r => r.Description).HasMaxLength(1000);
+            entity.Property(r => r.SearchText).HasMaxLength(200).IsRequired();
+            entity.HasIndex(r => r.SearchText);
 
             entity.HasOne(r => r.User)
                 .WithMany(u => u.Recipes)
@@ -112,6 +132,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         modelBuilder.Entity<RecipeIngredient>(entity =>
         {
             entity.HasKey(ri => ri.Id);
+            // A food appears once per recipe (ADR-006 D6).
+            entity.HasIndex(ri => new { ri.RecipeId, ri.FoodItemId }).IsUnique();
 
             entity.HasOne(ri => ri.Recipe)
                 .WithMany(r => r.Ingredients)
