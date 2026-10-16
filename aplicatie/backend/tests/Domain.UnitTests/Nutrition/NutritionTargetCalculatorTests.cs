@@ -223,6 +223,39 @@ public class NutritionTargetCalculatorTests
     }
 
     [Fact]
+    public void CalculateBestEffort_OverridesInfeasibleAfterBirthday_FallsBackToCalculated()
+    {
+        // Arrange: 318 g protein leaves +0.75 g carbs at 28 years (1700 kcal), −1.1 g at 29 (1690 kcal)
+        var user = R1();
+        user.ProteinsGramsOverride = 318;
+        NutritionTargetCalculator.Calculate(user, Today).IsValid.Should().BeTrue();
+        var nextYear = Today.AddYears(1);
+
+        // Act
+        var t = NutritionTargetCalculator.CalculateBestEffort(user, nextYear);
+
+        // Assert
+        NutritionTargetCalculator.Calculate(user, nextYear).IsValid.Should().BeFalse();
+        t.ProteinsGrams.Source.Should().Be(TargetSource.Calculated);
+        t.CarbsGrams.Value.Should().BeGreaterThanOrEqualTo(0);
+        user.ProteinsGramsOverride.Should().Be(318, "a read must not change the stored overrides");
+    }
+
+    [Fact]
+    public void CalculateBestEffort_FeasibleOverrides_KeepsThem()
+    {
+        // Arrange
+        var user = R1();
+        user.ProteinsGramsOverride = 140;
+
+        // Act
+        var t = NutritionTargetCalculator.CalculateBestEffort(user, Today);
+
+        // Assert
+        t.ProteinsGrams.Should().Be(new TargetValue(140, TargetSource.Manual));
+    }
+
+    [Fact]
     public void Calculate_IncompleteProfile_ReturnsDefaults()
     {
         // Act

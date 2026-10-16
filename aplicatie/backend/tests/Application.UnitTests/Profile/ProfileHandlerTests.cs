@@ -41,6 +41,22 @@ public class ProfileHandlerTests : IDisposable
     }
 
     [Fact]
+    public async Task GetProfile_OverridesInfeasibleAYearLater_DoesNotThrow()
+    {
+        // Arrange
+        var user = await _ctx.SeedUserAsync();
+        await UpdateProfile(ProfileTestData.R1(user.Id));
+        await UpdateTargets(new UpdateTargetsCommand(user.Id, null, 318, null, null));
+        _ctx.Now = _ctx.Now.AddYears(1);
+
+        // Act
+        var profile = await GetProfile(user.Id);
+
+        // Assert
+        profile.Targets.ProteinsGrams.Source.Should().Be(TargetSource.Calculated);
+    }
+
+    [Fact]
     public async Task GetProfile_MissingUser_ThrowsUnauthorized()
     {
         // Act

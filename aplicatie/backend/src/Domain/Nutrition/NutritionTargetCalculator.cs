@@ -28,10 +28,32 @@ public static class NutritionTargetCalculator
     private const string NegativeFatsError = "Țintele setate manual nu sunt compatibile: grăsimile ar deveni negative.";
     private const string InconsistentEnergyError = "Țintele setate manual diferă cu peste 15% de totalul caloric (4P + 4C + 9G).";
 
+    /// <summary>Strict: used when writing. Infeasible overrides are reported as an error.</summary>
     public static NutritionTargetResult Calculate(User user, DateOnly today) =>
-        user.IsProfileComplete ? CalculateFromProfile(user, today) : CalculateWithoutProfile(user);
+        Calculate(user, today, TargetOverrides.From(user));
 
-    private static NutritionTargetResult CalculateFromProfile(User user, DateOnly today)
+    /// <summary>
+    /// Lenient: used when reading. Overrides that were valid when saved can become infeasible later
+    /// (e.g. a birthday lowers BMR); then the targets are calculated as if no overrides were set.
+    /// The user's stored overrides are not changed.
+    /// </summary>
+    public static NutritionTargets CalculateBestEffort(User user, DateOnly today) =>
+        Calculate(user, today).Targets
+        ?? Calculate(user, today, TargetOverrides.None).Targets
+        ?? throw new InvalidOperationException("Targets without overrides are always feasible.");
+
+    private static NutritionTargetResult Calculate(User user, DateOnly today, TargetOverrides overrides) =>
+        user.IsProfileComplete ? CalculateFromProfile(user, today, overrides) : CalculateWithoutProfile(overrides);
+
+    private sealed record TargetOverrides(int? Calories, double? ProteinsGrams, double? CarbsGrams, double? FatsGrams)
+    {
+        public static readonly TargetOverrides None = new(null, null, null, null);
+
+        public static TargetOverrides From(User user) =>
+            new(user.CaloriesOverride, user.ProteinsGramsOverride, user.CarbsGramsOverride, user.FatsGramsOverride);
+    }
+
+    private static NutritionTargetResult CalculateFromProfile(User user, DateOnly today, TargetOverrides overrides)
     {
         var age = user.AgeOn(today)!.Value;
         var bmr = 10 * user.WeightKg + 6.25 * user.HeightCm - 5 * age + (user.Gender == Gender.Male ? 5 : -161);
@@ -40,23 +62,23 @@ public static class NutritionTargetCalculator
         var floor = user.Gender == Gender.Male ? 1500 : 1200;
         var calculatedCalories = Math.Max(floor, Round10(tdee * GoalFactor(user.Goal)));
 
-        var caloriesManual = user.CaloriesOverride is not null;
-        double calories = user.CaloriesOverride ?? calculatedCalories;
-        var proteins = user.ProteinsGramsOverride ?? ProteinReferenceWeightKg(user) * ProteinGramsPerKg(user.Goal);
+        var caloriesManual = overrides.Calories is not null;
+        double calories = overrides.Calories ?? calculatedCalories;
+        var proteins = overrides.ProteinsGrams ?? ProteinReferenceWeightKg(user) * ProteinGramsPerKg(user.Goal);
 
         double carbs, fats;
-        if (user.CarbsGramsOverride is null)
+        if (overrides.CarbsGrams is null)
         {
-            fats = user.FatsGramsOverride ?? calories * FatEnergyShare / KcalPerGramFat;
+            fats = overrides.FatsGrams ?? calories * FatEnergyShare / KcalPerGramFat;
             carbs = (calories - KcalPerGramProtein * proteins - KcalPerGramFat * fats) / KcalPerGramCarbs;
             if (carbs < 0)
             {
                 return NutritionTargetResult.Failure(NegativeCarbsError);
             }
         }
-        else if (user.FatsGramsOverride is null)
+        else if (overrides.FatsGrams is null)
         {
-            carbs = user.CarbsGramsOverride.Value;
+            carbs = overrides.CarbsGrams.Value;
             fats = (calories - KcalPerGramProtein * proteins - KcalPerGramCarbs * carbs) / KcalPerGramFat;
             if (fats < 0)
             {
@@ -65,8 +87,8 @@ public static class NutritionTargetCalculator
         }
         else
         {
-            carbs = user.CarbsGramsOverride.Value;
-            fats = user.FatsGramsOverride.Value;
+            carbs = overrides.CarbsGrams.Value;
+            fats = overrides.FatsGrams.Value;
             if (caloriesManual)
             {
                 if (!IsEnergyConsistent(calories, proteins, carbs, fats))
@@ -85,16 +107,16 @@ public static class NutritionTargetCalculator
             Bmr: RoundToInt(bmr),
             Tdee: RoundToInt(tdee),
             Calories: new TargetValue(calories, Source(caloriesManual)),
-            ProteinsGrams: new TargetValue(RoundToInt(proteins), Source(user.ProteinsGramsOverride is not null)),
-            CarbsGrams: new TargetValue(RoundToInt(carbs), Source(user.CarbsGramsOverride is not null)),
-            FatsGrams: new TargetValue(RoundToInt(fats), Source(user.FatsGramsOverride is not null))));
+            ProteinsGrams: new TargetValue(RoundToInt(proteins), Source(overrides.ProteinsGrams is not null)),
+            CarbsGrams: new TargetValue(RoundToInt(carbs), Source(overrides.CarbsGrams is not null)),
+            FatsGrams: new TargetValue(RoundToInt(fats), Source(overrides.FatsGrams is not null))));
     }
 
-    private static NutritionTargetResult CalculateWithoutProfile(User user)
+    private static NutritionTargetResult CalculateWithoutProfile(TargetOverrides overrides)
     {
-        if (user is { CaloriesOverride: not null, ProteinsGramsOverride: not null, CarbsGramsOverride: not null, FatsGramsOverride: not null }
-            && !IsEnergyConsistent(user.CaloriesOverride.Value, user.ProteinsGramsOverride.Value,
-                user.CarbsGramsOverride.Value, user.FatsGramsOverride.Value))
+        if (overrides is { Calories: not null, ProteinsGrams: not null, CarbsGrams: not null, FatsGrams: not null }
+            && !IsEnergyConsistent(overrides.Calories.Value, overrides.ProteinsGrams.Value,
+                overrides.CarbsGrams.Value, overrides.FatsGrams.Value))
         {
             return NutritionTargetResult.Failure(InconsistentEnergyError);
         }
@@ -102,10 +124,10 @@ public static class NutritionTargetCalculator
         return NutritionTargetResult.Success(new NutritionTargets(
             Bmr: null,
             Tdee: null,
-            Calories: ManualOrDefault(user.CaloriesOverride, DefaultCalories),
-            ProteinsGrams: ManualOrDefault(user.ProteinsGramsOverride, DefaultProteinsGrams),
-            CarbsGrams: ManualOrDefault(user.CarbsGramsOverride, DefaultCarbsGrams),
-            FatsGrams: ManualOrDefault(user.FatsGramsOverride, DefaultFatsGrams)));
+            Calories: ManualOrDefault(overrides.Calories, DefaultCalories),
+            ProteinsGrams: ManualOrDefault(overrides.ProteinsGrams, DefaultProteinsGrams),
+            CarbsGrams: ManualOrDefault(overrides.CarbsGrams, DefaultCarbsGrams),
+            FatsGrams: ManualOrDefault(overrides.FatsGrams, DefaultFatsGrams)));
     }
 
     /// <summary>
