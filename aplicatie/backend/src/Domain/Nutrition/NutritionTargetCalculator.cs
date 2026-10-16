@@ -6,13 +6,14 @@ namespace NutriScan.Domain.Nutrition;
 /// <summary>
 /// Daily nutrition targets from the user's profile and manual overrides (spec FR-02).
 /// BMR: Mifflin–St Jeor (1990). Calories: BMR × activity factor × goal factor, with a safety floor.
-/// Macros: protein per kg of body weight (ISSN 2017), fat 25% of energy (AMDR), carbohydrates take the rest.
+/// Macros: protein per kg of body weight, capped at BMI 25 (ISSN 2017), fat 25% of energy (AMDR), carbohydrates take the rest.
 /// Manual overrides are inputs: the targets that depend on them are recalculated around them.
 /// </summary>
 public static class NutritionTargetCalculator
 {
     public const double EnergyTolerance = 0.15;
     public const double FatEnergyShare = 0.25;
+    public const double ReferenceBmi = 25;
 
     private const double KcalPerGramProtein = 4;
     private const double KcalPerGramCarbs = 4;
@@ -41,7 +42,7 @@ public static class NutritionTargetCalculator
 
         var caloriesManual = user.CaloriesOverride is not null;
         double calories = user.CaloriesOverride ?? calculatedCalories;
-        var proteins = user.ProteinsGramsOverride ?? user.WeightKg * ProteinGramsPerKg(user.Goal);
+        var proteins = user.ProteinsGramsOverride ?? ProteinReferenceWeightKg(user) * ProteinGramsPerKg(user.Goal);
 
         double carbs, fats;
         if (user.CarbsGramsOverride is null)
@@ -105,6 +106,16 @@ public static class NutritionTargetCalculator
             ProteinsGrams: ManualOrDefault(user.ProteinsGramsOverride, DefaultProteinsGrams),
             CarbsGrams: ManualOrDefault(user.CarbsGramsOverride, DefaultCarbsGrams),
             FatsGrams: ManualOrDefault(user.FatsGramsOverride, DefaultFatsGrams)));
+    }
+
+    /// <summary>
+    /// Body weight capped at BMI 25 for the height. Protein needs follow lean mass, so total weight
+    /// overestimates them in obesity (and would leave no energy for carbohydrates at the extremes).
+    /// </summary>
+    private static double ProteinReferenceWeightKg(User user)
+    {
+        var heightM = user.HeightCm / 100;
+        return Math.Min(user.WeightKg, ReferenceBmi * heightM * heightM);
     }
 
     private static double Energy(double proteins, double carbs, double fats) =>
