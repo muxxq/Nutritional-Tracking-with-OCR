@@ -18,6 +18,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<RecipeIngredient> RecipeIngredients => Set<RecipeIngredient>();
     public DbSet<PlannedMeal> PlannedMeals => Set<PlannedMeal>();
     public DbSet<ShoppingListItem> ShoppingListItems => Set<ShoppingListItem>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -32,6 +33,26 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             entity.Property(u => u.FirstName).HasMaxLength(100).IsRequired();
             entity.Property(u => u.LastName).HasMaxLength(100).IsRequired();
             entity.Property(u => u.PasswordHash).IsRequired();
+            // Optimistic concurrency: parallel failed logins must not overwrite each other's increment.
+            entity.Property(u => u.FailedLoginAttempts).HasDefaultValue(0).IsConcurrencyToken();
+            entity.Ignore(u => u.IsProfileComplete);
+        });
+
+        // RefreshToken
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(rt => rt.Id);
+            entity.Property(rt => rt.TokenHash).HasMaxLength(64).IsRequired();
+            entity.HasIndex(rt => rt.TokenHash).IsUnique();
+            entity.HasIndex(rt => rt.FamilyId);
+
+            // Optimistic concurrency: rotating or revoking only succeeds if no one revoked the token first.
+            entity.Property(rt => rt.RevokedAtUtc).IsConcurrencyToken();
+
+            entity.HasOne(rt => rt.User)
+                .WithMany(u => u.RefreshTokens)
+                .HasForeignKey(rt => rt.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // FoodItem

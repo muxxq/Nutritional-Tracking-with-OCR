@@ -60,6 +60,7 @@ erDiagram
     USERS ||--o{ RECIPES : creates
     USERS ||--o{ PLANNED_MEALS : plans
     USERS ||--o{ SHOPPING_LIST_ITEMS : manages
+    USERS ||--o{ REFRESH_TOKENS : authenticates_with
     FOOD_ITEMS ||--o{ DIARY_ENTRIES : contains
     FOOD_ITEMS ||--o{ RECIPE_INGREDIENTS : used_in
     RECIPES ||--o{ RECIPE_INGREDIENTS : composed_of
@@ -82,9 +83,20 @@ erDiagram
         float TargetProteinsGrams
         float TargetCarbsGrams
         float TargetFatsGrams
-        string RefreshToken
-        timestamp RefreshTokenExpiryTime
+        int FailedLoginAttempts
+        timestamp LockoutEndUtc
         timestamp CreatedAtUtc
+    }
+
+    REFRESH_TOKENS {
+        uuid Id PK
+        uuid UserId FK
+        string TokenHash UK
+        uuid FamilyId
+        timestamp CreatedAtUtc
+        timestamp ExpiresAtUtc
+        timestamp RevokedAtUtc
+        uuid ReplacedByTokenId
     }
 
     FOOD_ITEMS {
@@ -248,4 +260,47 @@ sequenceDiagram
   "raw_text": "Valoare energetica: 389 kcal\nGrasimi: 6.9 g\nCarbohidrati: 66.3 g\nProteine: 16.9 g\nSare: 0.02 g",
   "processing_time_ms": 340.5
 }
+```
+
+---
+
+## 5. Autentificare: JWT + Refresh Token Rotativ
+
+Decizia completă și alternativele respinse: [ADR-002](adr/ADR-002-authentication-strategy.md). Design detaliat: [spec](specs/2026-10-16-auth-jwt-design.md).
+
+### Contract `/api/auth`
+
+| Metodă și rută | Auth | Corp cerere | Succes | Erori |
+|---|---|---|---|---|
+| `POST /register` | — | `{ email, password, firstName, lastName }` | 201 `AuthResponse` + cookie | 400, 409, 429 |
+| `POST /login` | — | `{ email, password }` | 200 `AuthResponse` + cookie | 400, 401, 429 |
+| `POST /refresh` | cookie | — | 200 `AuthResponse` + cookie nou | 401 (+ cookie șters), 429 |
+| `POST /logout` | cookie (opțional) | — | 204 + cookie șters | 429 |
+| `GET /me` | Bearer | — | 200 `UserDto` | 401 |
+
+* **`AuthResponse`:** `{ accessToken, accessTokenExpiresAtUtc, user: { id, email, firstName, lastName, isProfileComplete } }`
+* **Access token:** JWT HS256, valabil 15 minute, păstrat de client **doar în memorie**.
+* **Refresh token:** cookie `nutriscan_rt; HttpOnly; Secure; SameSite=Strict; Path=/api/auth`, valabil 7 zile, rotit la fiecare folosire. În baza de date se salvează doar hash-ul SHA-256.
+* **Erori:** toate sunt `application/problem+json` (RFC 7807).
+
+### Diagrama de secvență: rotație și detectarea reutilizării
+
+```mermaid
+sequenceDiagram
+    participant C as Client PWA
+    participant A as AuthController
+    participant H as RefreshCommandHandler
+    participant DB as PostgreSQL
+    C->>A: POST /api/auth/refresh (cookie RT1)
+    A->>H: RefreshCommand(RT1)
+    H->>DB: SELECT RefreshToken WHERE TokenHash = sha256(RT1)
+    alt RT1 activ
+        H->>DB: INSERT RT2 (aceeași FamilyId), RT1.Revoke(replacedBy = RT2)
+        H-->>A: AuthResult(access token, RT2)
+        A-->>C: 200 + Set-Cookie RT2
+    else RT1 deja revocat (token copiat, reutilizat)
+        H->>DB: revocă toate tokenurile active din familie
+        H-->>A: UnauthorizedException
+        A-->>C: 401 + cookie șters
+    end
 ```
