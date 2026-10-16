@@ -83,7 +83,7 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
   * [x] Modul Catalog Alimente: CRUD `FoodItem` cu **introducere manuală** a valorilor nutriționale per 100g și căutare după nume.
   * [x] Modul Jurnal Alimentar: Comenzi & Interogări MediatR pentru adăugare, editare, ștergere și vizualizare pe cele 4 mese principale, cu totaluri zilnice față de ținte (statisticile săptămânale/lunare FR-08 rămân de făcut).
   * [x] Reguli de validare energetică (avertisment dacă diferența dintre calorii și formula `4P + 4C + 9G` > 15%): implementată ca avertisment în Domain (`EnergyCheck`), nu ca eroare `FluentValidation`, pentru că fibrele, alcoolul și poliolii pot explica legitim diferența.
-  * [ ] Modul Rețetar & Planificator Săptămânal: agregare ingrediente, recalcul nutrienți per porție, planificare pe zile. **Rețetar ✅** (FR-09: CRUD cu arhivare, valori totale și per porție calculate la citire, rețete în jurnal în porții, ADR-006); **planificator în lucru** (FR-10, FR-11).
+  * [x] Modul Rețetar & Planificator Săptămânal: agregare ingrediente, recalcul nutrienți per porție, planificare pe zile. **Rețetar** (FR-09: CRUD cu arhivare, valori totale și per porție calculate la citire, rețete în jurnal în porții, ADR-006); **planificator** (FR-10, FR-11: mese planificate din alimente și rețete, starea zilei față de țintă ±5%, „Am mâncat asta” cu snapshot în jurnal, ADR-007).
   * [ ] Generator automat Listă de Cumpărături (agregare cantități identice din mesele planificate).
   * [ ] Contract `IOcrService` în Application cu implementare stub în Infrastructure (pregătire pentru Faza 4).
   * [ ] Teste unitare (xUnit, FluentAssertions, Moq) pentru Handlers & Domain Rules; Teste de integrare cu Testcontainers Postgres.
@@ -210,8 +210,7 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
 ---
 
 ## 🚦 Pasul Următor (Sprint 2 — Faza 2: Backend Core)
-Gata în Faza 2: autentificare (JWT + refresh token rotativ), profil și ținte, catalog de alimente, jurnal alimentar, rețetar (ADR-002 – ADR-006).
-1. **Planificator săptămânal** (FR-10) și transferul „Am mâncat asta” în jurnal (FR-11), refolosind snapshot-ul din jurnal și intrările-rețetă.
-2. **Listă de cumpărături** (FR-12): agregarea ingredientelor din mesele planificate.
-3. **Contract `IOcrService`** cu stub în Infrastructure, apoi trecerea la clientul integrat (Faza 3).
-4. **În paralel**: colectarea fotografiilor de etichete pentru dataset-ul OCR.
+Gata în Faza 2: autentificare (JWT + refresh token rotativ), profil și ținte, catalog de alimente, jurnal alimentar, rețetar, planificator săptămânal (ADR-002 – ADR-007).
+1. **Listă de cumpărături** (FR-12): agregarea ingredientelor din mesele planificate pe un interval, scalate la porțiile planificate, cu bifare și articole manuale.
+2. **Contract `IOcrService`** cu stub în Infrastructure, apoi trecerea la clientul integrat (Faza 3).
+3. **În paralel**: colectarea fotografiilor de etichete pentru dataset-ul OCR.

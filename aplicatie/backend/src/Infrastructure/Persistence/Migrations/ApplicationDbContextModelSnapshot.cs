@@ -169,11 +169,11 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("FoodItemId")
+                    b.Property<Guid?>("DiaryEntryId")
                         .HasColumnType("uuid");
 
-                    b.Property<bool>("IsTransferredToDiary")
-                        .HasColumnType("boolean");
+                    b.Property<Guid?>("FoodItemId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("MealType")
                         .HasColumnType("integer");
@@ -181,11 +181,14 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                     b.Property<DateOnly>("PlanDate")
                         .HasColumnType("date");
 
-                    b.Property<double>("QuantityGrams")
+                    b.Property<double?>("QuantityGrams")
                         .HasColumnType("double precision");
 
                     b.Property<Guid?>("RecipeId")
                         .HasColumnType("uuid");
+
+                    b.Property<double?>("Servings")
+                        .HasColumnType("double precision");
 
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
@@ -195,13 +198,21 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DiaryEntryId")
+                        .IsUnique();
+
                     b.HasIndex("FoodItemId");
 
                     b.HasIndex("RecipeId");
 
                     b.HasIndex("UserId", "PlanDate");
 
-                    b.ToTable("PlannedMeals");
+                    b.ToTable("PlannedMeals", t =>
+                        {
+                            t.HasCheckConstraint("CK_PlannedMeals_FoodXorRecipe", "(\"FoodItemId\" IS NULL) <> (\"RecipeId\" IS NULL)");
+
+                            t.HasCheckConstraint("CK_PlannedMeals_QuantityByKind", "(\"FoodItemId\" IS NOT NULL AND \"QuantityGrams\" IS NOT NULL) OR (\"RecipeId\" IS NOT NULL AND \"QuantityGrams\" IS NULL AND \"Servings\" IS NOT NULL)");
+                        });
                 });
 
             modelBuilder.Entity("NutriScan.Domain.Entities.Recipe", b =>
@@ -472,21 +483,28 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("NutriScan.Domain.Entities.PlannedMeal", b =>
                 {
+                    b.HasOne("NutriScan.Domain.Entities.DiaryEntry", "DiaryEntry")
+                        .WithMany()
+                        .HasForeignKey("DiaryEntryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("NutriScan.Domain.Entities.FoodItem", "FoodItem")
                         .WithMany("PlannedMeals")
                         .HasForeignKey("FoodItemId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("NutriScan.Domain.Entities.Recipe", "Recipe")
                         .WithMany("PlannedMeals")
                         .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("NutriScan.Domain.Entities.User", "User")
                         .WithMany("PlannedMeals")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DiaryEntry");
 
                     b.Navigation("FoodItem");
 

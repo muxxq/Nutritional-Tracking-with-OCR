@@ -157,15 +157,34 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
                 .HasForeignKey(pm => pm.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Foods and recipes are archived, never deleted; SET NULL would break the "exactly one" rule below.
             entity.HasOne(pm => pm.FoodItem)
                 .WithMany(f => f.PlannedMeals)
                 .HasForeignKey(pm => pm.FoodItemId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(pm => pm.Recipe)
                 .WithMany(r => r.PlannedMeals)
                 .HasForeignKey(pm => pm.RecipeId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Deleting the diary entry frees the planned meal to be logged again (ADR-007 D6).
+            entity.HasOne(pm => pm.DiaryEntry)
+                .WithMany()
+                .HasForeignKey(pm => pm.DiaryEntryId)
                 .OnDelete(DeleteBehavior.SetNull);
+            entity.HasIndex(pm => pm.DiaryEntryId).IsUnique();
+
+            // Same shape as a diary entry: a food or a recipe, recipes in servings only (ADR-007 D1).
+            entity.ToTable(t =>
+            {
+                t.HasCheckConstraint("CK_PlannedMeals_FoodXorRecipe", "(\"FoodItemId\" IS NULL) <> (\"RecipeId\" IS NULL)");
+                t.HasCheckConstraint("CK_PlannedMeals_QuantityByKind",
+                    "(\"FoodItemId\" IS NOT NULL AND \"QuantityGrams\" IS NOT NULL) " +
+                    "OR (\"RecipeId\" IS NOT NULL AND \"QuantityGrams\" IS NULL AND \"Servings\" IS NOT NULL)");
+            });
         });
 
         // ShoppingListItem
