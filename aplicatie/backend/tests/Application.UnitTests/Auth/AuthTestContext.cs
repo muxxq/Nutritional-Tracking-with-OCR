@@ -40,7 +40,7 @@ public sealed class AuthTestContext : IDisposable
 
     /// <summary>A separate unit of work on the same database, to simulate a concurrent request.</summary>
     public ApplicationDbContext CreateContext() =>
-        new(new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(_databaseName).Options);
+        new(new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(_databaseName).Options, Clock.Object);
 
     public ApplicationDbContext Db { get; }
     public Mock<IPasswordHasher> Hasher { get; } = new();
