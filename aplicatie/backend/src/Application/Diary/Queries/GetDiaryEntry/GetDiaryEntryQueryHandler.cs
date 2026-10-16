@@ -9,6 +9,6 @@ public sealed class GetDiaryEntryQueryHandler(IApplicationDbContext db) : IReque
     public async Task<DiaryEntryDto> Handle(GetDiaryEntryQuery request, CancellationToken cancellationToken)
     {
         var entry = await db.LoadOwnAsync(request.UserId, request.EntryId, cancellationToken);
-        return DiaryEntryDto.From(entry, entry.FoodItem);
+        return DiaryEntryDto.From(entry);
     }
 }

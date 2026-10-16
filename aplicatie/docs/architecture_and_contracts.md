@@ -64,6 +64,7 @@ erDiagram
     FOOD_ITEMS ||--o{ DIARY_ENTRIES : contains
     FOOD_ITEMS ||--o{ RECIPE_INGREDIENTS : used_in
     RECIPES ||--o{ RECIPE_INGREDIENTS : composed_of
+    RECIPES ||--o{ DIARY_ENTRIES : logged_as
     RECIPES ||--o{ PLANNED_MEALS : scheduled_in
     FOOD_ITEMS ||--o{ PLANNED_MEALS : scheduled_in
 
@@ -123,10 +124,11 @@ erDiagram
     DIARY_ENTRIES {
         uuid Id PK
         uuid UserId FK
-        uuid FoodItemId FK
+        uuid FoodItemId FK "NULL la intrare-rețetă"
+        uuid RecipeId FK "NULL la intrare-aliment"
         date ConsumedDate
         int MealType
-        float QuantityGrams
+        float QuantityGrams "NULL la intrare-rețetă"
         float Servings
         float CalculatedCalories
         float CalculatedProteins
@@ -143,7 +145,11 @@ erDiagram
         string Description
         string Instructions
         int ServingsCount
+        int PrepTimeMinutes
+        string SearchText
+        timestamp ArchivedAtUtc
         timestamp CreatedAtUtc
+        timestamp UpdatedAtUtc
     }
 
     RECIPE_INGREDIENTS {
@@ -151,6 +157,7 @@ erDiagram
         uuid RecipeId FK
         uuid FoodItemId FK
         float QuantityGrams
+        int Position
     }
 
     PLANNED_MEALS {
@@ -374,7 +381,29 @@ Decizii: [ADR-005](adr/ADR-005-food-diary.md). Design: [spec](specs/2026-10-16-f
 | `DELETE /api/diary/entries/{id}` | 204 | 401, 404 |
 | `GET /api/diary/recent-foods?limit=10` | 200 `RecentFoodDto[]` | 400, 401 |
 
-* **Corpul la adăugare:** `{ foodId, date, mealType, quantityGrams?, servings? }`, cu exact una dintre cantități; la editare, aceleași câmpuri fără `foodId`. `mealType` ∈ `breakfast`, `lunch`, `dinner`, `snack`.
-* **`DiaryEntryDto`:** `{ id, date, mealType, quantityGrams, servings, food: { id, name, brand, isArchived }, nutrients: { calories, proteins, carbs, fats } }`.
+* **Corpul la adăugare:** `{ foodId?, recipeId?, date, mealType, quantityGrams?, servings? }`, cu exact unul dintre `foodId` / `recipeId`. Un aliment primește exact una dintre cantități; o rețetă primește doar `servings` (ADR-006 D3). La editare, aceleași câmpuri fără id-uri; tipul intrării nu se schimbă, iar la o intrare-rețetă `quantityGrams` trebuie să lipsească. `mealType` ∈ `breakfast`, `lunch`, `dinner`, `snack`.
+* **`DiaryEntryDto`:** `{ id, kind, date, mealType, quantityGrams, servings, food, recipe, nutrients: { calories, proteins, carbs, fats } }`. `kind` ∈ `food`, `recipe`; exact unul dintre `food: { id, name, brand, isArchived }` și `recipe: { id, name, isArchived }` este completat, celălalt e `null`. La o intrare-rețetă `quantityGrams` e `null`.
 * **`DiaryDayDto`:** `{ date, meals[4]: { mealType, entries[], totals }, totals, targets, remaining, isProfileComplete }`. Mesele apar mereu, în ordinea de mai sus; `remaining = targets − totals` poate fi negativ.
-* **Snapshot:** valorile nutriționale ale unei intrări se calculează la salvare și nu se schimbă când alimentul este editat ulterior; se recalculează doar la editarea intrării.
+* **Snapshot:** valorile nutriționale ale unei intrări se calculează la salvare și nu se schimbă când alimentul sau rețeta sunt editate ulterior; se recalculează doar la editarea intrării, din valorile curente (și dintr-o rețetă arhivată).
+
+---
+
+## 9. Rețetarul
+
+Decizii: [ADR-006](adr/ADR-006-recipes.md). Design: [spec](specs/2026-10-16-recipes-design.md).
+
+| Metodă și rută | Succes | Erori |
+|---|---|---|
+| `GET /api/recipes?q=&page=1&pageSize=20` | 200 `{ items: RecipeSummaryDto[], page, pageSize, totalCount }` | 400, 401 |
+| `GET /api/recipes/{id}` | 200 `RecipeDto` | 401, 404 |
+| `POST /api/recipes` | 201 `RecipeDto` | 400, 401, 404 |
+| `PUT /api/recipes/{id}` | 200 `RecipeDto` | 400, 401, 404 |
+| `DELETE /api/recipes/{id}` (arhivare) | 204 | 401, 404 |
+
+* **Corpul la creare/editare:** `{ name, description?, instructions?, servingsCount, prepTimeMinutes?, ingredients: [{ foodId, quantityGrams }] }`. `PUT` înlocuiește integral câmpurile și lista de ingrediente; ingredientele sunt returnate în ordinea în care au fost trimise la ultima salvare.
+* **`RecipeDto`:** `{ id, name, description, instructions, servingsCount, prepTimeMinutes, isArchived, ingredients: [{ food: { id, name, brand, isArchived }, quantityGrams, nutrients }], total, perServing }`.
+* **`RecipeSummaryDto`:** `{ id, name, servingsCount, prepTimeMinutes, ingredientCount, perServing }`, ordonate după nume.
+* **Calcul la citire:** `total = Σ aliment.per100g × grame / 100`, `perServing = total / servingsCount`, din valorile curente ale alimentelor. Exemplul SRS: 200 g ovăz (389 kcal/100 g), 4 porții → total 778 kcal, 194,5 kcal per porție.
+* **Validare:** nume 1–200 caractere; descriere ≤ 1000; instrucțiuni ≤ 10 000; `servingsCount` 1–50; `prepTimeMinutes` 0–1440; 1–50 ingrediente cu alimente distincte și `0 < quantityGrams ≤ 5000`.
+* **Vizibilitate:** rețetele sunt private (404 pentru alți utilizatori și pentru rețetele arhivate). Ingredientele trebuie să fie alimente vizibile, cu excepția unui aliment arhivat care era deja în rețetă.
+* **În jurnal:** `POST /api/diary/entries` cu `recipeId` și `servings` creează o intrare `kind = "recipe"` cu snapshot `perServing × servings` (1,5 porții → 291,75 kcal, afișat 291,8). Constrângerile `CHECK` din PostgreSQL garantează că intrarea are exact o cheie și, la rețetă, porții fără grame.

@@ -36,7 +36,7 @@ public class DiaryController(ISender sender) : ControllerBase
             ? Ok(await sender.Send(new GetDiaryEntryQuery(userId, id), cancellationToken))
             : Unauthorized();
 
-    /// <summary>Logs a food at a meal, in grams or servings, with a snapshot of its nutrients.</summary>
+    /// <summary>Logs a food (grams or servings) or a recipe (servings) at a meal, with a snapshot of its nutrients.</summary>
     [HttpPost("entries")]
     [ProducesResponseType<DiaryEntryDto>(StatusCodes.Status201Created)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
@@ -49,11 +49,11 @@ public class DiaryController(ISender sender) : ControllerBase
         }
 
         var entry = await sender.Send(
-            new AddDiaryEntryCommand(userId, r.FoodId, r.Date, r.MealType, r.QuantityGrams, r.Servings), cancellationToken);
+            new AddDiaryEntryCommand(userId, r.FoodId, r.RecipeId, r.Date, r.MealType, r.QuantityGrams, r.Servings), cancellationToken);
         return Created($"/api/diary/entries/{entry.Id}", entry);
     }
 
-    /// <summary>Changes an entry's quantity, meal and date; nutrients are recalculated from the food's current values.</summary>
+    /// <summary>Changes an entry's quantity, meal and date; nutrients are recalculated from the food's or recipe's current values.</summary>
     [HttpPut("entries/{id:guid}")]
     [ProducesResponseType<DiaryEntryDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]

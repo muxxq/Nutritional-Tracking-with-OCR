@@ -1,6 +1,7 @@
 using FluentAssertions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using NutriScan.Application.Common.Models;
 using NutriScan.Application.Common.Exceptions;
 using NutriScan.Application.Diary.Commands.AddDiaryEntry;
 using NutriScan.Application.Diary.Commands.DeleteDiaryEntry;
@@ -197,7 +198,7 @@ public class DiaryCommandHandlerTests : IDisposable
         var dto = await Update(_me, entry.Id, grams: 50);
 
         // Assert
-        dto.Food.IsArchived.Should().BeTrue();
+        dto.Food!.IsArchived.Should().BeTrue();
         dto.Nutrients.Calories.Should().Be(194.5);
     }
 

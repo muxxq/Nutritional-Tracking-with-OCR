@@ -22,5 +22,9 @@ public static class DiaryTestData
 
     public static AddDiaryEntryCommand Add(Guid userId, Guid foodId, double? grams = 100, double? servings = null,
         MealType meal = MealType.Breakfast, DateOnly? date = null) =>
-        new(userId, foodId, date ?? Today, meal, grams, servings);
+        new(userId, foodId, null, date ?? Today, meal, grams, servings);
+
+    public static AddDiaryEntryCommand AddRecipe(Guid userId, Guid recipeId, double? servings = 1, double? grams = null,
+        MealType meal = MealType.Breakfast, DateOnly? date = null) =>
+        new(userId, null, recipeId, date ?? Today, meal, grams, servings);
 }
