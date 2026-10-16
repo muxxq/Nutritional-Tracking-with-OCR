@@ -64,11 +64,11 @@ calculate = max(prag, Round10(brut))  (prag: 1200 femei · 1500 bărbați)
 ### 3.4 Macronutrienți calculați
 Plecând de la caloriile **efective** `K` (manuale dacă există, altfel calculate):
 ```
-P = greutate_kg × g_per_kg      (LoseWeight 2,0 · MaintainWeight 1,6 · GainMuscle 1,8)
+P = min(greutate_kg, 25 × înălțime_m²) × g_per_kg   (LoseWeight 2,0 · MaintainWeight 1,6 · GainMuscle 1,8)
 G = K × 0,25 / 9
 C = (K − 4·P − 9·G) / 4
 ```
-Calculul intern folosește valorile nerotunjite. Doar ieșirea se rotunjește la gram întreg (jumătățile în sus). BMR și TDEE se raportează rotunjite la kcal întreg.
+Greutatea pentru proteine e limitată la cea corespunzătoare unui IMC de 25 (amendament din implementare, vezi ADR-003 D4): necesarul urmează masa slabă, iar cu greutatea totală profilurile-limită acceptate de validare ar fi dat carbohidrați negativi. Calculul intern folosește valorile nerotunjite. Doar ieșirea se rotunjește la gram întreg (jumătățile în sus). BMR și TDEE se raportează rotunjite la kcal întreg.
 
 ### 3.5 Combinarea cu suprascrierile
 Suprascrierile sunt **intrări** în calcul. Valoarea manuală înlocuiește formula, iar țintele care depind de ea se recalculează:
@@ -84,7 +84,11 @@ Suprascrierile sunt **intrări** în calcul. Valoarea manuală înlocuiește for
 
 Erorile din pașii 3–4 sunt raportate de calculator ca rezultat invalid cu un mesaj. Handler-ul le transformă în `ValidationException`, deci 400.
 
-**Profil incomplet** (lipsește înălțimea, greutatea sau data nașterii): nu se calculează nimic. Fiecare țintă = suprascrierea ei (sursa `manual`) sau valoarea implicită (sursa `default`): 2000 kcal, 150 g, 200 g, 65 g. Verificarea de consistență se aplică doar dacă toate 4 sunt manuale. `bmr` și `tdee` sunt `null`.
+**Amendamente din implementare (2026-10-16):**
+- **Strict la scriere, tolerant la citire.** `PUT /api/profile/targets` respinge suprascrierile imposibile. La citire, dacă suprascrieri valide la salvare au devenit imposibile între timp (de exemplu o aniversare scade BMR-ul), țintele se raportează calculate, fără a modifica valorile stocate (`CalculateBestEffort`).
+- **`PUT /api/profile` resetează toate suprascrierile** dacă noul profil le face imposibile. Sursele devin `calculated`, deci schimbarea e vizibilă în răspuns.
+
+**Profil incomplet** (lipsește înălțimea, greutatea sau data nașterii): nu se calculează nimic. Fiecare țintă = suprascrierea ei (sursa `manual`) sau valoarea implicită (sursa `default`): 2000 kcal, 150 g, 200 g, 65 g. Verificarea de consistență se aplică dacă toate 4 sunt manuale. În plus, energia macronutrienților setați manual nu poate depăși caloriile (manuale sau implicite, 2000) cu peste 15%. `bmr` și `tdee` sunt `null`.
 
 ### 3.6 Cazuri de referință (valori exacte, folosite în teste)
 
