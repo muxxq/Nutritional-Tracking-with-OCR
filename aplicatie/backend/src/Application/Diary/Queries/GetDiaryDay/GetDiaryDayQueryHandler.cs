@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NutriScan.Application.Common.Models;
 using NutriScan.Application.Common.Interfaces;
 using NutriScan.Application.Diary.Dtos;
 using NutriScan.Application.Profile;

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using NutriScan.Application.Common.Models;
 using NutriScan.Application.Common.Exceptions;
 using NutriScan.Application.Diary;
 using NutriScan.Application.Diary.Dtos;

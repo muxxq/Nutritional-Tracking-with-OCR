@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NutriScan.Application.Common.Models;
 using NutriScan.Application.Diary.Dtos;
 using NutriScan.Application.Diary.Queries.GetDiaryDay;
 using NutriScan.Application.Profile.Commands.UpdateProfile;
