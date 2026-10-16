@@ -63,6 +63,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             entity.Property(f => f.Brand).HasMaxLength(150);
             entity.Property(f => f.Barcode).HasMaxLength(64);
             entity.HasIndex(f => f.Barcode);
+            entity.Property(f => f.SearchText).HasMaxLength(400).IsRequired();
+            entity.HasIndex(f => f.SearchText);
 
             entity.HasOne(f => f.CreatedByUser)
                 .WithMany()
