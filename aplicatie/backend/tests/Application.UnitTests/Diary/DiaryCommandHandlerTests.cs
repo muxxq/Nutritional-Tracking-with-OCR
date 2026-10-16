@@ -1,6 +1,7 @@
 using FluentAssertions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using NutriScan.Application.Common.Models;
 using NutriScan.Application.Common.Exceptions;
 using NutriScan.Application.Diary.Commands.AddDiaryEntry;
 using NutriScan.Application.Diary.Commands.DeleteDiaryEntry;
