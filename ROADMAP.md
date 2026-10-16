@@ -81,7 +81,7 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
   * [x] Hashing parole folosind PBKDF2 / Argon2id; prevenire atacuri Brute Force.
   * [x] Modul Profil Utilizator: calcul automat rată metabolică bazală (BMR) și necesar caloric zilnic (TDEE) prin formula Mifflin-St Jeor; distribuție macronutrienți conform obiectivului (slăbire, menținere, hipertrofie).
   * [x] Modul Catalog Alimente: CRUD `FoodItem` cu **introducere manuală** a valorilor nutriționale per 100g și căutare după nume.
-  * [ ] Modul Jurnal Alimentar: Comenzi & Interogări MediatR pentru adăugare, editare, ștergere și vizualizare pe cele 4 mese principale.
+  * [x] Modul Jurnal Alimentar: Comenzi & Interogări MediatR pentru adăugare, editare, ștergere și vizualizare pe cele 4 mese principale, cu totaluri zilnice față de ținte (statisticile săptămânale/lunare FR-08 rămân de făcut).
   * [ ] Reguli de validare energetică în `FluentValidation` (ex: avertisment dacă diferența dintre calorii și formula `4P + 4C + 9G` > 15%).
   * [ ] Modul Rețetar & Planificator Săptămânal: agregare ingrediente, recalcul nutrienți per porție, planificare pe zile.
   * [ ] Generator automat Listă de Cumpărături (agregare cantități identice din mesele planificate).
