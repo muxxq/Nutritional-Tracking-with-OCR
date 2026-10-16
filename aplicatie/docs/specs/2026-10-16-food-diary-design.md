@@ -131,7 +131,7 @@ Toate rutele sunt `[Authorize]`, cu id-ul utilizatorului din claim-ul `sub`.
   "lastQuantityGrams": 60, "lastServings": 1.5, "lastUsedAtUtc": "2026-10-16T07:30:00Z" }
 ```
 
-Toate valorile nutriționale din DTO sunt rotunjite la 1 zecimală; totalurile se calculează înainte de rotunjire (D4). Intrările dintr-o masă sunt ordonate după `CreatedAtUtc`.
+Toate valorile nutriționale din DTO sunt rotunjite la 1 zecimală; totalurile se calculează înainte de rotunjire (D4). `remaining` se calculează din valorile afișate (`ținte − total rotunjit`), ca suma de pe ecran să dea exact ținta, iar `-0` devine `0`. Intrările dintr-o masă sunt ordonate după `CreatedAtUtc`.
 
 ---
 

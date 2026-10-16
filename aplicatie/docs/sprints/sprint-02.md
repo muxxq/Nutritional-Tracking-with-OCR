@@ -106,7 +106,7 @@ dotnet test
 | AC8 | Alimente recente, distincte, cele mai noi primele | `RecentFoods_ReturnsDistinctNewestFirst`, `GetRecentFoodsTests` |
 | AC9 | Token obligatoriu | `Diary_WithoutToken_Returns401` |
 
-**Realizări:** `DiaryQuantity` (grame sau porții), snapshot nerotunjit pe `DiaryEntry`, migrarea `DiaryServings`, comenzile `AddDiaryEntry` / `UpdateDiaryEntry` / `DeleteDiaryEntry`, interogările `GetDiaryDay` și `GetRecentFoods`, `DiaryController`. Marcajele de timp de audit vin acum din `IDateTimeProvider`. **326 de teste backend, toate trec.**
+**Realizări:** `DiaryQuantity` (grame sau porții), snapshot nerotunjit pe `DiaryEntry`, migrarea `DiaryServings`, comenzile `AddDiaryEntry` / `UpdateDiaryEntry` / `DeleteDiaryEntry`, interogările `GetDiaryDay` și `GetRecentFoods`, `DiaryController`. Marcajele de timp de audit vin acum din `IDateTimeProvider`. **329 de teste backend, toate trec.**
 
 ## ⏭️ Următorii pași din sprint
 * Contractul `IOcrService` cu implementare stub; rețetarul și planificatorul.

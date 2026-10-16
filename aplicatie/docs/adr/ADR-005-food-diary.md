@@ -47,7 +47,9 @@ Jurnalul este ecranul principal al aplicației: utilizatorul notează ce a mânc
 * **Un singur request pentru dashboard**, cu toate cele 4 mese mereu prezente, în ordine fixă; clientul nu mai calculează totaluri.
 * **Totaluri exacte:** suma se face din valorile nerotunjite (`GetDay_SumsBeforeRounding`).
 * **Timp controlabil în teste:** marcajele `CreatedAtUtc`/`UpdatedAtUtc` vin acum din `IDateTimeProvider` și în `ApplicationDbContext`. Până acum erau suprascrise cu ceasul sistemului, iar problema a ieșit la iveală prin testele TDD ale jurnalului.
-* **Testare:** suita backend are 326 de teste.
+* **Cifre consistente pe ecran:** `remaining` se calculează din valorile deja rotunjite, așa că total + rest = țintă (2,3 + 44,7 = 47, nu 47,1), iar `-0` este afișat ca `0`. Ambele au fost găsite la code review-ul final.
+* **Cereri concurente:** o editare sau o ștergere a unei intrări șterse între timp de altă cerere (dublu-tap, două tab-uri) primește 404, nu 500.
+* **Testare:** suita backend are 329 de teste.
 
 ### Riscuri asumate:
 * **Țintele zilelor trecute sunt cele de azi** (D5). Statisticile săptămânale și lunare (FR-08) vor avea nevoie de un istoric al țintelor sau de un snapshot zilnic.
