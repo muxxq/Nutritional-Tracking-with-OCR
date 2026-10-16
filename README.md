@@ -27,13 +27,7 @@ Licenta/
     ├── design/
     │   └── mockup.html            # Prototip vizual interactiv (Desktop + Mobil)
     └── srs/
-        ├── SRS - Sistem de Monitorizare Nutritionala cu OCR v2.docx  # Documentul SRS oficial
-        ├── SRS - Sistem de Monitorizare Nutritionala cu OCR v2.odt   # Format OpenDocument
-        ├── Specificatie_Cerinte_Software_SRS.docx                   # Format Alb-Negru
-        ├── scripts/
-        │   ├── generate_srs_v2.py # Generatorul SRS v2
-        │   └── generate_srs_bw.py # Generatorul SRS alb-negru
-        └── istoric_versiuni/      # Versiunile inițiale arhivate
+        └── SRS - Sistem de Monitorizare Nutritionala cu OCR v2.docx  # Documentul SRS oficial (IEEE 830)
 ```
 
 ---

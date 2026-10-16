@@ -45,6 +45,19 @@ cleanup() {
 }
 trap cleanup SIGINT SIGTERM EXIT
 
+# 0. Încărcare configurație locală (credențiale) din aplicatie/.env
+ENV_FILE="$APLICATIE_DIR/.env"
+if [ ! -f "$ENV_FILE" ]; then
+    echo -e "${RED}✖ Lipsește $ENV_FILE. Creează-l cu: cp $APLICATIE_DIR/.env.example $ENV_FILE${NC}"
+    exit 1
+fi
+set -a
+# shellcheck disable=SC1090
+source "$ENV_FILE"
+set +a
+export ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+export Jwt__Secret="${JWT_SECRET}"
+
 # 1. Start Python OCR Service
 echo -e "${BLUE}[1/3] Pornire Microserviciu Python OCR (FastAPI)...${NC}"
 cd "$APLICATIE_DIR/ocr-service"
