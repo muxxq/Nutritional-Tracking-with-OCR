@@ -37,8 +37,11 @@ Pentru a porni întreaga infrastructură (bază de date, servicii și interfaț�
 
 ```bash
 cd aplicatie
+cp .env.example .env   # o singură dată: completează parola PostgreSQL și secretul JWT
 docker compose up -d
 ```
+
+> Credențialele (parola PostgreSQL, secretul JWT) se află exclusiv în `aplicatie/.env`, care nu este versionat în git. Atât `docker compose`, cât și `start.sh` (modul local) le citesc de acolo.
 
 Verificare status containere:
 ```bash

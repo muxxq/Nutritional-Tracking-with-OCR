@@ -7,10 +7,20 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
 {
     public ApplicationDbContext CreateDbContext(string[] args)
     {
+        // Design-time connection string for generating migrations, read from the environment
+        // (same variable the API uses) so no credentials are stored in source control.
+        var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException(
+                "Variabila de mediu 'ConnectionStrings__DefaultConnection' nu este setată. " +
+                "Exemplu: ConnectionStrings__DefaultConnection=\"Host=localhost;Port=5432;Database=nutriscan_db;" +
+                "Username=nutriscan_user;Password=<din aplicatie/.env>\" dotnet ef migrations add <Nume>");
+        }
+
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-        // Design-time connection string for generating migrations
         optionsBuilder.UseNpgsql(
-            "Host=localhost;Port=5432;Database=nutriscan_db;Username=nutriscan_user;Password=nutriscan_secret_password",
+            connectionString,
             b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)
         );
 
