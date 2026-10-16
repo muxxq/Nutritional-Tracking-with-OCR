@@ -18,10 +18,7 @@ public sealed class AuthTestContext : IDisposable
 
     public AuthTestContext()
     {
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase($"auth-tests-{Guid.NewGuid()}")
-            .Options;
-        Db = new ApplicationDbContext(options);
+        Db = CreateContext();
 
         Hasher.Setup(h => h.Hash(It.IsAny<string>())).Returns((string p) => "hashed:" + p);
         Hasher.Setup(h => h.Verify(It.IsAny<string>(), It.IsAny<string>()))
@@ -38,6 +35,12 @@ public sealed class AuthTestContext : IDisposable
 
         Issuer = new AuthSessionIssuer(Db, Tokens.Object, Clock.Object);
     }
+
+    private readonly string _databaseName = $"auth-tests-{Guid.NewGuid()}";
+
+    /// <summary>A separate unit of work on the same database, to simulate a concurrent request.</summary>
+    public ApplicationDbContext CreateContext() =>
+        new(new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase(_databaseName).Options);
 
     public ApplicationDbContext Db { get; }
     public Mock<IPasswordHasher> Hasher { get; } = new();

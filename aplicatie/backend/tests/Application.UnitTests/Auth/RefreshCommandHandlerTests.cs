@@ -57,6 +57,33 @@ public class RefreshCommandHandlerTests : IDisposable
     }
 
     [Fact]
+    public async Task Handle_TokenRotatedConcurrently_RevokesFamilyAndThrows()
+    {
+        // Arrange: this request has read RT1 as active...
+        var user = await _ctx.SeedUserAsync();
+        var family = Guid.NewGuid();
+        await _ctx.SeedRefreshTokenAsync(user, "rt1", family);
+        await _ctx.Db.RefreshTokens.SingleAsync(t => t.TokenHash == "h:rt1");
+
+        // ...while a concurrent request rotates RT1 and commits first.
+        await using (var other = _ctx.CreateContext())
+        {
+            var issuer = new AuthSessionIssuer(other, _ctx.Tokens.Object, _ctx.Clock.Object);
+            await new RefreshCommandHandler(other, _ctx.Tokens.Object, issuer, _ctx.Clock.Object, NullLogger<RefreshCommandHandler>.Instance)
+                .Handle(new RefreshCommand("rt1"), CancellationToken.None);
+        }
+
+        // Act
+        var act = () => Refresh("rt1");
+
+        // Assert: no second live child; the whole family is revoked.
+        await act.Should().ThrowAsync<UnauthorizedException>().WithMessage(AuthErrors.InvalidSession);
+        await using var verify = _ctx.CreateContext();
+        var tokens = await verify.RefreshTokens.Where(t => t.FamilyId == family).ToListAsync();
+        tokens.Should().NotBeEmpty().And.OnlyContain(t => t.RevokedAtUtc != null);
+    }
+
+    [Fact]
     public async Task Handle_ExpiredToken_ThrowsUnauthorized()
     {
         // Arrange

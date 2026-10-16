@@ -45,6 +45,9 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             entity.HasIndex(rt => rt.TokenHash).IsUnique();
             entity.HasIndex(rt => rt.FamilyId);
 
+            // Optimistic concurrency: rotating or revoking only succeeds if no one revoked the token first.
+            entity.Property(rt => rt.RevokedAtUtc).IsConcurrencyToken();
+
             entity.HasOne(rt => rt.User)
                 .WithMany(u => u.RefreshTokens)
                 .HasForeignKey(rt => rt.UserId)
