@@ -69,6 +69,25 @@ dotnet test
 
 **Realizări:** `NutritionTargetCalculator` (funcție pură în Domain), migrarea `ProfileTargetOverrides`, `GetProfile` / `UpdateProfile` / `UpdateTargets`, `ProfileController`, enum-uri ca text la nivel global. **165 de teste backend, toate trec.**
 
+## 📋 Story: Catalogul de alimente — ✅ Backend finalizat
+
+> Ca utilizator NutriScan, vreau să caut alimente într-un catalog de încredere și să-mi adaug propriile alimente cu valorile de pe etichetă.
+
+**Documente:** [spec](../specs/2026-10-16-food-catalog-design.md) · [plan](../plans/2026-10-16-food-catalog.md) · [ADR-004](../adr/ADR-004-food-catalog.md)
+
+| AC | Descriere | Acoperit de |
+|---|---|---|
+| AC1 | Căutare fără diacritice, toate cuvintele | `Search_WithoutDiacritics_FindsSeededFood`, `SearchFoodsTests` |
+| AC2 | Aliment personal vizibil doar autorului | `Create_ThenSearch_OnlyAuthorSeesIt` |
+| AC3 | Editare și arhivare; jurnalul rămâne valid | `Update_OwnFood_Returns200`, `Archive_OwnFood_Returns204ThenGet404`, `Archive_FoodReferencedByDiary_KeepsDiaryRowReadable` |
+| AC4 | 404 pe alimentele altora, 403 pe cele globale | `OtherUsersFood_Returns404ForGetPutDelete`, `GlobalFood_Returns403ForPutDelete` |
+| AC5 | Valori imposibile → 400 | `Create_InvalidValues_Returns400`, `FoodFieldsValidatorTests` |
+| AC6 | Avertisment de coerență energetică | `Create_InconsistentEnergy_Returns201WithWarning`, `EnergyCheckTests` |
+| AC7 | Sare în grame, convertită din sodiu | `SeededChicken_HasSaltConvertedFromSodium` + verificare manuală a migrării pe date reale |
+| AC8 | Token obligatoriu | `Foods_WithoutToken_Returns401` |
+
+**Realizări:** `TextNormalizer`, `EnergyCheck`, `FoodItem` cu vizibilitate și arhivare, migrarea `FoodCatalog`, validatorul comun `FoodFieldsValidator`, căutarea paginată, `FoodsController`, maparea 403/404. **251 de teste backend, toate trec.**
+
 ## ⏭️ Următorii pași din sprint
-* Modulul Catalog Alimente: CRUD `FoodItem` cu introducere manuală și căutare după nume.
+* Modulul Jurnal Alimentar: adăugare, editare, ștergere și vizualizare pe cele 4 mese, cu totaluri față de ținte.
 * Ecranele de login, înregistrare și onboarding din client (Faza 3), cu un singur refresh în zbor.

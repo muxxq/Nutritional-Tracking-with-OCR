@@ -76,6 +76,9 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("ArchivedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Barcode")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
@@ -113,13 +116,18 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                     b.Property<double>("Proteins")
                         .HasColumnType("double precision");
 
+                    b.Property<double?>("SaltGrams")
+                        .HasColumnType("double precision");
+
                     b.Property<double?>("SaturatedFats")
                         .HasColumnType("double precision");
 
-                    b.Property<double>("ServingSizeGrams")
-                        .HasColumnType("double precision");
+                    b.Property<string>("SearchText")
+                        .IsRequired()
+                        .HasMaxLength(401)
+                        .HasColumnType("character varying(401)");
 
-                    b.Property<double?>("Sodium")
+                    b.Property<double?>("ServingSizeGrams")
                         .HasColumnType("double precision");
 
                     b.Property<double?>("Sugars")
@@ -133,6 +141,8 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                     b.HasIndex("Barcode");
 
                     b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("SearchText");
 
                     b.ToTable("FoodItems");
                 });
@@ -418,7 +428,7 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                     b.HasOne("NutriScan.Domain.Entities.User", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CreatedByUser");
                 });
