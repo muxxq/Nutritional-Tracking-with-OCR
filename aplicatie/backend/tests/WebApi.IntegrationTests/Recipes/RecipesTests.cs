@@ -139,6 +139,29 @@ public class RecipesTests(NutriScanApiFactory factory) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Get_KeepsIngredientOrderOfLastSave()
+    {
+        // Arrange: four foods, so a random order matches the expected one by chance in 1 of 24 runs
+        var client = await SignedInClientAsync();
+        var ids = new List<string>();
+        foreach (var name in new[] { "Ovăz", "Lapte", "Miere", "Nuci" })
+        {
+            ids.Add(await CreateFoodAsync(client, new { name, calories = 100, proteins = 1, carbohydrates = 1, fats = 1 }));
+        }
+        var recipeId = await CreateRecipeAsync(client, Recipe(ingredients: [(ids[0], 50), (ids[1], 200), (ids[2], 20), (ids[3], 30)]));
+
+        // Act: reorder, keep every food
+        var put = await client.PutAsJsonAsync($"/api/recipes/{recipeId}",
+            Recipe(ingredients: [(ids[3], 30), (ids[1], 200), (ids[0], 50), (ids[2], 20)]));
+
+        // Assert
+        static IEnumerable<string> Order(JsonElement recipe) =>
+            recipe.GetProperty("ingredients").EnumerateArray().Select(i => i.GetProperty("food").GetProperty("name").GetString()!);
+        Order(await JsonAsync(put)).Should().Equal("Nuci", "Lapte", "Ovăz", "Miere");
+        Order(await JsonAsync(await client.GetAsync($"/api/recipes/{recipeId}"))).Should().Equal("Nuci", "Lapte", "Ovăz", "Miere");
+    }
+
+    [Fact]
     public async Task EditFood_ChangesRecipeButNotLoggedEntry()
     {
         // Arrange

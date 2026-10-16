@@ -157,6 +157,7 @@ erDiagram
         uuid RecipeId FK
         uuid FoodItemId FK
         float QuantityGrams
+        int Position
     }
 
     PLANNED_MEALS {
@@ -399,7 +400,7 @@ Decizii: [ADR-006](adr/ADR-006-recipes.md). Design: [spec](specs/2026-10-16-reci
 | `PUT /api/recipes/{id}` | 200 `RecipeDto` | 400, 401, 404 |
 | `DELETE /api/recipes/{id}` (arhivare) | 204 | 401, 404 |
 
-* **Corpul la creare/editare:** `{ name, description?, instructions?, servingsCount, prepTimeMinutes?, ingredients: [{ foodId, quantityGrams }] }`. `PUT` înlocuiește integral câmpurile și lista de ingrediente.
+* **Corpul la creare/editare:** `{ name, description?, instructions?, servingsCount, prepTimeMinutes?, ingredients: [{ foodId, quantityGrams }] }`. `PUT` înlocuiește integral câmpurile și lista de ingrediente; ingredientele sunt returnate în ordinea în care au fost trimise la ultima salvare.
 * **`RecipeDto`:** `{ id, name, description, instructions, servingsCount, prepTimeMinutes, isArchived, ingredients: [{ food: { id, name, brand, isArchived }, quantityGrams, nutrients }], total, perServing }`.
 * **`RecipeSummaryDto`:** `{ id, name, servingsCount, prepTimeMinutes, ingredientCount, perServing }`, ordonate după nume.
 * **Calcul la citire:** `total = Σ aliment.per100g × grame / 100`, `perServing = total / servingsCount`, din valorile curente ale alimentelor. Exemplul SRS: 200 g ovăz (389 kcal/100 g), 4 porții → total 778 kcal, 194,5 kcal per porție.

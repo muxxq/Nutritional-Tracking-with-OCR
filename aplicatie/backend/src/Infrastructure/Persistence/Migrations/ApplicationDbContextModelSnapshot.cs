@@ -263,6 +263,9 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("FoodItemId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("Position")
+                        .HasColumnType("integer");
+
                     b.Property<double>("QuantityGrams")
                         .HasColumnType("double precision");
 
