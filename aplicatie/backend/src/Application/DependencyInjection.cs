@@ -2,6 +2,7 @@ using System.Reflection;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using NutriScan.Application.Auth;
 using NutriScan.Application.Common.Behaviors;
 
 namespace NutriScan.Application;
@@ -19,6 +20,8 @@ public static class DependencyInjection
             cfg.RegisterServicesFromAssembly(assembly);
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         });
+
+        services.AddScoped<AuthSessionIssuer>();
 
         return services;
     }
