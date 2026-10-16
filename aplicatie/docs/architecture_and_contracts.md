@@ -79,10 +79,10 @@ erDiagram
         int Gender
         int ActivityLevel
         int Goal
-        int TargetCalories
-        float TargetProteinsGrams
-        float TargetCarbsGrams
-        float TargetFatsGrams
+        int CaloriesOverride
+        float ProteinsGramsOverride
+        float CarbsGramsOverride
+        float FatsGramsOverride
         int FailedLoginAttempts
         timestamp LockoutEndUtc
         timestamp CreatedAtUtc
@@ -303,4 +303,34 @@ sequenceDiagram
         H-->>A: UnauthorizedException
         A-->>C: 401 + cookie șters
     end
+```
+
+---
+
+## 6. Profil și Ținte Nutriționale
+
+Decizia și formulele: [ADR-003](adr/ADR-003-nutrition-target-calculation.md). Design: [spec](specs/2026-10-16-profile-targets-design.md).
+
+| Metodă și rută | Corp | Succes | Erori |
+|---|---|---|---|
+| `GET /api/profile` | — | 200 `ProfileDto` | 401 |
+| `PUT /api/profile` | `{ firstName, lastName, birthDate, heightCm, weightKg, gender, activityLevel, goal }` | 200 `ProfileDto` | 400, 401 |
+| `PUT /api/profile/targets` | `{ calories?, proteinsGrams?, carbsGrams?, fatsGrams? }` (`null` = calculat) | 200 `ProfileDto` | 400, 401 |
+
+* Toate rutele cer access token; id-ul utilizatorului vine **doar** din claim-ul `sub`.
+* Enum-urile circulă ca text camelCase: `gender` ∈ {`male`, `female`}, `activityLevel` ∈ {`sedentary`, `lightlyActive`, `moderatelyActive`, `veryActive`, `extremelyActive`}, `goal` ∈ {`loseWeight`, `maintainWeight`, `gainMuscle`}.
+* `ProfileDto` conține datele profilului, `age`, `isProfileComplete`, `bmr`, `tdee` (null dacă profilul e incomplet) și `targets.{calories, proteinsGrams, carbsGrams, fatsGrams}`, fiecare cu `{ value, source }`, unde `source` ∈ {`default`, `calculated`, `manual`}.
+
+```mermaid
+flowchart LR
+    P[Profil: greutate, înălțime, vârstă, sex] --> BMR[BMR Mifflin–St Jeor]
+    BMR --> TDEE[TDEE = BMR × activitate]
+    TDEE --> K[Calorii = TDEE × obiectiv, cu prag]
+    OK[Suprascriere calorii] -.înlocuiește.-> K
+    K --> G[Grăsimi = 25% din calorii]
+    P --> PR[Proteine = g/kg × greutate ≤ IMC 25]
+    OP[Suprascriere proteine] -.înlocuiește.-> PR
+    K --> C[Carbohidrați = restul energiei]
+    PR --> C
+    G --> C
 ```
