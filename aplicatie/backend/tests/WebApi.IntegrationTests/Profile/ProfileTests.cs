@@ -10,10 +10,14 @@ namespace NutriScan.WebApi.IntegrationTests.Profile;
 [Collection(IntegrationTestCollection.Name)]
 public class ProfileTests(NutriScanApiFactory factory) : IAsyncLifetime
 {
-    // Reference case R1 (spec §3.6); age 28 as long as the test runs before 2027-05-14
+    // Reference case R1 (spec §3.6). The API uses the real clock, so the birth date is relative:
+    // 28 years and one day ago keeps the age at 28 whenever the suite runs.
+    private static readonly string R1BirthDate =
+        DateOnly.FromDateTime(DateTime.UtcNow).AddYears(-28).AddDays(-1).ToString("yyyy-MM-dd");
+
     private static object R1(double weightKg = 62, string activityLevel = "moderatelyActive") => new
     {
-        firstName = "Ana", lastName = "Pop", birthDate = "1998-05-14", heightCm = 168, weightKg,
+        firstName = "Ana", lastName = "Pop", birthDate = R1BirthDate, heightCm = 168, weightKg,
         gender = "female", activityLevel, goal = "loseWeight"
     };
 
