@@ -28,6 +28,8 @@ public sealed class LoginCommandHandler(
 
         if (user.IsLockedOut(now))
         {
+            // Not the real hash: a locked account must not be probed, but the response time must stay the same.
+            hasher.Verify(hasher.DummyHash, request.Password);
             throw new UnauthorizedException(AuthErrors.InvalidCredentials);
         }
 
