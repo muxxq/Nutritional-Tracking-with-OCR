@@ -75,6 +75,16 @@ public class UserLockoutTests
         user.LockoutEndUtc.Should().BeNull();
     }
 
+    [Fact]
+    public void IsProfileComplete_WithoutBirthDate_IsFalse()
+    {
+        // Act
+        var complete = new User { HeightCm = 170, WeightKg = 70 }.IsProfileComplete;
+
+        // Assert
+        complete.Should().BeFalse();
+    }
+
     [Theory]
     [InlineData(0, 0, false)]
     [InlineData(170, 0, false)]
@@ -83,7 +93,7 @@ public class UserLockoutTests
     public void IsProfileComplete_DependsOnHeightAndWeight(double heightCm, double weightKg, bool expected)
     {
         // Arrange
-        var user = new User { HeightCm = heightCm, WeightKg = weightKg };
+        var user = new User { HeightCm = heightCm, WeightKg = weightKg, BirthDate = new DateOnly(1998, 5, 14) };
 
         // Act
         var complete = user.IsProfileComplete;
