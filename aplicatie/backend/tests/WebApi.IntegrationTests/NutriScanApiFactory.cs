@@ -42,6 +42,7 @@ public class NutriScanApiFactory : WebApplicationFactory<Program>, IAsyncLifetim
     {
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await db.ShoppingListItems.ExecuteDeleteAsync();  // first: generated lines reference foods
         await db.PlannedMeals.ExecuteDeleteAsync();  // first: they reference diary entries, foods and recipes
         await db.DiaryEntries.ExecuteDeleteAsync();
         await db.Recipes.ExecuteDeleteAsync();  // ingredients cascade; they reference foods, deleted next
