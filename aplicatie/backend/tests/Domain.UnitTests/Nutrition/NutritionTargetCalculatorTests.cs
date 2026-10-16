@@ -114,6 +114,40 @@ public class NutritionTargetCalculatorTests
     }
 
     [Fact]
+    public void Calculate_BmiAbove25_ProteinUsesReferenceWeight()
+    {
+        // Arrange: BMI 46.9; reference weight at BMI 25 is 25 × 1.6² = 64 kg
+        var user = new User
+        {
+            Gender = Gender.Female, WeightKg = 120, HeightCm = 160, BirthDate = BornYearsAgo(40),
+            ActivityLevel = ActivityLevel.Sedentary, Goal = NutritionGoal.LoseWeight
+        };
+
+        // Act
+        var t = Valid(user);
+
+        // Assert
+        t.ProteinsGrams.Value.Should().Be(128);
+    }
+
+    [Fact]
+    public void Calculate_ExtremeButValidProfile_KeepsCarbsNonNegative()
+    {
+        // Arrange: limits allowed by validation (300 kg, 100 cm, 100 years)
+        var user = new User
+        {
+            Gender = Gender.Female, WeightKg = 300, HeightCm = 100, BirthDate = BornYearsAgo(100),
+            ActivityLevel = ActivityLevel.Sedentary, Goal = NutritionGoal.LoseWeight
+        };
+
+        // Act
+        var t = Valid(user);
+
+        // Assert
+        t.CarbsGrams.Value.Should().BeGreaterThanOrEqualTo(0);
+    }
+
+    [Fact]
     public void Calculate_ManualCarbs_FatsAbsorbDifference()
     {
         // Arrange
