@@ -55,4 +55,7 @@ public class RecipeIngredient : BaseEntity
     public FoodItem FoodItem { get; set; } = null!;
 
     public double QuantityGrams { get; set; }
+
+    /// <summary>0-based place in the list as the user entered it; ids are random, so they can't give the order.</summary>
+    public int Position { get; set; }
 }

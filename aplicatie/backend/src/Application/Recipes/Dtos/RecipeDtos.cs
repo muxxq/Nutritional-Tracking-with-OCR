@@ -15,13 +15,18 @@ public sealed record RecipeDto(
     Guid Id, string Name, string? Description, string? Instructions, int ServingsCount, int? PrepTimeMinutes,
     bool IsArchived, IReadOnlyList<RecipeIngredientDto> Ingredients, NutrientsDto Total, NutrientsDto PerServing)
 {
-    /// <summary>The recipe must be loaded with its ingredients' foods. Per-serving values come from the unrounded total.</summary>
+    /// <summary>
+    /// The recipe must be loaded with its ingredients' foods. Ingredients are listed in the order the user entered them;
+    /// per-serving values come from the unrounded total.
+    /// </summary>
     public static RecipeDto From(Recipe recipe)
     {
         var nutrition = RecipeNutrition.Of(recipe);
         var ingredients = recipe.Ingredients
-            .Zip(nutrition.Ingredients, (i, m) =>
-                new RecipeIngredientDto(RecipeFoodDto.From(i.FoodItem), i.QuantityGrams, NutrientsDto.From(m).Rounded()))
+            .Zip(nutrition.Ingredients, (i, m) => (i.Position, Dto: new RecipeIngredientDto(
+                RecipeFoodDto.From(i.FoodItem), i.QuantityGrams, NutrientsDto.From(m).Rounded())))
+            .OrderBy(x => x.Position)
+            .Select(x => x.Dto)
             .ToList();
 
         return new RecipeDto(

@@ -63,11 +63,11 @@ Testul `CheckConstraints_RejectDirectSqlInserts` inserează direct prin SQL și 
 * **Lista de rețete nu încarcă ingredientele:** valorile per porție se calculează în SQL, prin proiecție (`SUM(kcal × grame / 100)`), apoi se împart la porții și se rotunjesc în memorie.
 * **Editarea ingredientelor păstrează rândurile existente:** lista se modifică pe loc, după aliment (cantitate schimbată, ingrediente eliminate, ingrediente noi), deci reordonarea nu lovește indexul unic (testat pe PostgreSQL real, `Update_ChangesQuantityOfExistingIngredient_Returns200`).
 * **Client TypeScript sigur:** `DiaryEntryDto` primește câmpul `kind` (`"food"` / `"recipe"`), care permite o uniune discriminată.
-* **Testare:** suita backend are 403 teste (72 Domain, 13 Infrastructure, 216 Application, 102 de integrare).
+* **Ordinea ingredientelor se păstrează:** `RecipeIngredient.Position` reține locul din listă la fiecare salvare. Id-urile sunt GUID-uri aleatoare, deci fără poziție ordinea la citire ar fi întâmplătoare. Problema a fost găsită la code review-ul final (`Get_KeepsIngredientOrderOfLastSave`).
+* **Testare:** suita backend are 404 teste (72 Domain, 13 Infrastructure, 216 Application, 103 de integrare).
 
 ### Riscuri asumate:
 * **Ultima scriere câștigă** (D7): două tab-uri care editează aceeași rețetă se suprascriu.
 * **Zilele trecute folosesc țintele curente** (moștenit din ADR-005 D5).
 * **Rețetele nu se pot adăuga în grame** (D3): pentru o porție inegală, utilizatorul introduce porții fracționare (de exemplu 1,5).
 * **Contract incompatibil în jurnal:** `food` și `quantityGrams` din `DiaryEntryDto` devin nullable. Schimbarea nu afectează pe nimeni acum, pentru că clientul folosește încă date mock (Faza 3).
-* **Ordinea ingredientelor** nu este stocată: lista e returnată în ordinea din baza de date. O coloană de poziție poate fi adăugată când ecranul o va cere.
