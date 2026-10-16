@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NutriScan.Application.UnitT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NutriScan.Infrastructure.UnitTests", "tests\Infrastructure.UnitTests\NutriScan.Infrastructure.UnitTests.csproj", "{0B9DED99-1BC7-4EB5-B1FF-8DC79460E805}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NutriScan.WebApi.IntegrationTests", "tests\WebApi.IntegrationTests\NutriScan.WebApi.IntegrationTests.csproj", "{36C45B0F-E0BA-4779-8299-BF57625C900D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{0B9DED99-1BC7-4EB5-B1FF-8DC79460E805}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B9DED99-1BC7-4EB5-B1FF-8DC79460E805}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B9DED99-1BC7-4EB5-B1FF-8DC79460E805}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36C45B0F-E0BA-4779-8299-BF57625C900D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36C45B0F-E0BA-4779-8299-BF57625C900D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36C45B0F-E0BA-4779-8299-BF57625C900D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36C45B0F-E0BA-4779-8299-BF57625C900D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CF76B7FE-5316-4718-A547-C6CF8A801F14} = {8AA9A7BA-3E20-49B5-83C2-A925A9A1172A}
@@ -67,5 +73,6 @@ Global
 		{96B7770A-745B-4DAF-9CAC-09FB9A9F924F} = {D0152017-0EAE-4119-B0B8-F4217CE90B2C}
 		{071179CB-9BBF-44F7-8D36-714DD961B671} = {D0152017-0EAE-4119-B0B8-F4217CE90B2C}
 		{0B9DED99-1BC7-4EB5-B1FF-8DC79460E805} = {D0152017-0EAE-4119-B0B8-F4217CE90B2C}
+		{36C45B0F-E0BA-4779-8299-BF57625C900D} = {D0152017-0EAE-4119-B0B8-F4217CE90B2C}
 	EndGlobalSection
 EndGlobal
