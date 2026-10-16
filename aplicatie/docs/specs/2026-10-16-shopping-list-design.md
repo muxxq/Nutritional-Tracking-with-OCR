@@ -96,7 +96,7 @@ Exemplu AC2: 200 × 2 / 4 = 100 g. Exemplu AC1: 150 + 250 = 400 g.
 ## 4. Persistență
 
 Migrarea `ShoppingList`:
-- `FoodItems`: `AddColumn Category` (`integer`, implicit 0 = `Other`), plus `UPDATE` pe numele celor 10 alimente globale din seed (§3.1). `ApplicationDbContextSeed` setează aceleași categorii pentru bazele noi.
+- `FoodItems`: `AddColumn Category` (`integer`, implicit 6 = `Other`; 0 este `FruitsVegetables`), plus `UPDATE` pe numele celor 10 alimente globale din seed (§3.1). `ApplicationDbContextSeed` setează aceleași categorii pentru bazele noi.
 - `ShoppingListItems` (goală până acum: nu exista API): `QuantityGrams` devine nullable; `AddColumn FoodItemId` (FK `RESTRICT`, index), `QuantityText` (`character varying(50)`), `Category` (`integer`); index `(UserId, Category)`.
 - Constrângere `CHECK`:
   ```sql

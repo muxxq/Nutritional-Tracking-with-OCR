@@ -9,8 +9,12 @@ public sealed record ShoppingListItemDto(
 {
     /// <summary>Grams are rounded up to a whole gram: at the shelf, what matters is not buying too little (ADR-008 D6).</summary>
     public static ShoppingListItemDto From(ShoppingListItem item) => new(
-        item.Id, item.ItemName, item.QuantityGrams is { } grams ? Math.Ceiling(grams) : null, item.QuantityText,
+        item.Id, item.ItemName, item.QuantityGrams is { } grams ? RoundUp(grams) : null, item.QuantityText,
         item.Category, item.IsPurchased, item.IsManual, item.FoodItemId);
+
+    // Sums of fractions carry binary noise (6 × 400/6 = 400.00000000000006); rounding it off first keeps 400 g at 400 g
+    // instead of rounding the noise up to 401 g.
+    private static double RoundUp(double grams) => Math.Ceiling(Math.Round(grams, 6));
 }
 
 public sealed record ShoppingCategoryDto(FoodCategory Category, IReadOnlyList<ShoppingListItemDto> Items);

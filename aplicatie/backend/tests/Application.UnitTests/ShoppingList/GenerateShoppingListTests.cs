@@ -160,6 +160,24 @@ public class GenerateShoppingListTests : IDisposable
     }
 
     [Fact]
+    public async Task Generate_BatchCookedRecipe_DoesNotRoundFloatNoiseUp()
+    {
+        // Arrange: a 6-serving batch eaten one serving a day; six times 400/6 sums to 400.00000000000006 in doubles
+        var chicken = await _t.FoodAsync("Piept de pui", FoodCategory.MeatFish);
+        var recipeId = await _t.RecipeAsync(6, (chicken.Id, 400));
+        for (var day = 0; day < 6; day++)
+        {
+            await _t.PlanRecipeAsync(recipeId, 1, Monday.AddDays(day));
+        }
+
+        // Act
+        var list = await Generate();
+
+        // Assert
+        Items(list).Single().QuantityGrams.Should().Be(400);
+    }
+
+    [Fact]
     public async Task Generate_IgnoresOtherUsersMealsAndOutOfRange()
     {
         // Arrange

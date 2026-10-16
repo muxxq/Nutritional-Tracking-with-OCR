@@ -8,6 +8,6 @@ public sealed class DeleteShoppingListItemCommandHandler(IApplicationDbContext d
     public async Task Handle(DeleteShoppingListItemCommand request, CancellationToken cancellationToken)
     {
         db.ShoppingListItems.Remove(await db.LoadOwnAsync(request.UserId, request.ItemId, cancellationToken));
-        await db.SaveChangesAsync(cancellationToken);
+        await db.SaveOrNotFoundAsync(cancellationToken);
     }
 }

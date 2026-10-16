@@ -56,7 +56,9 @@ Exemple: 150 + 250 = 400 g (criteriul SRS); 200 g ovăz într-o rețetă de 4 po
 * **Criteriul SRS este verificat la toate nivelurile:** Domain (`Build_SrsExample_ChickenFromTwoRecipes_Is400`), Application și integrare pe PostgreSQL real.
 * **Regenerarea este sigură:** articolele scrise de mână nu se pierd, iar un plan gol nu golește lista.
 * **O singură regulă de interval** pentru plan și listă (`PlanRangeValidator`), extrasă din planificator în loc să fie copiată.
-* **Testare:** suita backend are 509 teste (83 Domain, 13 Infrastructure, 281 Application, 132 de integrare).
+* **Cantități corecte la gătitul pe loturi:** o rețetă de 6 porții cu 400 g, planificată câte o porție pe zi, însumează în virgulă mobilă 400,00000000000006 g. Valoarea se rotunjește întâi la 6 zecimale, apoi în sus, deci se afișează 400 g, nu 401 g. Problema a fost găsită la code review-ul final (`Generate_BatchCookedRecipe_DoesNotRoundFloatNoiseUp`).
+* **Dublu-tap fără erori 500:** ștergerea sau bifarea unui articol șters între timp întoarce 404, ca în jurnal; „șterge cele bifate” apăsat de două ori reușește; o generare concurentă întoarce 409 cu mesaj de reîncercare (`ShoppingListConcurrencyTests`).
+* **Testare:** suita backend are 513 teste (83 Domain, 13 Infrastructure, 285 Application, 132 de integrare).
 
 ### Riscuri asumate:
 * **Bifele generate se pierd la regenerare** (D2). Utilizatorul generează de regulă o dată pe săptămână, înainte de cumpărături.
