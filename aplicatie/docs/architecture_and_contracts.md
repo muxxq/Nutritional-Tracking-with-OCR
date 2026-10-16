@@ -68,6 +68,7 @@ erDiagram
     RECIPES ||--o{ PLANNED_MEALS : scheduled_in
     FOOD_ITEMS ||--o{ PLANNED_MEALS : scheduled_in
     DIARY_ENTRIES |o--o| PLANNED_MEALS : eaten_as
+    FOOD_ITEMS ||--o{ SHOPPING_LIST_ITEMS : bought_as
 
     USERS {
         uuid Id PK
@@ -107,6 +108,7 @@ erDiagram
         string Brand
         string Barcode
         float ServingSizeGrams
+        int Category
         float Calories
         float Proteins
         float Carbohydrates
@@ -178,10 +180,14 @@ erDiagram
     SHOPPING_LIST_ITEMS {
         uuid Id PK
         uuid UserId FK
+        uuid FoodItemId FK "NULL la articol manual"
         string ItemName
-        float QuantityGrams
+        float QuantityGrams "NULL la articol manual"
+        string QuantityText "doar la articol manual"
+        int Category
         boolean IsPurchased
         timestamp CreatedAtUtc
+        timestamp UpdatedAtUtc
     }
 ```
 
@@ -365,7 +371,7 @@ Decizii: [ADR-004](adr/ADR-004-food-catalog.md). Design: [spec](specs/2026-10-16
 | `PUT /api/foods/{id}` | 200 `FoodDto` | 400, 401, 403, 404 |
 | `DELETE /api/foods/{id}` (arhivare) | 204 | 401, 403, 404 |
 
-* **Corpul la creare/editare:** `{ name, brand?, barcode?, servingSizeGrams?, calories, proteins, carbohydrates, sugars?, fats, saturatedFats?, fiber?, saltGrams? }`, toate per 100 g.
+* **Corpul la creare/editare:** `{ name, brand?, barcode?, servingSizeGrams?, calories, proteins, carbohydrates, sugars?, fats, saturatedFats?, fiber?, saltGrams?, category? }`, valorile per 100 g. `category` ∈ `fruitsVegetables`, `meatFish`, `dairy`, `grains`, `pantry`, `beverages`, `other` (implicit), folosită la gruparea listei de cumpărături.
 * **`FoodDto`:** câmpurile de mai sus grupate în `per100g`, plus `isVerified`, `isOwn` și `energyWarning` (FR-06, null dacă valorile sunt coerente).
 * **Vizibilitate:** alimentele globale sunt văzute de toți și nu pot fi modificate (403); cele personale sunt văzute doar de autor (404 pentru alții).
 
@@ -431,3 +437,23 @@ Decizii: [ADR-007](adr/ADR-007-meal-planner.md). Design: [spec](specs/2026-10-16
 * **`PlanDto`:** `{ from, to, days[]: { date, meals[4]: { mealType, items[], totals }, totals, targets, status }, isProfileComplete }`. Toate zilele intervalului apar (cel mult 31). `status` ∈ `under`, `within`, `over`: sub 95%, între 95% și 105%, peste 105% din ținta calorică (pentru 1700 kcal: `within` între 1615 și 1785).
 * **„Am mâncat asta”:** creează o intrare de jurnal la data și masa planificate, cu aceeași cantitate și snapshot din valorile curente; masa primește `diaryEntryId`. Al doilea transfer: 409; după ștergerea intrării din jurnal, masa se poate transfera din nou. O masă pentru o zi de după ziua de mâine: 400.
 * **Vizibilitate:** mesele planificate sunt private (404). Se pot planifica doar alimente și rețete vizibile; o masă al cărei aliment sau rețetă a fost arhivat ulterior rămâne în plan (`isArchived = true`) și se poate edita, șterge și transfera.
+
+---
+
+## 11. Lista de Cumpărături
+
+Decizii: [ADR-008](adr/ADR-008-shopping-list.md). Design: [spec](specs/2026-10-16-shopping-list-design.md).
+
+| Metodă și rută | Succes | Erori |
+|---|---|---|
+| `GET /api/shopping-list` | 200 `ShoppingListDto` | 401 |
+| `POST /api/shopping-list/generate` | 200 `ShoppingListDto` | 400, 401 |
+| `POST /api/shopping-list/items` | 201 `ShoppingListItemDto` | 400, 401 |
+| `PATCH /api/shopping-list/items/{id}` | 200 `ShoppingListItemDto` | 400, 401, 404 |
+| `DELETE /api/shopping-list/items/{id}` | 204 | 401, 404 |
+| `DELETE /api/shopping-list/purchased` | 204 | 401 |
+
+* **Generare:** `{ from, to }` (cel mult 31 de zile). Intră mesele planificate nemâncate din interval; aceleași alimente se adună, rețetele se scalează la porțiile planificate (150 g + 250 g de piept de pui → 400 g; 200 g în 4 porții, planificat pentru 2 → 100 g). Articolele generate anterior sunt înlocuite, cele manuale rămân. Fără mese în interval: 400, lista rămâne neschimbată.
+* **Articol manual:** `{ name, quantity?, category? }`; nume 1–200 caractere, cantitate text ≤ 50. **Bifare:** `{ isPurchased }`, obligatoriu.
+* **`ShoppingListItemDto`:** `{ id, name, quantityGrams, quantityText, category, isPurchased, isManual, foodId }`; `quantityGrams` rotunjit în sus la gram întreg (33,3 → 34), `null` la articolele manuale.
+* **`ShoppingListDto`:** `{ categories[]: { category, items[] }, totalCount, purchasedCount }`; doar categoriile cu articole, în ordinea raioanelor, articolele după nume.
