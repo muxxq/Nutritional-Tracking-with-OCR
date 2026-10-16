@@ -62,8 +62,7 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
   * [x] Scaffold serviciu Python 3.12 FastAPI cu structură modulară (`preprocessor`, `ocr_engine`, `parser`).
   * [x] Scaffold client React 18/19 cu TypeScript, Vite, Tailwind CSS și componente de bază.
   * [x] Configurare `docker-compose.yml` cu healthchecks, volume persistente și rețea internă dedicată.
-  * [x] Modelare entități EF Core (`User`, `FoodItem`, `DiaryEntry`, `MealType`, `Recipe`, `PlannedMeal`).
-    * [ ] `ShoppingListItem` — mutat în Faza 2 (modulul Listă de Cumpărături).
+  * [x] Modelare entități EF Core (`User`, `FoodItem`, `DiaryEntry`, `MealType`, `Recipe`, `RecipeIngredient`, `PlannedMeal`, `ShoppingListItem`).
   * [x] Rulare migrare inițială EF Core pe PostgreSQL și script seed date de test.
   * [x] Contract OpenAPI între Backend și Serviciul OCR.
 * [x] **Academic / Documentație:**
@@ -85,7 +84,7 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
   * [ ] Modul Jurnal Alimentar: Comenzi & Interogări MediatR pentru adăugare, editare, ștergere și vizualizare pe cele 4 mese principale.
   * [ ] Reguli de validare energetică în `FluentValidation` (ex: avertisment dacă diferența dintre calorii și formula `4P + 4C + 9G` > 15%).
   * [ ] Modul Rețetar & Planificator Săptămânal: agregare ingrediente, recalcul nutrienți per porție, planificare pe zile.
-  * [ ] Generator automat Listă de Cumpărături (entitate `ShoppingListItem`, agregare cantități identice din mesele planificate).
+  * [ ] Generator automat Listă de Cumpărături (agregare cantități identice din mesele planificate).
   * [ ] Contract `IOcrService` în Application cu implementare stub în Infrastructure (pregătire pentru Faza 4).
   * [ ] Teste unitare (xUnit, FluentAssertions, Moq) pentru Handlers & Domain Rules; Teste de integrare cu Testcontainers Postgres.
 * [ ] **Academic / Documentație:**
