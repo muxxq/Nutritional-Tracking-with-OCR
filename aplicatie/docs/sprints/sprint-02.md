@@ -86,7 +86,7 @@ dotnet test
 | AC7 | Sare în grame, convertită din sodiu | `SeededChicken_HasSaltConvertedFromSodium` + verificare manuală a migrării pe date reale |
 | AC8 | Token obligatoriu | `Foods_WithoutToken_Returns401` |
 
-**Realizări:** `TextNormalizer`, `EnergyCheck`, `FoodItem` cu vizibilitate și arhivare, migrarea `FoodCatalog`, validatorul comun `FoodFieldsValidator`, căutarea paginată, `FoodsController`, maparea 403/404. **246 de teste backend, toate trec.**
+**Realizări:** `TextNormalizer`, `EnergyCheck`, `FoodItem` cu vizibilitate și arhivare, migrarea `FoodCatalog`, validatorul comun `FoodFieldsValidator`, căutarea paginată, `FoodsController`, maparea 403/404. **251 de teste backend, toate trec.**
 
 ## ⏭️ Următorii pași din sprint
 * Modulul Jurnal Alimentar: adăugare, editare, ștergere și vizualizare pe cele 4 mese, cu totaluri față de ținte.
