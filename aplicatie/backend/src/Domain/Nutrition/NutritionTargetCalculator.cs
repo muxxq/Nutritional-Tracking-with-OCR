@@ -26,6 +26,7 @@ public static class NutritionTargetCalculator
 
     private const string NegativeCarbsError = "Țintele setate manual nu sunt compatibile: carbohidrații ar deveni negativi.";
     private const string NegativeFatsError = "Țintele setate manual nu sunt compatibile: grăsimile ar deveni negative.";
+    private const string ExceedingMacrosError = "Macronutrienții setați manual depășesc caloriile țintă cu peste 15%.";
     private const string InconsistentEnergyError = "Țintele setate manual diferă cu peste 15% de totalul caloric (4P + 4C + 9G).";
 
     /// <summary>Strict: used when writing. Infeasible overrides are reported as an error.</summary>
@@ -119,6 +120,13 @@ public static class NutritionTargetCalculator
                 overrides.CarbsGrams.Value, overrides.FatsGrams.Value))
         {
             return NutritionTargetResult.Failure(InconsistentEnergyError);
+        }
+
+        // Without a profile nothing absorbs the difference, so manual macros alone must fit the calories.
+        var manualMacroEnergy = Energy(overrides.ProteinsGrams ?? 0, overrides.CarbsGrams ?? 0, overrides.FatsGrams ?? 0);
+        if (manualMacroEnergy > (overrides.Calories ?? DefaultCalories) * (1 + EnergyTolerance))
+        {
+            return NutritionTargetResult.Failure(ExceedingMacrosError);
         }
 
         return NutritionTargetResult.Success(new NutritionTargets(
