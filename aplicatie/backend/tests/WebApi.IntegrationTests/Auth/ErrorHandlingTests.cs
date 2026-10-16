@@ -20,6 +20,8 @@ public class ThrowingTestController : ControllerBase
         "validation" => throw new ValidationException(new[] { new ValidationFailure("Email", "Email invalid") }),
         "conflict" => throw new ConflictException("x"),
         "unauthorized" => throw new UnauthorizedException("y"),
+        "forbidden" => throw new ForbiddenException("z"),
+        "notfound" => throw new NotFoundException("w"),
         _ => throw new InvalidOperationException("secret")
     };
 }
@@ -54,6 +56,8 @@ public class ErrorHandlingTests(NutriScanApiFactory factory)
     [Theory]
     [InlineData("conflict", HttpStatusCode.Conflict, "x")]
     [InlineData("unauthorized", HttpStatusCode.Unauthorized, "y")]
+    [InlineData("forbidden", HttpStatusCode.Forbidden, "z")]
+    [InlineData("notfound", HttpStatusCode.NotFound, "w")]
     public async Task ApplicationException_MapsToStatusAndTitle(string kind, HttpStatusCode status, string title)
     {
         // Act
