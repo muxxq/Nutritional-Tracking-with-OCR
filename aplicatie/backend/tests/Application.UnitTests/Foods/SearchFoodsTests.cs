@@ -94,6 +94,8 @@ public class SearchFoodsTests : IDisposable
     [InlineData(0, 20)]
     [InlineData(1, 0)]
     [InlineData(1, 51)]
+    [InlineData(10_001, 20)]
+    [InlineData(int.MaxValue, 50)]
     public void Validator_RejectsInvalidPaging(int page, int pageSize)
     {
         // Act

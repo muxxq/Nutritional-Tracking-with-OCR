@@ -247,6 +247,19 @@ public class FoodsTests(NutriScanApiFactory factory) : IAsyncLifetime
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
+    [Fact]
+    public async Task Search_HugePage_Returns400NotOverflow()
+    {
+        // Arrange: (page − 1) × pageSize would overflow int into a negative OFFSET
+        var client = await SignedInClientAsync();
+
+        // Act
+        var response = await client.GetAsync("/api/foods?page=2147483647&pageSize=50");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
     [Theory]
     [InlineData("GET", "/api/foods")]
     [InlineData("POST", "/api/foods")]
