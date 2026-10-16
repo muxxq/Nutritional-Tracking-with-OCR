@@ -16,7 +16,7 @@
 ### Criterii de acceptanță
 - **AC1:** `POST /api/diary/entries` cu un aliment vizibil și o cantitate în grame creează intrarea (201, `Location: /api/diary/entries/{id}`). Valorile nutriționale ale intrării sunt `valoare_per_100g × grame / 100`.
 - **AC2:** cu `servings`, gramele sunt `servings × ServingSizeGrams`, iar intrarea păstrează și numărul de porții. Dacă alimentul nu are porție definită, răspunsul este 400.
-- **AC3:** `GET /api/diary/days/{date}` întoarce mereu cele 4 mese în ordinea Breakfast, Lunch, Dinner, Snack (și cele goale), fiecare cu intrările și subtotalul ei, plus totalul zilei, țintele, restul (`ținte − total`, poate fi negativ) și `isProfileComplete`. O zi fără intrări întoarce totaluri zero.
+- **AC3:** `GET /api/diary/days/{date}` întoarce mereu cele 4 mese în ordinea `breakfast`, `lunch`, `dinner`, `snack` (și cele goale), fiecare cu intrările și subtotalul ei, plus totalul zilei, țintele, restul (`ținte − total`, poate fi negativ) și `isProfileComplete`. O zi fără intrări întoarce totaluri zero.
 - **AC4 (snapshot):** editarea unui aliment din catalog nu modifică intrările deja salvate. Editarea cantității unei intrări recalculează valorile din alimentul curent.
 - **AC5:** `PUT /api/diary/entries/{id}` modifică cantitatea, masa și data (200). `DELETE` întoarce 204, iar intrarea nu mai apare nici în zi, nici la `GET` (404).
 - **AC6:** intrarea altui utilizator primește 404 la `GET`, `PUT` și `DELETE` (NFR-10). Un aliment al altui utilizator sau unul arhivat primește 404 la `POST`. O intrare existentă al cărei aliment a fost arhivat rămâne în zi, cu `food.isArchived = true`, și poate fi editată sau ștearsă.
@@ -72,7 +72,7 @@ Limita de 5000 g se verifică după conversie.
 |---|---|
 | `quantityGrams` / `servings` | exact unul; `0 < grame ≤ 5000`; `0 < porții ≤ 50`; după conversie `≤ 5000 g` |
 | `date` | `2000-01-01 ≤ date ≤ azi (UTC) + 1 zi`; ziua în plus acoperă fusurile orare, serverul nu știe ora locală a clientului |
-| `mealType` | `Breakfast`, `Lunch`, `Dinner` sau `Snack` (text); altfel 400 |
+| `mealType` | `breakfast`, `lunch`, `dinner` sau `snack` (text, camelCase ca restul enum-urilor); altfel 400 |
 | `limit` (recente) | `1–30`, implicit 10 |
 
 Regulile care nu depind de baza de date stau în validatoare FluentValidation. Porția lipsă depinde de aliment, deci e verificată în handler și produce tot 400 ProblemDetails, prin aceeași excepție de validare.
@@ -109,18 +109,18 @@ Toate rutele sunt `[Authorize]`, cu id-ul utilizatorului din claim-ul `sub`.
 
 ```jsonc
 // AddDiaryEntryRequest (POST); UpdateDiaryEntryRequest (PUT) are aceleași câmpuri fără foodId
-{ "foodId": "…", "date": "2026-10-16", "mealType": "Breakfast", "quantityGrams": null, "servings": 1.5 }
+{ "foodId": "…", "date": "2026-10-16", "mealType": "breakfast", "quantityGrams": null, "servings": 1.5 }
 
 // DiaryEntryDto
-{ "id": "…", "date": "2026-10-16", "mealType": "Breakfast",
+{ "id": "…", "date": "2026-10-16", "mealType": "breakfast",
   "quantityGrams": 60, "servings": 1.5,
   "food": { "id": "…", "name": "Fulgi de ovăz", "brand": "Generic", "isArchived": false },
   "nutrients": { "calories": 233.4, "proteins": 10.1, "carbs": 39.8, "fats": 4.1 } }
 
 // DiaryDayDto
 { "date": "2026-10-16",
-  "meals": [ { "mealType": "Breakfast", "entries": [ /* DiaryEntryDto */ ], "totals": { /* nutrients */ } },
-             { "mealType": "Lunch", … }, { "mealType": "Dinner", … }, { "mealType": "Snack", … } ],
+  "meals": [ { "mealType": "breakfast", "entries": [ /* DiaryEntryDto */ ], "totals": { /* nutrients */ } },
+             { "mealType": "lunch", … }, { "mealType": "dinner", … }, { "mealType": "snack", … } ],
   "totals":    { "calories": 1240.5, "proteins": 81.2, "carbs": 140.0, "fats": 38.9 },
   "targets":   { "calories": 1700,   "proteins": 124,  "carbs": 195,   "fats": 47 },
   "remaining": { "calories": 459.5,  "proteins": 42.8, "carbs": 55.0,  "fats": 8.1 },
