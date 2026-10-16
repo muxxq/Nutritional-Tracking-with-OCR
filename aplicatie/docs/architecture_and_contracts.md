@@ -67,6 +67,7 @@ erDiagram
     RECIPES ||--o{ DIARY_ENTRIES : logged_as
     RECIPES ||--o{ PLANNED_MEALS : scheduled_in
     FOOD_ITEMS ||--o{ PLANNED_MEALS : scheduled_in
+    DIARY_ENTRIES |o--o| PLANNED_MEALS : eaten_as
 
     USERS {
         uuid Id PK
@@ -165,11 +166,13 @@ erDiagram
         uuid UserId FK
         date PlanDate
         int MealType
-        uuid FoodItemId FK
-        uuid RecipeId FK
-        float QuantityGrams
-        boolean IsTransferredToDiary
+        uuid FoodItemId FK "NULL la masă-rețetă"
+        uuid RecipeId FK "NULL la masă-aliment"
+        float QuantityGrams "NULL la masă-rețetă"
+        float Servings
+        uuid DiaryEntryId FK "intrarea creată prin Am mâncat asta"
         timestamp CreatedAtUtc
+        timestamp UpdatedAtUtc
     }
 
     SHOPPING_LIST_ITEMS {
@@ -407,3 +410,24 @@ Decizii: [ADR-006](adr/ADR-006-recipes.md). Design: [spec](specs/2026-10-16-reci
 * **Validare:** nume 1–200 caractere; descriere ≤ 1000; instrucțiuni ≤ 10 000; `servingsCount` 1–50; `prepTimeMinutes` 0–1440; 1–50 ingrediente cu alimente distincte și `0 < quantityGrams ≤ 5000`.
 * **Vizibilitate:** rețetele sunt private (404 pentru alți utilizatori și pentru rețetele arhivate). Ingredientele trebuie să fie alimente vizibile, cu excepția unui aliment arhivat care era deja în rețetă.
 * **În jurnal:** `POST /api/diary/entries` cu `recipeId` și `servings` creează o intrare `kind = "recipe"` cu snapshot `perServing × servings` (1,5 porții → 291,75 kcal, afișat 291,8). Constrângerile `CHECK` din PostgreSQL garantează că intrarea are exact o cheie și, la rețetă, porții fără grame.
+
+---
+
+## 10. Planificatorul Săptămânal
+
+Decizii: [ADR-007](adr/ADR-007-meal-planner.md). Design: [spec](specs/2026-10-16-meal-planner-design.md).
+
+| Metodă și rută | Succes | Erori |
+|---|---|---|
+| `GET /api/plan?from=yyyy-MM-dd&to=yyyy-MM-dd` | 200 `PlanDto` | 400, 401 |
+| `GET /api/plan/items/{id}` | 200 `PlannedMealDto` | 401, 404 |
+| `POST /api/plan/items` | 201 `PlannedMealDto` | 400, 401, 404 |
+| `PUT /api/plan/items/{id}` | 200 `PlannedMealDto` | 400, 401, 404 |
+| `DELETE /api/plan/items/{id}` | 204 | 401, 404 |
+| `POST /api/plan/items/{id}/eat` („Am mâncat asta”) | 201 `DiaryEntryDto` | 400, 401, 404, 409 |
+
+* **Corpul la creare:** `{ foodId?, recipeId?, date, mealType, quantityGrams?, servings? }`, cu aceleași reguli ca intrarea de jurnal: exact unul dintre id-uri; aliment în grame sau porții, rețetă doar în porții. La editare, aceleași câmpuri fără id-uri. Data: între 01.01.2000 și azi + 366 de zile.
+* **`PlannedMealDto`:** `{ id, kind, date, mealType, quantityGrams, servings, food, recipe, nutrients, diaryEntryId }`, cu `food` / `recipe` ca în jurnal. Valorile sunt calculate din alimentele și rețetele curente.
+* **`PlanDto`:** `{ from, to, days[]: { date, meals[4]: { mealType, items[], totals }, totals, targets, status }, isProfileComplete }`. Toate zilele intervalului apar (cel mult 31). `status` ∈ `under`, `within`, `over`: sub 95%, între 95% și 105%, peste 105% din ținta calorică (pentru 1700 kcal: `within` între 1615 și 1785).
+* **„Am mâncat asta”:** creează o intrare de jurnal la data și masa planificate, cu aceeași cantitate și snapshot din valorile curente; masa primește `diaryEntryId`. Al doilea transfer: 409; după ștergerea intrării din jurnal, masa se poate transfera din nou. O masă pentru o zi de după ziua de mâine: 400.
+* **Vizibilitate:** mesele planificate sunt private (404). Se pot planifica doar alimente și rețete vizibile; o masă al cărei aliment sau rețetă a fost arhivat ulterior rămâne în plan (`isArchived = true`) și se poate edita, șterge și transfera.
