@@ -109,6 +109,21 @@ public class LoginCommandHandlerTests : IDisposable
     }
 
     [Fact]
+    public async Task Handle_LockedAccount_VerifiesDummyHashToKeepTimingConstant()
+    {
+        // Arrange
+        var user = await _ctx.SeedUserAsync();
+        user.LockoutEndUtc = _ctx.Now.AddMinutes(1);
+        await _ctx.Db.SaveChangesAsync();
+
+        // Act
+        await Login().Invoking(t => t).Should().ThrowAsync<UnauthorizedException>();
+
+        // Assert
+        _ctx.Hasher.Verify(h => h.Verify("hashed:dummy", "parola123"), Times.Once);
+    }
+
+    [Fact]
     public async Task Handle_SuccessAfterFailures_ResetsCounter()
     {
         // Arrange
