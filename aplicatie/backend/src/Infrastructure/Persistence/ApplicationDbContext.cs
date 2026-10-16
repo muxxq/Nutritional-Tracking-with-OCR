@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using NutriScan.Application.Common.Interfaces;
 using NutriScan.Domain.Common;
 using NutriScan.Domain.Entities;
+using NutriScan.Domain.Enums;
 using NutriScan.Infrastructure.Common;
 
 namespace NutriScan.Infrastructure.Persistence;
@@ -192,6 +193,20 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         {
             entity.HasKey(sli => sli.Id);
             entity.Property(sli => sli.ItemName).HasMaxLength(200).IsRequired();
+            entity.Property(sli => sli.QuantityText).HasMaxLength(50);
+            entity.HasIndex(sli => new { sli.UserId, sli.Category });
+
+            // Foods are archived, never deleted; the line keeps its own name and grams anyway (snapshot).
+            entity.HasOne(sli => sli.FoodItem)
+                .WithMany()
+                .HasForeignKey(sli => sli.FoodItemId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Generated from the plan (a food and grams) or added by hand (free text), never a mix (ADR-008).
+            entity.ToTable(t => t.HasCheckConstraint("CK_ShoppingListItems_GeneratedOrManual",
+                "(\"FoodItemId\" IS NOT NULL AND \"QuantityGrams\" IS NOT NULL AND \"QuantityText\" IS NULL) " +
+                "OR (\"FoodItemId\" IS NULL AND \"QuantityGrams\" IS NULL)"));
 
             entity.HasOne(sli => sli.User)
                 .WithMany(u => u.ShoppingListItems)
