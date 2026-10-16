@@ -15,8 +15,12 @@ public class DiaryEntry : BaseEntity, IAuditableEntity
     public MealType MealType { get; set; }
 
     public double QuantityGrams { get; set; }
-    
-    // Cached calculated values for high performance querying
+
+    /// <summary>Servings the user entered, if any; <see cref="QuantityGrams"/> stays the source of truth.</summary>
+    public double? Servings { get; set; }
+
+    // Snapshot of the food's values when the entry was saved: later edits to the food don't rewrite history.
+    // Stored unrounded so day totals don't accumulate rounding error.
     public double CalculatedCalories { get; set; }
     public double CalculatedProteins { get; set; }
     public double CalculatedCarbs { get; set; }
@@ -25,13 +29,12 @@ public class DiaryEntry : BaseEntity, IAuditableEntity
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAtUtc { get; set; }
 
-    public void RecalculateNutrients()
+    public void RecalculateNutrients(FoodItem food)
     {
-        if (FoodItem == null) return;
         var ratio = QuantityGrams / 100.0;
-        CalculatedCalories = Math.Round(FoodItem.Calories * ratio, 1);
-        CalculatedProteins = Math.Round(FoodItem.Proteins * ratio, 1);
-        CalculatedCarbs = Math.Round(FoodItem.Carbohydrates * ratio, 1);
-        CalculatedFats = Math.Round(FoodItem.Fats * ratio, 1);
+        CalculatedCalories = food.Calories * ratio;
+        CalculatedProteins = food.Proteins * ratio;
+        CalculatedCarbs = food.Carbohydrates * ratio;
+        CalculatedFats = food.Fats * ratio;
     }
 }
