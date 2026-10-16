@@ -41,10 +41,12 @@ Schema inițială ținea un singur câmp `RefreshToken` pe utilizator, iar auten
 * **Baza de date furată** nu permite autentificarea: conține doar hash-uri de parole și de tokenuri.
 * **Clean Architecture demonstrată:** handlerele MediatR (Register, Login, Refresh, Logout, GetCurrentUser) depind doar de interfețe; criptografia stă în Infrastructure, cookie-urile în WebApi.
 * **CORS restrâns** la originile configurate (înlocuiește `AllowAnyOrigin`); toate erorile sunt uniforme (ProblemDetails, RFC 7807).
-* **Testare:** 13 teste de domeniu, 35 de teste pe Application, 13 pe Infrastructure și 22 de teste de integrare pe PostgreSQL real (Testcontainers).
+* **Concurență optimistă:** `RevokedAtUtc` și `FailedLoginAttempts` sunt *concurrency tokens* EF Core. Două refresh-uri simultane cu același token nu pot crea două sesiuni valide (cererea care pierde cursa e tratată ca reutilizare), iar parolele greșite trimise în paralel sunt toate numărate, deci blocarea nu poate fi ocolită.
+* **Testare:** 13 teste de domeniu, 38 de teste pe Application, 13 pe Infrastructure și 22 de teste de integrare pe PostgreSQL real (Testcontainers).
 
 ### Riscuri asumate (datorie tehnică):
 * **Două refresh-uri simultane** cu același token (de exemplu două tab-uri) sunt tratate drept reutilizare și deloghează utilizatorul. Clientul (Faza 3) va trimite un singur refresh odată.
 * **`POST /register` răspunde 409** pentru un email existent, deci dezvăluie existența contului. Alternativa (confirmare pe email) a fost amânată; rate limiting-ul limitează enumerarea.
 * **Tokenurile expirate sau revocate rămân în tabel.** Este nevoie de un job periodic de curățare.
+* **Sesiunile nu au durată absolută:** fiecare rotație acordă încă 7 zile, deci un utilizator activ rămâne logat oricât. O limită pe familie (de exemplu 30 de zile) poate fi adăugată ulterior.
 * **Rate limiting-ul folosește IP-ul conexiunii.** În spatele unui reverse proxy trebuie configurat `ForwardedHeaders`, altfel toți clienții împart aceeași limită.
