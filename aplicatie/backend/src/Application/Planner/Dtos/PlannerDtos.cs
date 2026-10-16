@@ -2,6 +2,7 @@ using NutriScan.Application.Common.Models;
 using NutriScan.Application.Diary.Dtos;
 using NutriScan.Domain.Entities;
 using NutriScan.Domain.Enums;
+using NutriScan.Domain.Nutrition;
 
 namespace NutriScan.Application.Planner.Dtos;
 
@@ -19,3 +20,11 @@ public sealed record PlannedMealDto(
         NutrientsDto.From(meal.Nutrients()).Rounded(),
         meal.DiaryEntryId);
 }
+
+public sealed record PlanMealDto(MealType MealType, IReadOnlyList<PlannedMealDto> Items, NutrientsDto Totals);
+
+/// <summary>A planned day against the calorie target (FR-10); the status comes from the unrounded total.</summary>
+public sealed record PlanDayDto(
+    DateOnly Date, IReadOnlyList<PlanMealDto> Meals, NutrientsDto Totals, NutrientsDto Targets, PlanDayStatus Status);
+
+public sealed record PlanDto(DateOnly From, DateOnly To, IReadOnlyList<PlanDayDto> Days, bool IsProfileComplete);
