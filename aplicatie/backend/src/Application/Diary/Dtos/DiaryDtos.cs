@@ -34,3 +34,11 @@ public sealed record DiaryEntryDto(
         entry.Id, entry.ConsumedDate, entry.MealType, entry.QuantityGrams, entry.Servings,
         DiaryFoodDto.From(food), NutrientsDto.Of(entry).Rounded());
 }
+
+public sealed record DiaryMealDto(MealType MealType, IReadOnlyList<DiaryEntryDto> Entries, NutrientsDto Totals);
+
+public sealed record DiaryDayDto(
+    DateOnly Date, IReadOnlyList<DiaryMealDto> Meals, NutrientsDto Totals,
+    NutrientsDto Targets, NutrientsDto Remaining, bool IsProfileComplete);
+
+public sealed record RecentFoodDto(DiaryFoodDto Food, double LastQuantityGrams, double? LastServings, DateTime LastUsedAtUtc);
