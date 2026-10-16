@@ -1,7 +1,7 @@
 # 🏃‍♂️ Sprint 2 — Backend Core: Autentificare
 **Faza din roadmap:** Faza 2: Backend core (săptămânile 3–7)
 **Branch:** `feature/NUT-auth-jwt`
-**Status:** 🟡 În desfășurare (autentificarea și profilul sunt finalizate în backend)
+**Status:** 🟡 În desfășurare (autentificarea, profilul, catalogul și jurnalul sunt finalizate în backend)
 
 ---
 
@@ -88,6 +88,26 @@ dotnet test
 
 **Realizări:** `TextNormalizer`, `EnergyCheck`, `FoodItem` cu vizibilitate și arhivare, migrarea `FoodCatalog`, validatorul comun `FoodFieldsValidator`, căutarea paginată, `FoodsController`, maparea 403/404. **251 de teste backend, toate trec.**
 
+## 📋 Story: Jurnalul alimentar (FR-07, totaluri FR-08) — ✅ Backend finalizat
+
+> Ca utilizator NutriScan, vreau să notez ce mănânc la fiecare masă, în grame sau în porții, și să văd cât am consumat azi față de țintele mele.
+
+**Documente:** [spec](../specs/2026-10-16-food-diary-design.md) · [plan](../plans/2026-10-16-food-diary.md) · [ADR-005](../adr/ADR-005-food-diary.md)
+
+| AC | Descriere | Acoperit de |
+|---|---|---|
+| AC1 | Adăugare în grame → 201, snapshot corect | `Add_Grams_Returns201WithLocationAndSnapshot`, `Add_Grams_StoresSnapshot` |
+| AC2 | Porții convertite din `ServingSizeGrams`; fără porție → 400 | `Add_Servings_ConvertsToGrams`, `Add_ServingsForSeededOats_Returns400`, `DiaryQuantityTests` |
+| AC3 | Ziua: 4 mese în ordine fixă, totaluri, ținte, rest | `GetDay_ReturnsFourMealsTotalsAndTargets`, `GetDiaryDayTests` |
+| AC4 | Snapshot: editarea alimentului nu schimbă intrarea | `EditFood_DoesNotChangeExistingEntry`, `Update_FoodChangedAfterAdd_RecalculatesFromCurrentFood` |
+| AC5 | Editare (cantitate, masă, dată) și ștergere | `Update_ChangesQuantityMealAndDate_Returns200`, `Update_MoveToAnotherDay_LeavesOldDay`, `Delete_Returns204ThenGet404` |
+| AC6 | 404 pe intrări și alimente străine; aliment arhivat rămâne în zi | `OtherUsersEntry_Returns404ForGetPutDelete`, `Add_OtherUsersFood_Returns404`, `ArchivedFoodEntry_StaysInDayAndIsEditable` |
+| AC7 | Cereri invalide → 400 | `Add_InvalidRequest_Returns400`, `GetDay_MalformedDate_Returns400`, `DiaryEntryFieldsValidatorTests` |
+| AC8 | Alimente recente, distincte, cele mai noi primele | `RecentFoods_ReturnsDistinctNewestFirst`, `GetRecentFoodsTests` |
+| AC9 | Token obligatoriu | `Diary_WithoutToken_Returns401` |
+
+**Realizări:** `DiaryQuantity` (grame sau porții), snapshot nerotunjit pe `DiaryEntry`, migrarea `DiaryServings`, comenzile `AddDiaryEntry` / `UpdateDiaryEntry` / `DeleteDiaryEntry`, interogările `GetDiaryDay` și `GetRecentFoods`, `DiaryController`. Marcajele de timp de audit vin acum din `IDateTimeProvider`. **326 de teste backend, toate trec.**
+
 ## ⏭️ Următorii pași din sprint
-* Modulul Jurnal Alimentar: adăugare, editare, ștergere și vizualizare pe cele 4 mese, cu totaluri față de ținte.
+* Contractul `IOcrService` cu implementare stub; rețetarul și planificatorul.
 * Ecranele de login, înregistrare și onboarding din client (Faza 3), cu un singur refresh în zbor.
