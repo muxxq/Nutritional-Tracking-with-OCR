@@ -278,6 +278,36 @@ public class NutritionTargetCalculatorTests
         t.ProteinsGrams.Should().Be(new TargetValue(150, TargetSource.Default));
     }
 
+    [Theory]
+    [InlineData(1000, 300.0, null)]  // 1200 kcal of protein alone in a 1000 kcal target
+    [InlineData(null, 600.0, null)]  // 2400 kcal of protein in the 2000 kcal default
+    [InlineData(1200, 100.0, 200.0)] // 1200 kcal of protein + carbs, fine; plus fats below
+    public void Calculate_IncompleteProfileManualMacrosExceedCalories_ReturnsError(int? calories, double? proteins, double? carbs)
+    {
+        // Arrange
+        var user = new User
+        {
+            CaloriesOverride = calories, ProteinsGramsOverride = proteins, CarbsGramsOverride = carbs,
+            FatsGramsOverride = carbs is null ? null : 60  // 540 kcal → 1740 kcal against 1200
+        };
+
+        // Act
+        var result = NutritionTargetCalculator.Calculate(user, Today);
+
+        // Assert
+        result.IsValid.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Calculate_IncompleteProfileManualMacrosWithinCalories_IsValid()
+    {
+        // Act
+        var result = NutritionTargetCalculator.Calculate(new User { CaloriesOverride = 1800, ProteinsGramsOverride = 150 }, Today);
+
+        // Assert
+        result.IsValid.Should().BeTrue();
+    }
+
     [Fact]
     public void Calculate_IncompleteProfileAllManualInconsistent_ReturnsError()
     {
