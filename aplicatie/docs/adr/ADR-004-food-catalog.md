@@ -53,9 +53,10 @@ Varianta comunitară se poate adăuga peste D1 fără să se schimbe modelul exi
 * **Istoricul jurnalului rămâne corect** după „ștergerea” unui aliment.
 * **Valorile de sare corespund etichetei.** Migrarea a convertit seed-ul (65 mg sodiu → 0,1625 g sare), iar conversia a fost verificată pe o bază PostgreSQL populată.
 * **Căutare tolerantă:** „piept pui fara piele” găsește „Piept de pui fără piele (crud)”. `%` și `_` sunt tratate literal, ceea ce a fost dovedit pe PostgreSQL.
-* **Testare:** suita backend are 246 de teste.
+* **Testare:** suita backend are 251 de teste.
 
 ### Riscuri asumate:
+* **Ștergerea contului (GDPR, viitor) trebuie să trateze explicit alimentele personale** (ștergere sau anonimizare + arhivare). Cheia străină `FoodItems → Users` e `RESTRICT` intenționat: cu `SET NULL`, alimentele private ar fi devenit globale, adică publice. Code review-ul a găsit problema, iar un test de integrare o fixează.
 * **Copii duplicate:** doi utilizatori care scanează același produs au fiecare propria copie (până la catalogul comunitar).
 * **`Contains` cu `%x%` nu folosește indexul B-tree.** La volum mare se adaugă un index trigram (`pg_trgm`), fără schimbări de cod.
 * **Normalizarea din migrare** (`translate`) acoperă diacriticele românești. Alte diacritice din datele vechi se normalizează la prima editare a alimentului.
