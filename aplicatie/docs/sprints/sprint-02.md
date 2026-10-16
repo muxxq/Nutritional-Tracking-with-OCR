@@ -67,7 +67,7 @@ dotnet test
 | AC8 | Doar propriul profil, cu token | `Profile_WithoutToken_Returns401`, `Profile_TwoUsers_SeeOnlyTheirOwn` |
 | AC9 | Enum-uri ca text | `UpdateProfile_R1_ReturnsCalculatedTargets` |
 
-**Realizări:** `NutritionTargetCalculator` (funcție pură în Domain), migrarea `ProfileTargetOverrides`, `GetProfile` / `UpdateProfile` / `UpdateTargets`, `ProfileController`, enum-uri ca text la nivel global. **158 de teste backend, toate trec.**
+**Realizări:** `NutritionTargetCalculator` (funcție pură în Domain), migrarea `ProfileTargetOverrides`, `GetProfile` / `UpdateProfile` / `UpdateTargets`, `ProfileController`, enum-uri ca text la nivel global. **165 de teste backend, toate trec.**
 
 ## ⏭️ Următorii pași din sprint
 * Modulul Catalog Alimente: CRUD `FoodItem` cu introducere manuală și căutare după nume.
