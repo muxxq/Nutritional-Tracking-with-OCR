@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NutriScan.Application.Foods;
 using NutriScan.Application.Foods.Commands.CreateFood;
+using NutriScan.Domain.Enums;
 
 namespace NutriScan.Application.UnitTests.Foods;
 
@@ -75,6 +76,16 @@ public class FoodFieldsValidatorTests
     {
         // Act
         var result = _validator.Validate(Valid() with { Name = "́́" });
+
+        // Assert
+        result.IsValid.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Validate_UnknownCategory_IsInvalid()
+    {
+        // Act
+        var result = _validator.Validate(Valid() with { Category = (FoodCategory)99 });
 
         // Assert
         result.IsValid.Should().BeFalse();

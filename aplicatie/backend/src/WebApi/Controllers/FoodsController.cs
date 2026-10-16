@@ -50,7 +50,7 @@ public class FoodsController(ISender sender) : ControllerBase
         }
 
         var food = await sender.Send(new CreateFoodCommand(userId, r.Name, r.Brand, r.Barcode, r.ServingSizeGrams,
-            r.Calories, r.Proteins, r.Carbohydrates, r.Sugars, r.Fats, r.SaturatedFats, r.Fiber, r.SaltGrams), cancellationToken);
+            r.Calories, r.Proteins, r.Carbohydrates, r.Sugars, r.Fats, r.SaturatedFats, r.Fiber, r.SaltGrams, r.Category), cancellationToken);
         return Created($"/api/foods/{food.Id}", food);
     }
 
@@ -63,7 +63,7 @@ public class FoodsController(ISender sender) : ControllerBase
     public async Task<IActionResult> Update(Guid id, SaveFoodRequest r, CancellationToken cancellationToken) =>
         User.GetUserId() is { } userId
             ? Ok(await sender.Send(new UpdateFoodCommand(userId, id, r.Name, r.Brand, r.Barcode, r.ServingSizeGrams,
-                r.Calories, r.Proteins, r.Carbohydrates, r.Sugars, r.Fats, r.SaturatedFats, r.Fiber, r.SaltGrams), cancellationToken))
+                r.Calories, r.Proteins, r.Carbohydrates, r.Sugars, r.Fats, r.SaturatedFats, r.Fiber, r.SaltGrams, r.Category), cancellationToken))
             : Unauthorized();
 
     /// <summary>Archives the user's own food; diary history keeps referring to it.</summary>

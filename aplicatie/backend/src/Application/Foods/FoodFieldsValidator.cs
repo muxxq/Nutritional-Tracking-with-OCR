@@ -42,5 +42,6 @@ public sealed class FoodFieldsValidator : AbstractValidator<IFoodFields>
             .When(f => f.SaturatedFats is not null);
         RuleFor(f => f.Fiber).InclusiveBetween(0, 100).When(f => f.Fiber is not null);
         RuleFor(f => f.SaltGrams).InclusiveBetween(0, 100).When(f => f.SaltGrams is not null);
+        RuleFor(f => f.Category).IsInEnum().When(f => f.Category is not null);
     }
 }

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using NutriScan.Application.Common.Exceptions;
 using NutriScan.Application.Common.Interfaces;
 using NutriScan.Domain.Entities;
+using NutriScan.Domain.Enums;
 
 namespace NutriScan.Application.Foods;
 
@@ -35,5 +36,6 @@ internal static class FoodAccess
         food.SaturatedFats = fields.SaturatedFats;
         food.Fiber = fields.Fiber;
         food.SaltGrams = fields.SaltGrams;
+        food.Category = fields.Category ?? FoodCategory.Other;
     }
 }
