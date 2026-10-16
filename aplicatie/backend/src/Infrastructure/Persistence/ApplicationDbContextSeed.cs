@@ -23,7 +23,7 @@ public static class ApplicationDbContextSeed
                 Carbohydrates = 0.0,
                 Fats = 2.6,
                 Fiber = 0.0,
-                Sodium = 65.0,
+                SaltGrams = 0.1625, // from 65 mg sodium (salt = sodium × 2.5)
                 IsVerified = true
             },
             new()
@@ -35,7 +35,7 @@ public static class ApplicationDbContextSeed
                 Carbohydrates = 66.3,
                 Fats = 6.9,
                 Fiber = 10.6,
-                Sodium = 2.0,
+                SaltGrams = 0.005, // from 2 mg sodium (salt = sodium × 2.5)
                 IsVerified = true
             },
             new()
@@ -47,7 +47,7 @@ public static class ApplicationDbContextSeed
                 Carbohydrates = 78.0,
                 Fats = 0.9,
                 Fiber = 1.3,
-                Sodium = 1.0,
+                SaltGrams = 0.0025, // from 1 mg sodium (salt = sodium × 2.5)
                 IsVerified = true
             },
             new()
@@ -59,7 +59,7 @@ public static class ApplicationDbContextSeed
                 Carbohydrates = 0.7,
                 Fats = 9.5,
                 Fiber = 0.0,
-                Sodium = 142.0,
+                SaltGrams = 0.355, // from 142 mg sodium (salt = sodium × 2.5)
                 IsVerified = true
             },
             new()
@@ -71,7 +71,7 @@ public static class ApplicationDbContextSeed
                 Carbohydrates = 22.8,
                 Fats = 0.3,
                 Fiber = 2.6,
-                Sodium = 1.0,
+                SaltGrams = 0.0025, // from 1 mg sodium (salt = sodium × 2.5)
                 IsVerified = true
             },
             new()
@@ -83,7 +83,7 @@ public static class ApplicationDbContextSeed
                 Carbohydrates = 0.0,
                 Fats = 13.4,
                 Fiber = 0.0,
-                Sodium = 59.0,
+                SaltGrams = 0.1475, // from 59 mg sodium (salt = sodium × 2.5)
                 IsVerified = true
             },
             new()
@@ -95,7 +95,7 @@ public static class ApplicationDbContextSeed
                 Carbohydrates = 6.6,
                 Fats = 0.4,
                 Fiber = 2.6,
-                Sodium = 33.0,
+                SaltGrams = 0.0825, // from 33 mg sodium (salt = sodium × 2.5)
                 IsVerified = true
             },
             new()
@@ -107,7 +107,7 @@ public static class ApplicationDbContextSeed
                 Carbohydrates = 0.0,
                 Fats = 100.0,
                 Fiber = 0.0,
-                Sodium = 2.0,
+                SaltGrams = 0.005, // from 2 mg sodium (salt = sodium × 2.5)
                 IsVerified = true
             },
             new()
@@ -119,7 +119,7 @@ public static class ApplicationDbContextSeed
                 Carbohydrates = 3.6,
                 Fats = 2.0,
                 Fiber = 0.0,
-                Sodium = 45.0,
+                SaltGrams = 0.1125, // from 45 mg sodium (salt = sodium × 2.5)
                 IsVerified = true
             },
             new()
@@ -131,7 +131,7 @@ public static class ApplicationDbContextSeed
                 Carbohydrates = 21.6,
                 Fats = 49.9,
                 Fiber = 12.5,
-                Sodium = 1.0,
+                SaltGrams = 0.0025, // from 1 mg sodium (salt = sodium × 2.5)
                 IsVerified = true
             }
         };
