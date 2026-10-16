@@ -325,8 +325,14 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                     b.Property<int>("ActivityLevel")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("BirthDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly?>("BirthDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("CaloriesOverride")
+                        .HasColumnType("integer");
+
+                    b.Property<double?>("CarbsGramsOverride")
+                        .HasColumnType("double precision");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
@@ -341,6 +347,9 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(0);
+
+                    b.Property<double?>("FatsGramsOverride")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -368,16 +377,7 @@ namespace NutriScan.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("TargetCalories")
-                        .HasColumnType("integer");
-
-                    b.Property<double>("TargetCarbsGrams")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("TargetFatsGrams")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("TargetProteinsGrams")
+                    b.Property<double?>("ProteinsGramsOverride")
                         .HasColumnType("double precision");
 
                     b.Property<DateTime?>("UpdatedAtUtc")
