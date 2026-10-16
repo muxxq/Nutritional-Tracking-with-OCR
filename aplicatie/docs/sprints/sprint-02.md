@@ -37,7 +37,7 @@ Primul modul al backend-ului real: conturi de utilizator și sesiuni securizate.
 * Primele handlere MediatR reale: `Register`, `Login`, `Refresh`, `Logout`, `GetCurrentUser`, cu validatoare FluentValidation.
 * `PasswordHasherService` (PBKDF2 210k), `JwtTokenService` (HS256), validarea configurării la pornire.
 * `AuthController`, erori ProblemDetails globale, rate limiting, CORS cu origini explicite.
-* Proiecte de test noi: `Infrastructure.UnitTests` și `WebApi.IntegrationTests` (Testcontainers PostgreSQL). **83 de teste automate, toate trec.**
+* Proiecte de test noi: `Infrastructure.UnitTests` și `WebApi.IntegrationTests` (Testcontainers PostgreSQL). **86 de teste automate, toate trec**, inclusiv scenarii de cereri concurente (refresh dublu, parole greșite în paralel).
 
 ### Rularea testelor de integrare
 Necesită un motor de containere. Cu Docker: utilizatorul trebuie să fie în grupul `docker`. Cu Podman rootless:
