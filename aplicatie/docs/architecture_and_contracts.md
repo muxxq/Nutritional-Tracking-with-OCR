@@ -474,3 +474,18 @@ Decizii: [ADR-009](adr/ADR-009-statistics.md). Design: [spec](specs/2026-10-17-s
 * **Starea zilei:** aceeași regulă ca planul (±5% din ținta calorică); `null` la zilele necompletate.
 * **Agregare:** `GROUP BY ConsumedDate` în PostgreSQL, pe indexul `(UserId, ConsumedDate)`.
 
+---
+
+## 13. Scanarea Etichetei (contract backend, OCR stub)
+
+Decizii: [ADR-010](adr/ADR-010-ocr-port-and-stub.md). Design: [spec](specs/2026-10-17-ocr-contract-design.md).
+
+| Metodă și rută | Succes | Erori |
+|---|---|---|
+| `POST /api/scans` (`multipart/form-data`, câmp `file`) | 200 `ScanResultDto` | 400, 401, 413 |
+
+* **Fișier:** JPEG, PNG sau WebP, verificat după semnătura binară; cel mult 10 MB (413 peste). Imaginea nu este stocată.
+* **`ScanResultDto`:** `{ status, message, servingBase, overallConfidence, fields: { calories, proteins, carbohydrates, sugars, fats, saturatedFats, fiber, saltGrams } }`; fiecare câmp este `null` sau `{ value, confidence, needsReview }`. `status` ∈ `processed`, `unavailable`; `servingBase` ∈ `per100g`, `perServing`.
+* **`needsReview`:** `true` sub încrederea 0,80 (FR-05).
+* **Până în Faza 4** răspunsul este mereu `status = "unavailable"` cu un mesaj, iar clientul afișează formularul „Adaugă aliment” gol. Alimentul confirmat se salvează cu `POST /api/foods`.
+
