@@ -28,7 +28,7 @@ Conectarea clientului React la API-ul real și eliminarea datelor mock: o aplica
 ## ✅ Calitate
 * **46 de teste client** (Vitest + Testing Library) pentru: refresh-ul unic în zbor, gărzile de rută, login, onboarding, jurnal, formularul HitL, rețetar, planificator, lista de cumpărături, statistici, temă și deconectare.
 * **CI client** (`.github/workflows/client-ci.yml`): verificarea tipurilor generate față de contract, lint, build, teste.
-* Backend: **562 de teste**, inclusiv testul care compară `openapi.json` cu API-ul real.
+* Backend: **560 de teste** (88 Domain, 14 Infrastructure, 310 Application, 148 de integrare), inclusiv testul care compară `openapi.json` cu API-ul real.
 * Fiecare flux a fost verificat și prin proxy, pe API-ul real cu PostgreSQL (profilul R1 → 1700 kcal; rețeta SRS → 194,5 kcal/porție).
 
 ## ⏭️ Următorii pași
