@@ -4,6 +4,7 @@ import { useSessionBootstrap } from '@/auth/useSessionBootstrap'
 import { AppLayout } from '@/layout/AppLayout'
 import { PlannerPage } from '@/features/planner/PlannerPage'
 import { ShoppingListPage } from '@/features/shopping/ShoppingListPage'
+import { StatisticsPage } from '@/features/stats/StatisticsPage'
 import { RecipesPage } from '@/features/recipes/RecipesPage'
 import { DiaryPage } from '@/features/diary/DiaryPage'
 import { ProfilePage } from '@/features/profile/ProfilePage'
@@ -27,6 +28,7 @@ export function App() {
           <Route path="/planner" element={<PlannerPage />} />
           <Route path="/recipes" element={<RecipesPage />} />
           <Route path="/shopping" element={<ShoppingListPage />} />
+          <Route path="/stats" element={<StatisticsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/onboarding" element={<ProfilePage onboarding />} />
         </Route>
