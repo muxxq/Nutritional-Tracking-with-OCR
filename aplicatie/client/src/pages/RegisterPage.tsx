@@ -2,7 +2,8 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { fieldErrors, problemMessage } from '@/api/problem'
 import { register } from '@/auth/authApi'
-import { AuthLayout, Field, FormError, SubmitButton } from './AuthLayout'
+import { Field, FormError, SubmitButton } from '@/components/ui/form'
+import { AuthLayout } from './AuthLayout'
 
 export function RegisterPage() {
   const navigate = useNavigate()
@@ -20,7 +21,8 @@ export function RegisterPage() {
     setErrors({})
     try {
       await register(form)
-      navigate('/', { replace: true })
+      // A new account has an empty profile: ask for it now, so the targets are personal from day one.
+      navigate('/onboarding', { replace: true })
     } catch (err) {
       const perField = fieldErrors(err)
       setErrors(perField)
