@@ -1,4 +1,4 @@
-import { Flame, Camera, Sun, Moon, LogOut } from 'lucide-react'
+import { Flame, Camera, Sun, Moon, LogOut, UserRound } from 'lucide-react'
 import { NavLink } from 'react-router'
 import { NAV_ITEMS } from '@/layout/navigation'
 
@@ -61,9 +61,14 @@ export function Navbar({
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
-          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300">
-            <span>{userName}</span>
-          </div>
+          <NavLink
+            to="/profile"
+            title="Profil și ținte"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+          >
+            <UserRound className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <span className="hidden lg:inline">{userName}</span>
+          </NavLink>
 
           <button
             onClick={onToggleTheme}

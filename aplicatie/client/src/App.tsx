@@ -3,6 +3,7 @@ import { RedirectIfSignedIn, RequireAuth } from '@/auth/RequireAuth'
 import { useSessionBootstrap } from '@/auth/useSessionBootstrap'
 import { AppLayout } from '@/layout/AppLayout'
 import { DiaryRoute, PlannerRoute, RecipesRoute, ShoppingRoute } from '@/layout/legacyRoutes'
+import { ProfilePage } from '@/features/profile/ProfilePage'
 import { LoginPage } from '@/pages/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 
@@ -23,6 +24,8 @@ export function App() {
           <Route path="/planner" element={<PlannerRoute />} />
           <Route path="/recipes" element={<RecipesRoute />} />
           <Route path="/shopping" element={<ShoppingRoute />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/onboarding" element={<ProfilePage onboarding />} />
         </Route>
       </Route>
 
