@@ -42,3 +42,15 @@ export function formatShortDay(iso: string): { weekday: string; day: string } {
     day: d.toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' }).replace('.', ''),
   }
 }
+
+export const firstOfMonth = (iso: string) => `${iso.slice(0, 8)}01`
+
+export function lastOfMonth(iso: string): string {
+  const d = parseIsoDate(firstOfMonth(iso))
+  return toIsoDate(new Date(d.getFullYear(), d.getMonth() + 1, 0))
+}
+
+export function addMonths(iso: string, months: number): string {
+  const d = parseIsoDate(firstOfMonth(iso))
+  return toIsoDate(new Date(d.getFullYear(), d.getMonth() + months, 1))
+}
