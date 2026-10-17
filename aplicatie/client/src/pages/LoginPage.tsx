@@ -2,7 +2,8 @@ import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
 import { problemMessage } from '@/api/problem'
 import { login } from '@/auth/authApi'
-import { AuthLayout, Field, FormError, SubmitButton } from './AuthLayout'
+import { Field, FormError, SubmitButton } from '@/components/ui/form'
+import { AuthLayout } from './AuthLayout'
 
 const TOO_MANY = 'Prea multe încercări. Încearcă din nou peste un minut.'
 
