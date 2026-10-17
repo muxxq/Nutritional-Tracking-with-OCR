@@ -104,7 +104,7 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
   * [x] Arhitectură frontend: React Router 7, TanStack Query pentru server-state, Zustand pentru sesiune; tipuri generate din contractul OpenAPI salvat în repo (ADR-011, NUT-27).
   * [ ] Înlocuire `mockData.ts` cu apeluri reale către API (client HTTP tipizat, interceptor JWT + refresh automat): clientul tipizat și refresh-ul unic în zbor sunt gata (NUT-46); ecranele trec pe API unul câte unul.
   * [ ] Design System & Layout adaptiv: Dark/Light mode, Desktop split layout vs. Mobile bottom navigation bar.
-  * [ ] Ecrane de Onboarding & Autentificare: Login, Înregistrare, Formular configurare profil fizic și obiective.
+  * [x] Ecrane de Onboarding & Autentificare: Login, Înregistrare, Formular configurare profil fizic și obiective (NUT-29): onboarding imediat după înregistrare, pagina `/profile` cu țintele calculate (BMR, TDEE) și suprascrierea lor manuală.
   * [ ] Ecranul Principal (Dashboard & Jurnal): Inel caloric SVG interactiv, progress bars pentru macro-nutrienți, selector de date, listă mese zilnice.
   * [ ] Formular „Adaugă aliment” (introducere manuală), proiectat pentru reutilizare ca ecran de validare *Human-in-the-Loop* în Faza 4.
   * [ ] Ecrane Rețetar & Planificator Săptămânal: adăugare ingrediente cu căutare instantanee, transfer rapid masă planificată în jurnalul zilei.
