@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using NutriScan.Application.Common.Interfaces;
 using NutriScan.Infrastructure.Common;
 using NutriScan.Infrastructure.Identity;
+using NutriScan.Infrastructure.Ocr;
 using NutriScan.Infrastructure.Persistence;
 
 namespace NutriScan.Infrastructure;
@@ -34,6 +35,9 @@ public static class DependencyInjection
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<IPasswordHasher, PasswordHasherService>();
         services.AddSingleton<ITokenService, JwtTokenService>();
+
+        // OCR: stub until Phase 4, when this line becomes a typed HttpClient with Polly policies (ADR-010).
+        services.AddSingleton<IOcrService, StubOcrService>();
 
         return services;
     }
