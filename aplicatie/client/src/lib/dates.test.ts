@@ -1,0 +1,26 @@
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { addDays, isIsoDate, today } from './dates'
+
+describe('dates', () => {
+  afterEach(() => vi.useRealTimers())
+
+  it('today is the local date, not the UTC one', () => {
+    // Arrange: 00:30 on 18 Oct in Bucharest is still 17 Oct in UTC
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 9, 18, 0, 30))
+
+    // Act & Assert
+    expect(today()).toBe('2026-10-18')
+  })
+
+  it('adds days across month ends', () => {
+    expect(addDays('2026-10-31', 1)).toBe('2026-11-01')
+    expect(addDays('2026-03-01', -1)).toBe('2026-02-28')
+  })
+
+  it('accepts only yyyy-MM-dd', () => {
+    expect(isIsoDate('2026-10-17')).toBe(true)
+    expect(isIsoDate('17.10.2026')).toBe(false)
+    expect(isIsoDate(null)).toBe(false)
+  })
+})

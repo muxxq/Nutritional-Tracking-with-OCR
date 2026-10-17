@@ -26,7 +26,7 @@ function FieldShell({ id, label, error, hint, children }: FieldShellProps) {
 }
 
 export function Field({
-  label, name, type = 'text', value, onChange, error, hint, autoComplete, placeholder, min, max, step,
+  label, name, type = 'text', value, onChange, error, hint, autoComplete, placeholder,
 }: {
   label: string
   name: string
@@ -37,9 +37,6 @@ export function Field({
   hint?: string
   autoComplete?: string
   placeholder?: string
-  min?: number | string
-  max?: number | string
-  step?: number | string
 }) {
   const id = `field-${name}`
   return (
@@ -47,11 +44,10 @@ export function Field({
       <input
         id={id}
         name={name}
-        type={type}
+        // Numbers are typed as text with a decimal keypad: <input type="number"> rejects the decimal comma ("6,9")
+        // that Romanian users type; the forms parse both "," and ".".
+        type={type === 'number' ? 'text' : type}
         value={value}
-        min={min}
-        max={max}
-        step={step}
         inputMode={type === 'number' ? 'decimal' : undefined}
         placeholder={placeholder}
         autoComplete={autoComplete}

@@ -105,8 +105,8 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
   * [ ] Înlocuire `mockData.ts` cu apeluri reale către API (client HTTP tipizat, interceptor JWT + refresh automat): clientul tipizat și refresh-ul unic în zbor sunt gata (NUT-46); ecranele trec pe API unul câte unul.
   * [ ] Design System & Layout adaptiv: Dark/Light mode, Desktop split layout vs. Mobile bottom navigation bar.
   * [x] Ecrane de Onboarding & Autentificare: Login, Înregistrare, Formular configurare profil fizic și obiective (NUT-29): onboarding imediat după înregistrare, pagina `/profile` cu țintele calculate (BMR, TDEE) și suprascrierea lor manuală.
-  * [ ] Ecranul Principal (Dashboard & Jurnal): Inel caloric SVG interactiv, progress bars pentru macro-nutrienți, selector de date, listă mese zilnice.
-  * [ ] Formular „Adaugă aliment” (introducere manuală), proiectat pentru reutilizare ca ecran de validare *Human-in-the-Loop* în Faza 4.
+  * [x] Ecranul Principal (Dashboard & Jurnal): Inel caloric SVG interactiv, progress bars pentru macro-nutrienți, selector de date, listă mese zilnice (NUT-30, ADR-012): pe API-ul real, cu adăugare, editare, ștergere și ziua în URL.
+  * [x] Formular „Adaugă aliment” (introducere manuală), proiectat pentru reutilizare ca ecran de validare *Human-in-the-Loop* în Faza 4 (NUT-47): câmpurile cu `needsReview` blochează salvarea până la confirmare (FR-05); scanarea trece prin `POST /api/scans` și, cât timp OCR-ul e stub, deschide formularul gol (NFR-12).
   * [ ] Ecrane Rețetar & Planificator Săptămânal: adăugare ingrediente cu căutare instantanee, transfer rapid masă planificată în jurnalul zilei.
   * [ ] Ecranul Listă de Cumpărături: articole agregate, marcare interactivă checkbox, ștergere elemente bifate.
   * [ ] Configurare PWA: `manifest.json`, iconițe adaptive, Service Worker pentru caching resurse statice și funcționare fără conexiune pentru vizualizare catalog.

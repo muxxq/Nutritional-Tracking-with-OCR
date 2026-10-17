@@ -1,5 +1,4 @@
 import { useOutletContext } from 'react-router'
-import { DiaryView } from '@/components/DiaryView'
 import { MealPlannerView } from '@/components/MealPlannerView'
 import { RecipesView } from '@/components/RecipesView'
 import { ShoppingListView } from '@/components/ShoppingListView'
@@ -7,23 +6,9 @@ import type { MockData } from '@/data/useMockData'
 
 interface LayoutContext {
   mock: MockData
-  openScanModal: () => void
 }
 
 // Transitional: the screens below still run on mock data and are replaced one by one by API-backed pages.
-
-export function DiaryRoute() {
-  const { mock, openScanModal } = useOutletContext<LayoutContext>()
-  return (
-    <DiaryView
-      entries={mock.diaryEntries}
-      foodCatalog={mock.foodCatalog}
-      onAddEntry={mock.addDiaryEntry}
-      onDeleteEntry={mock.deleteDiaryEntry}
-      onOpenScanModal={openScanModal}
-    />
-  )
-}
 
 export function PlannerRoute() {
   const { mock } = useOutletContext<LayoutContext>()
