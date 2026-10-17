@@ -73,10 +73,10 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
 
 ---
 
-### 🔹 Faza 2: Backend Core API & Business Logic (Săpt. 3 – 7)
+### 🔹 Faza 2: Backend Core API & Business Logic (Săpt. 3 – 7) — ✅ Software finalizat
 > **Obiectiv principal:** Implementarea logicii de afaceri conform Clean Architecture & CQRS, securitate JWT și agregări nutriționale. Alimentele se introduc manual.
 
-* [ ] **Software:**
+* [x] **Software:**
   * [x] Sistem de autentificare & autorizare: JWT Access Token (durată scurtă) + Refresh Token rotativ salvat securizat în PostgreSQL.
   * [x] Hashing parole folosind PBKDF2 / Argon2id; prevenire atacuri Brute Force.
   * [x] Modul Profil Utilizator: calcul automat rată metabolică bazală (BMR) și necesar caloric zilnic (TDEE) prin formula Mifflin-St Jeor; distribuție macronutrienți conform obiectivului (slăbire, menținere, hipertrofie).
@@ -87,11 +87,13 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
   * [x] Modul Rețetar & Planificator Săptămânal: agregare ingrediente, recalcul nutrienți per porție, planificare pe zile. **Rețetar** (FR-09: CRUD cu arhivare, valori totale și per porție calculate la citire, rețete în jurnal în porții, ADR-006); **planificator** (FR-10, FR-11: mese planificate din alimente și rețete, starea zilei față de țintă ±5%, „Am mâncat asta” cu snapshot în jurnal, ADR-007).
   * [x] Generator automat Listă de Cumpărături (agregare cantități identice din mesele planificate): FR-12, agregare după aliment cu scalarea rețetelor la porțiile planificate, categorii pe aliment, bifare și articole manuale (ADR-008).
   * [x] Contract `IOcrService` în Application cu implementare stub în Infrastructure (pregătire pentru Faza 4): portul vorbește limbajul formularului de aliment, stub-ul întoarce „OCR indisponibil” (calea NFR-12), iar `POST /api/scans` validează fișierul după semnătura binară și dimensiune (400/413) (ADR-010).
-  * [ ] Teste unitare (xUnit, FluentAssertions, Moq) pentru Handlers & Domain Rules; Teste de integrare cu Testcontainers Postgres.
+  * [x] Teste unitare (xUnit, FluentAssertions, Moq) pentru Handlers & Domain Rules; Teste de integrare cu Testcontainers Postgres: 558 de teste; acoperire din teste unitare 87,8% Domain și 95,9% Application (Coverlet).
+  * [x] CI GitHub Actions (NFR-17): build și toate testele la fiecare push, cu prag de acoperire de 70% pentru Domain și Application; Swagger documentat integral din comentariile XML, verificat de un test.
+  * Amânat conștient: catalogul global administrat (FR-13, P3) și istoricul țintelor nutriționale.
 * [ ] **Academic / Documentație:**
   * [ ] Redactare **Capitolul 4 (Arhitectura și Proiectarea Sistemului)**: Diagrame de secvență pentru fluxul de autentificare și jurnal, schema CQRS, decizii de design patterns.
   * [ ] Redactare **Capitolul 5.1 (Implementarea Backend-ului ASP.NET Core)**.
-* 🏁 **Milestone M2:** *API-ul acoperă toate cerințele funcționale P1 (fără OCR), documentat 100% în Swagger, acoperire teste unitare ≥ 70%.*
+* 🏁 **Milestone M2 (atins pe partea software, 17.10.2026):** *API-ul acoperă toate cerințele funcționale P1 (fără OCR), documentat 100% în Swagger, acoperire teste unitare ≥ 70%.*
 
 ---
 
@@ -190,7 +192,7 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
 | **Cap. 2** | Stadiul Actual al Domeniului | Analiză comparativă (MyFitnessPal, Yuka etc.) | 📝 În plan |
 | **Cap. 3** | Analiza Cerințelor și Proiectarea Conceptuală | Document SRS IEEE 830, Diagrame Use Case & ERD | ✅ SRS + diagrame finalizate |
 | **Cap. 4** | Arhitectura Generală a Sistemului | Clean Architecture, CQRS, Diagrame Componente/Secvență | 📝 În plan |
-| **Cap. 5.1** | Implementare: Backend API (.NET 8) | Cod sursă `aplicatie/backend/`, MediatR, EF Core | ⏳ Următorul (Faza 2) |
+| **Cap. 5.1** | Implementare: Backend API (.NET 8) | Cod sursă `aplicatie/backend/`, MediatR, EF Core | 🟡 Cod finalizat, redactare în curs |
 | **Cap. 5.2** | Implementare: Serviciul Computer Vision (OCR) | Cod sursă `aplicatie/ocr-service/`, OpenCV, EasyOCR | 📝 Faza 4 (schelet existent) |
 | **Cap. 5.3** | Implementare: Interfața Client PWA (React) | Cod sursă `aplicatie/client/`, Tailwind, shadcn/ui | 🟡 Ecrane pe date mock (Faza 3) |
 | **Cap. 6** | Testare, Verificare și Evaluare Experimentală | Teste xUnit/Pytest/Playwright, Benchmarks OCR & Locust | 📝 În plan |
@@ -210,9 +212,8 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
 
 ---
 
-## 🚦 Pasul Următor (Sprint 2 — Faza 2: Backend Core)
-Gata în Faza 2: autentificare (JWT + refresh token rotativ), profil și ținte, catalog de alimente, jurnal alimentar, rețetar, planificator săptămânal, listă de cumpărături (ADR-002 – ADR-008).
-1. **Contract `IOcrService`** cu implementare stub în Infrastructure (pregătire pentru Faza 4).
-2. **Raport de acoperire a testelor** (Milestone M2 cere ≥ 70%) și statisticile săptămânale/lunare (FR-08), dacă intră în Faza 2.
-3. **Faza 3:** clientul integrat pe API-ul real (rutare, TanStack Query, interceptor JWT, înlocuirea `mockData.ts`).
-4. **În paralel**: colectarea fotografiilor de etichete pentru dataset-ul OCR.
+## 🚦 Pasul Următor (Sprint 3 — Faza 3: Client Integrat)
+Backend-ul din Faza 2 este gata: autentificare, profil și ținte, catalog, jurnal, statistici, rețetar, planificator, listă de cumpărături, contractul de scanare cu OCR stub (ADR-002 – ADR-010), CI cu prag de acoperire.
+1. **Faza 3:** clientul integrat pe API-ul real (rutare, TanStack Query, interceptor JWT cu refresh, înlocuirea `mockData.ts`), inclusiv ecranul de scanare pe calea „OCR indisponibil”.
+2. **Academic:** Capitolul 4 (diagrame de secvență, schema CQRS) și Capitolul 5.1, din ADR-urile 002–010.
+3. **În paralel**: colectarea fotografiilor de etichete pentru dataset-ul OCR (Faza 4 începe cel târziu în săptămâna 11).

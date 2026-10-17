@@ -1,7 +1,7 @@
 # 🏃‍♂️ Sprint 2 — Backend Core: Autentificare
 **Faza din roadmap:** Faza 2: Backend core (săptămânile 3–7)
 **Branch:** `feature/NUT-auth-jwt`
-**Status:** 🟡 În desfășurare (autentificarea, profilul, catalogul și jurnalul sunt finalizate în backend)
+**Status:** ✅ Backend finalizat (17.10.2026): toate cerințele funcționale P1 fără OCR, contractul OCR cu stub, CI cu prag de acoperire
 
 ---
 
@@ -108,6 +108,48 @@ dotnet test
 
 **Realizări:** `DiaryQuantity` (grame sau porții), snapshot nerotunjit pe `DiaryEntry`, migrarea `DiaryServings`, comenzile `AddDiaryEntry` / `UpdateDiaryEntry` / `DeleteDiaryEntry`, interogările `GetDiaryDay` și `GetRecentFoods`, `DiaryController`. Marcajele de timp de audit vin acum din `IDateTimeProvider`. **329 de teste backend, toate trec.**
 
-## ⏭️ Următorii pași din sprint
-* Contractul `IOcrService` cu implementare stub; rețetarul și planificatorul.
-* Ecranele de login, înregistrare și onboarding din client (Faza 3), cu un singur refresh în zbor.
+## 📋 Story: Statistici agregate (FR-08) — ✅ Backend finalizat
+
+> Ca utilizator NutriScan, vreau să văd cum am mâncat într-o săptămână sau într-o lună, ca să înțeleg dacă îmi respect obiectivul.
+
+**Documente:** [spec](../specs/2026-10-17-statistics-design.md) · [ADR-009](../adr/ADR-009-statistics.md)
+
+| AC | Descriere | Acoperit de |
+|---|---|---|
+| AC1 | Toate zilele intervalului, cu `isLogged` | `GetStatistics_Week_ReturnsEveryDayAndAveragesLoggedDaysOnly`, `Week_AveragesLoggedDaysAndCountsStatuses` |
+| AC2 | Media doar pe zilele completate | `Summarize_ThreeLoggedDays_AveragesOnlyThoseDays` |
+| AC3 | Abaterea cu semn și în procente | `Summarize_AboveTarget_DeviationIsSignedAndInPercent`, `GetStatistics_DeviationIsAverageMinusDisplayedTarget` |
+| AC4 | Zile sub / în / peste țintă (±5%) | `Summarize_CountsDaysByCalorieStatus` |
+| AC5 | Fără zile completate → `null`, nu eroare | `Summarize_NoLoggedDays_HasNoAverageOrDeviation`, `NothingLogged_Returns200WithNulls` |
+| AC6 | Intrările-rețetă contează | `GetStatistics_CountsRecipeEntries` |
+| AC7 | Interval invalid → 400 | `Validator_RangeLength`, `Validator_DatesOutOfBounds_AreRejected`, `InvalidRange_Returns400` |
+| AC8 | Izolare și token | `OtherUsersEntries_AreNotCounted`, `WithoutToken_Returns401` |
+
+**Realizări:** `NutritionStatistics` (funcție pură în Domain), `GetStatisticsQuery` cu `GROUP BY` în PostgreSQL, `StatisticsController`.
+
+## 📋 Story: Contractul OCR și endpoint-ul de scanare — ✅ Backend finalizat (stub)
+
+> Ca utilizator NutriScan, vreau să trimit fotografia unei etichete și să primesc formularul precompletat; dacă recunoașterea nu e disponibilă, vreau să completez manual, fără eroare.
+
+**Documente:** [spec](../specs/2026-10-17-ocr-contract-design.md) · [ADR-010](../adr/ADR-010-ocr-port-and-stub.md)
+
+| AC | Descriere | Acoperit de |
+|---|---|---|
+| AC1–AC2 | Imagine validă → 200 `unavailable` cât timp OCR-ul e stub | `ValidImage_WhileOcrIsStubbed_Returns200Unavailable`, `ReadLabel_AlwaysReportsUnavailable` |
+| AC3 | `needsReview` sub 0,80 | `Handle_Processed_FlagsFieldsBelowThreshold` |
+| AC4 | Tip verificat după semnătura binară | `Detect_KnownSignatures`, `TextRenamedAsJpeg_Returns400` |
+| AC5 | Gol → 400, peste 10 MB → 413 | `NoFile_Returns400`, `OverTenMegabytes_Returns413`, `Validate_OverTenMegabytes_IsInvalid` |
+| AC7 | Token obligatoriu | `WithoutToken_Returns401` |
+
+**Realizări:** portul `IOcrService`, `ImageFormatDetector`, `ScanLabelCommand`, `StubOcrService`, `ScansController`, `PayloadTooLargeAttribute`.
+
+## 📋 Calitate: CI, acoperire și Swagger — ✅ Finalizat
+
+* **CI (NFR-17):** `.github/workflows/backend-ci.yml` rulează build-ul, testele unitare și testele de integrare (PostgreSQL prin Testcontainers) la fiecare push care atinge backend-ul.
+* **Acoperire (Coverlet, liniile din migrări excluse):** testele unitare acoperă **87,8% din Domain** și **95,9% din Application** (prag NFR-17 și M2: 70%, impus în CI de `scripts/coverage_report.py`). Cu testele de integrare: Application 99,7%, Infrastructure 95,6%, WebApi 89,3%.
+* **Swagger:** comentariile XML apar în documentație; `SwaggerTests` verifică automat că fiecare endpoint are descriere.
+* **558 de teste backend, toate trec** (88 Domain, 14 Infrastructure, 310 Application, 146 de integrare).
+
+## ⏭️ Următorii pași
+* Faza 3: clientul integrat pe API-ul real (rutare, TanStack Query, interceptor JWT cu un singur refresh în zbor, înlocuirea `mockData.ts`), inclusiv ecranul de scanare pe calea `unavailable`.
+* Faza 4 (cel târziu în săptămâna 11): adaptorul `OcrServiceClient` cu Polly în locul `StubOcrService`.
