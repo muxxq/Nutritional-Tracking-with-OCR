@@ -56,3 +56,6 @@ postgres_data/
 # Unelte AI / analiză locală
 .ua/
 **/.superpowers/
+
+# Test coverage reports (Coverlet / CI)
+aplicatie/backend/coverage/
