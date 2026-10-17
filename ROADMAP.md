@@ -97,10 +97,10 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
 
 ---
 
-### 🔹 Faza 3: Client PWA Integrat & Experiență Utilizator (Săpt. 7 – 11)
+### 🔹 Faza 3: Client PWA Integrat & Experiență Utilizator (Săpt. 7 – 11) — ✅ Software finalizat
 > **Obiectiv principal:** Conectarea clientului React la API-ul real, înlocuirea datelor mock și livrarea unei aplicații full-stack funcționale cu introducere manuală.
 
-* [ ] **Software:**
+* [x] **Software:**
   * [x] Arhitectură frontend: React Router 7, TanStack Query pentru server-state, Zustand pentru sesiune; tipuri generate din contractul OpenAPI salvat în repo (ADR-011, NUT-27).
   * [x] Înlocuire `mockData.ts` cu apeluri reale către API (client HTTP tipizat, interceptor JWT + refresh automat) (NUT-46): toate ecranele rulează pe API-ul real; `mockData.ts` a fost șters.
   * [x] Design System & Layout adaptiv: Dark/Light mode, Desktop split layout vs. Mobile bottom navigation bar (NUT-28, ADR-013): tema urmează alegerea salvată sau preferința sistemului, fără flash la pornire; varianta `dark:` corectată pentru Tailwind v4.
@@ -114,7 +114,7 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
 * [ ] **Academic / Documentație:**
   * [ ] Redactare **Capitolul 5.3 (Dezvoltarea Interfeței cu Utilizatorul și Arhitectura Client PWA)**.
   * [ ] Capturi de ecran comparative Desktop vs. Mobile.
-* 🏁 **Milestone M3:** *Aplicație full-stack funcțională (fără OCR): înregistrare, profil, jurnal, rețete, planificator și listă de cumpărături pe date reale; instalabilă ca PWA pe telefon.*
+* 🏁 **Milestone M3 (atins pe partea software, 17.10.2026; instalarea pe iPhone de verificat pe dispozitiv):** *Aplicație full-stack funcțională (fără OCR): înregistrare, profil, jurnal, rețete, planificator și listă de cumpărături pe date reale; instalabilă ca PWA pe telefon.*
 
 ---
 
@@ -195,7 +195,7 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
 | **Cap. 4** | Arhitectura Generală a Sistemului | Clean Architecture, CQRS, Diagrame Componente/Secvență | 📝 În plan |
 | **Cap. 5.1** | Implementare: Backend API (.NET 8) | Cod sursă `aplicatie/backend/`, MediatR, EF Core | 🟡 Cod finalizat, redactare în curs |
 | **Cap. 5.2** | Implementare: Serviciul Computer Vision (OCR) | Cod sursă `aplicatie/ocr-service/`, OpenCV, EasyOCR | 📝 Faza 4 (schelet existent) |
-| **Cap. 5.3** | Implementare: Interfața Client PWA (React) | Cod sursă `aplicatie/client/`, Tailwind, shadcn/ui | 🟡 Ecrane pe date mock (Faza 3) |
+| **Cap. 5.3** | Implementare: Interfața Client PWA (React) | Cod sursă `aplicatie/client/`, Tailwind, TanStack Query | 🟡 Cod finalizat pe API-ul real, redactare în curs |
 | **Cap. 6** | Testare, Verificare și Evaluare Experimentală | Teste xUnit/Pytest/Playwright, Benchmarks OCR & Locust | 📝 În plan |
 | **Cap. 7** | Concluzii, Contribuții Proprii și Perspective | Raport final, limitări asumate, dezvoltări viitoare | 📝 În plan |
 
@@ -213,8 +213,8 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
 
 ---
 
-## 🚦 Pasul Următor (Sprint 3 — Faza 3: Client Integrat)
-Backend-ul din Faza 2 este gata: autentificare, profil și ținte, catalog, jurnal, statistici, rețetar, planificator, listă de cumpărături, contractul de scanare cu OCR stub (ADR-002 – ADR-010), CI cu prag de acoperire.
-1. **Faza 3:** clientul integrat pe API-ul real (rutare, TanStack Query, interceptor JWT cu refresh, înlocuirea `mockData.ts`), inclusiv ecranul de scanare pe calea „OCR indisponibil”.
-2. **Academic:** Capitolul 4 (diagrame de secvență, schema CQRS) și Capitolul 5.1, din ADR-urile 002–010.
-3. **În paralel**: colectarea fotografiilor de etichete pentru dataset-ul OCR (Faza 4 începe cel târziu în săptămâna 11).
+## 🚦 Pasul Următor (Sprint 4 — Faza 4: OCR)
+Fazele 2 și 3 sunt gata pe partea software: API-ul complet (ADR-002 – ADR-010) și clientul PWA pe date reale (ADR-011 – ADR-013), fără date mock.
+1. **Dataset-ul de etichete (NUT-13), neînceput:** fotografiile trebuie strânse acum (≥ 100), înaintea pipeline-ului OCR.
+2. **Faza 4:** preprocesare OpenCV, motoare OCR, parser, scor de încredere; apoi adaptorul `OcrServiceClient` cu Polly în locul stub-ului și ecranul de scanare cu cameră.
+3. **Academic:** Capitolele 4, 5.1 și 5.3, din ADR-uri; capturi Desktop vs. Mobile.
