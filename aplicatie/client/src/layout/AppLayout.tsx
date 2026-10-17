@@ -17,7 +17,7 @@ export function AppLayout() {
   const user = useSession((s) => s.user)
   const [darkMode, setDarkMode] = useState(false)
   const [isScanModalOpen, setIsScanModalOpen] = useState(false)
-  const mock = useMockData(() => navigate('/shopping'))
+  const mock = useMockData()
 
   const toggleTheme = () => {
     const nextMode = !darkMode
