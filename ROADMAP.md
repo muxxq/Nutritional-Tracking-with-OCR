@@ -86,7 +86,7 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
   * [x] Reguli de validare energetică (avertisment dacă diferența dintre calorii și formula `4P + 4C + 9G` > 15%): implementată ca avertisment în Domain (`EnergyCheck`), nu ca eroare `FluentValidation`, pentru că fibrele, alcoolul și poliolii pot explica legitim diferența.
   * [x] Modul Rețetar & Planificator Săptămânal: agregare ingrediente, recalcul nutrienți per porție, planificare pe zile. **Rețetar** (FR-09: CRUD cu arhivare, valori totale și per porție calculate la citire, rețete în jurnal în porții, ADR-006); **planificator** (FR-10, FR-11: mese planificate din alimente și rețete, starea zilei față de țintă ±5%, „Am mâncat asta” cu snapshot în jurnal, ADR-007).
   * [x] Generator automat Listă de Cumpărături (agregare cantități identice din mesele planificate): FR-12, agregare după aliment cu scalarea rețetelor la porțiile planificate, categorii pe aliment, bifare și articole manuale (ADR-008).
-  * [ ] Contract `IOcrService` în Application cu implementare stub în Infrastructure (pregătire pentru Faza 4).
+  * [x] Contract `IOcrService` în Application cu implementare stub în Infrastructure (pregătire pentru Faza 4): portul vorbește limbajul formularului de aliment, stub-ul întoarce „OCR indisponibil” (calea NFR-12), iar `POST /api/scans` validează fișierul după semnătura binară și dimensiune (400/413) (ADR-010).
   * [ ] Teste unitare (xUnit, FluentAssertions, Moq) pentru Handlers & Domain Rules; Teste de integrare cu Testcontainers Postgres.
 * [ ] **Academic / Documentație:**
   * [ ] Redactare **Capitolul 4 (Arhitectura și Proiectarea Sistemului)**: Diagrame de secvență pentru fluxul de autentificare și jurnal, schema CQRS, decizii de design patterns.
