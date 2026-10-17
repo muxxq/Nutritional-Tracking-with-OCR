@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* dark: follows the .dark class on <html> (the theme toggle), not only the OS setting (ADR-013) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   html {
     color-scheme: light;

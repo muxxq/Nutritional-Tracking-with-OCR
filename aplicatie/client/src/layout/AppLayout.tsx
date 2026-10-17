@@ -7,6 +7,7 @@ import { useSession } from '@/auth/session'
 import { AddEntryDialog } from '@/features/diary/AddEntryDialog'
 import { suggestedMeal } from '@/features/diary/labels'
 import { today } from '@/lib/dates'
+import { useTheme } from '@/lib/theme'
 import { NAV_ITEMS } from './navigation'
 
 /** The signed-in shell: top bar, the current screen, the scan dialog and the mobile bottom bar. */
@@ -14,14 +15,8 @@ export function AppLayout() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const user = useSession((s) => s.user)
-  const [darkMode, setDarkMode] = useState(false)
+  const { theme, toggle: toggleTheme } = useTheme()
   const [isScanModalOpen, setIsScanModalOpen] = useState(false)
-
-  const toggleTheme = () => {
-    const nextMode = !darkMode
-    setDarkMode(nextMode)
-    document.documentElement.classList.toggle('dark', nextMode)
-  }
 
   const handleLogout = async () => {
     await logout()
@@ -33,7 +28,7 @@ export function AppLayout() {
   return (
     <div className="min-h-screen flex flex-col transition-colors duration-200">
       <Navbar
-        darkMode={darkMode}
+        darkMode={theme === 'dark'}
         onToggleTheme={toggleTheme}
         userName={user ? `${user.firstName} ${user.lastName}` : ''}
         onOpenScanModal={() => setIsScanModalOpen(true)}
