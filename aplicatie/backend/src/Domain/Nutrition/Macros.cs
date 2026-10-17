@@ -14,6 +14,9 @@ public sealed record Macros(double Calories, double Proteins, double Carbs, doub
     public static Macros operator +(Macros a, Macros b) =>
         new(a.Calories + b.Calories, a.Proteins + b.Proteins, a.Carbs + b.Carbs, a.Fats + b.Fats);
 
+    public static Macros operator -(Macros a, Macros b) =>
+        new(a.Calories - b.Calories, a.Proteins - b.Proteins, a.Carbs - b.Carbs, a.Fats - b.Fats);
+
     public static Macros operator *(Macros m, double factor) =>
         new(m.Calories * factor, m.Proteins * factor, m.Carbs * factor, m.Fats * factor);
 
