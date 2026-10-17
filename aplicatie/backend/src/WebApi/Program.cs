@@ -93,6 +93,12 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 
+    // Endpoint summaries and DTO descriptions from the XML comments (WebApi and Application)
+    foreach (var assembly in new[] { typeof(Program).Assembly, typeof(NutriScan.Application.DependencyInjection).Assembly })
+    {
+        c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{assembly.GetName().Name}.xml"));
+    }
+
     // JWT Security in Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
