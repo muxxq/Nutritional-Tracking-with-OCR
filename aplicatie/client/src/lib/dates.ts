@@ -28,3 +28,17 @@ export function formatDay(iso: string): string {
   const long = parseIsoDate(iso).toLocaleDateString('ro-RO', { weekday: 'long', day: 'numeric', month: 'long' })
   return relative ? `${relative}, ${long}` : long.charAt(0).toUpperCase() + long.slice(1)
 }
+
+/** The Monday of the week containing `iso` (weeks start on Monday in Romania). */
+export function mondayOf(iso: string): string {
+  const d = parseIsoDate(iso)
+  return addDays(iso, -((d.getDay() + 6) % 7))
+}
+
+export function formatShortDay(iso: string): { weekday: string; day: string } {
+  const d = parseIsoDate(iso)
+  return {
+    weekday: d.toLocaleDateString('ro-RO', { weekday: 'short' }).replace('.', ''),
+    day: d.toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' }).replace('.', ''),
+  }
+}
