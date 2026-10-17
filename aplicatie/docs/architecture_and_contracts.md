@@ -489,3 +489,15 @@ Decizii: [ADR-010](adr/ADR-010-ocr-port-and-stub.md). Design: [spec](specs/2026-
 * **`needsReview`:** `true` sub încrederea 0,80 (FR-05).
 * **Până în Faza 4** răspunsul este mereu `status = "unavailable"` cu un mesaj, iar clientul afișează formularul „Adaugă aliment” gol. Alimentul confirmat se salvează cu `POST /api/foods`.
 
+---
+
+## 14. Clientul PWA: Arhitectură
+
+Decizii: [ADR-011](adr/ADR-011-client-architecture.md).
+
+* **Contract:** `backend/openapi.json` (verificat de `SwaggerTests`) → `npm run api:types` → `client/src/api/schema.d.ts` → `api` (`openapi-fetch`), tipizat pe rute, parametri și corpuri.
+* **Stare:** date de la server în TanStack Query; sesiunea (access token, utilizator) în Zustand, doar în memorie.
+* **Autentificare:** `authFetch` adaugă `Authorization: Bearer`; la 401 face un singur `POST /api/auth/refresh` pentru toate cererile concurente și le reia o dată; la eșec, sesiunea se închide. La pornire, un refresh restaurează sesiunea din cookie.
+* **Rute:** `/login`, `/register` (redirecționează un utilizator autentificat), apoi, protejate de `RequireAuth`: `/diary`, `/planner`, `/recipes`, `/shopping`.
+* **Dezvoltare:** Vite face proxy pentru `/api` către `VITE_API_PROXY_TARGET` (implicit `http://localhost:5000`; în Docker, `http://backend:8080`).
+
