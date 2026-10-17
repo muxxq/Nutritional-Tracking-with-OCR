@@ -1,4 +1,4 @@
-import { BookOpen, CalendarDays, ShoppingCart, UtensilsCrossed, type LucideIcon } from 'lucide-react'
+import { BarChart3, BookOpen, CalendarDays, ShoppingCart, UtensilsCrossed, type LucideIcon } from 'lucide-react'
 
 export interface NavItem {
   to: string
@@ -13,4 +13,5 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/planner', label: 'Planificator Mese', shortLabel: 'Planificator', icon: CalendarDays },
   { to: '/recipes', label: 'Rețetar & Alimente', shortLabel: 'Rețete', icon: UtensilsCrossed },
   { to: '/shopping', label: 'Cumpărături', shortLabel: 'Cumpărături', icon: ShoppingCart },
+  { to: '/stats', label: 'Statistici', shortLabel: 'Statistici', icon: BarChart3 },
 ]
