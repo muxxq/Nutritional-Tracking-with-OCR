@@ -1,5 +1,6 @@
 import { api } from '@/api/client'
 import type { Schemas } from '@/api/types'
+import { unwrap } from '@/api/unwrap'
 import { useSession } from './session'
 
 export type LoginRequest = Schemas['LoginRequest']
@@ -7,21 +8,13 @@ export type RegisterRequest = Schemas['RegisterRequest']
 
 /** Throws the ProblemDetails body on failure, so callers can show the API's message. */
 export async function login(body: LoginRequest) {
-  const { data, error, response } = await api.POST('/api/auth/login', { body })
-  if (!data) {
-    // The status travels with the body: a 429 from the rate limiter has no body at all.
-    throw { ...(error as object), status: response.status }
-  }
+  const data = unwrap(await api.POST('/api/auth/login', { body }))
   useSession.getState().signIn(data)
   return data
 }
 
 export async function register(body: RegisterRequest) {
-  const { data, error, response } = await api.POST('/api/auth/register', { body })
-  if (!data) {
-    // The status travels with the body: a 429 from the rate limiter has no body at all.
-    throw { ...(error as object), status: response.status }
-  }
+  const data = unwrap(await api.POST('/api/auth/register', { body }))
   useSession.getState().signIn(data)
   return data
 }
