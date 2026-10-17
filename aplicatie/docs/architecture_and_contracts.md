@@ -457,3 +457,20 @@ Decizii: [ADR-008](adr/ADR-008-shopping-list.md). Design: [spec](specs/2026-10-1
 * **Articol manual:** `{ name, quantity?, category? }`; nume 1–200 caractere, cantitate text ≤ 50. **Bifare:** `{ isPurchased }`, obligatoriu.
 * **`ShoppingListItemDto`:** `{ id, name, quantityGrams, quantityText, category, isPurchased, isManual, foodId }`; `quantityGrams` rotunjit în sus la gram întreg (33,3 → 34), `null` la articolele manuale.
 * **`ShoppingListDto`:** `{ categories[]: { category, items[] }, totalCount, purchasedCount }`; doar categoriile cu articole, în ordinea raioanelor, articolele după nume.
+
+---
+
+## 12. Statistici (FR-08)
+
+Decizii: [ADR-009](adr/ADR-009-statistics.md). Design: [spec](specs/2026-10-17-statistics-design.md).
+
+| Metodă și rută | Succes | Erori |
+|---|---|---|
+| `GET /api/stats?from=yyyy-MM-dd&to=yyyy-MM-dd` | 200 `StatisticsDto` | 400, 401 |
+
+* **Interval:** cel mult 366 de zile, `from ≤ to`, date între 01.01.2000 și azi + 366. Clientul alege săptămâna sau luna.
+* **`StatisticsDto`:** `{ from, to, totalDays, loggedDays, targets, average, deviation, caloriesDeviationPercent, statusCounts: { under, within, over }, days[]: { date, isLogged, totals, status }, isProfileComplete }`.
+* **Media** se face doar pe zilele cu cel puțin o intrare; `average`, `deviation` și `caloriesDeviationPercent` sunt `null` dacă nu există niciuna. `deviation = average − targets`, din valorile afișate.
+* **Starea zilei:** aceeași regulă ca planul (±5% din ținta calorică); `null` la zilele necompletate.
+* **Agregare:** `GROUP BY ConsumedDate` în PostgreSQL, pe indexul `(UserId, ConsumedDate)`.
+
