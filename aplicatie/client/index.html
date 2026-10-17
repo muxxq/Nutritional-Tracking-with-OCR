@@ -1,10 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="ro">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>client</title>
+    <title>NutriScan</title>
+    <meta name="description" content="Monitorizare nutrițională cu scanarea etichetelor" />
+    <script>
+      // Applied before the first paint, so a dark-theme user never sees a white flash. Same rule as src/lib/theme.ts.
+      try {
+        var stored = localStorage.getItem('nutriscan-theme')
+        var dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
+        document.documentElement.classList.toggle('dark', dark)
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
