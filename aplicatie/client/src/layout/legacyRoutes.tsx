@@ -1,6 +1,5 @@
 import { useOutletContext } from 'react-router'
 import { MealPlannerView } from '@/components/MealPlannerView'
-import { RecipesView } from '@/components/RecipesView'
 import { ShoppingListView } from '@/components/ShoppingListView'
 import type { MockData } from '@/data/useMockData'
 
@@ -19,18 +18,6 @@ export function PlannerRoute() {
       onAddPlannedMeal={mock.addPlannedMeal}
       onTransferToDiary={mock.transferPlannedMealToDiary}
       onGenerateShoppingList={mock.generateShoppingListFromPlanner}
-    />
-  )
-}
-
-export function RecipesRoute() {
-  const { mock } = useOutletContext<LayoutContext>()
-  return (
-    <RecipesView
-      recipes={mock.recipes}
-      foodCatalog={mock.foodCatalog}
-      onCreateRecipe={mock.createRecipe}
-      onAddFoodToDiary={(food, grams) => mock.addDiaryEntry('lunch', food, grams)}
     />
   )
 }
