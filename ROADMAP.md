@@ -103,14 +103,14 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
 * [ ] **Software:**
   * [x] Arhitectură frontend: React Router 7, TanStack Query pentru server-state, Zustand pentru sesiune; tipuri generate din contractul OpenAPI salvat în repo (ADR-011, NUT-27).
   * [x] Înlocuire `mockData.ts` cu apeluri reale către API (client HTTP tipizat, interceptor JWT + refresh automat) (NUT-46): toate ecranele rulează pe API-ul real; `mockData.ts` a fost șters.
-  * [ ] Design System & Layout adaptiv: Dark/Light mode, Desktop split layout vs. Mobile bottom navigation bar.
+  * [x] Design System & Layout adaptiv: Dark/Light mode, Desktop split layout vs. Mobile bottom navigation bar (NUT-28, ADR-013): tema urmează alegerea salvată sau preferința sistemului, fără flash la pornire; varianta `dark:` corectată pentru Tailwind v4.
   * [x] Ecrane de Onboarding & Autentificare: Login, Înregistrare, Formular configurare profil fizic și obiective (NUT-29): onboarding imediat după înregistrare, pagina `/profile` cu țintele calculate (BMR, TDEE) și suprascrierea lor manuală.
   * [x] Ecranul Principal (Dashboard & Jurnal): Inel caloric SVG interactiv, progress bars pentru macro-nutrienți, selector de date, listă mese zilnice (NUT-30, ADR-012): pe API-ul real, cu adăugare, editare, ștergere și ziua în URL.
   * [x] Formular „Adaugă aliment” (introducere manuală), proiectat pentru reutilizare ca ecran de validare *Human-in-the-Loop* în Faza 4 (NUT-47): câmpurile cu `needsReview` blochează salvarea până la confirmare (FR-05); scanarea trece prin `POST /api/scans` și, cât timp OCR-ul e stub, deschide formularul gol (NFR-12).
   * [x] Ecrane Rețetar & Planificator Săptămânal: adăugare ingrediente cu căutare instantanee, transfer rapid masă planificată în jurnalul zilei. **Rețetarul** e pe API-ul real (NUT-32): rețete cu previzualizare per porție, rețete în jurnal în porții, catalogul de alimente cu editarea și arhivarea alimentelor proprii. **Planificatorul** e pe API-ul real: săptămâna în URL, starea fiecărei zile față de țintă, mese din rețete sau alimente, „Am mâncat asta” și generarea listei de cumpărături pentru săptămână.
   * [x] Ecranul Listă de Cumpărături: articole agregate, marcare interactivă checkbox, ștergere elemente bifate (NUT-32): grupare pe raioane, bifare optimistă cu revenire la eroare, articole manuale, generare din planul săptămânii.
   * [x] Ecranul Statistici (FR-08, NUT-48): săptămână sau lună calendaristică, media pe zilele notate, abaterea față de țintă, zilele sub / în / peste țintă, calorii pe zi față de țintă (zilele nenotate fără coloană), cu tooltip și vedere tabelară.
-  * [ ] Configurare PWA: `manifest.json`, iconițe adaptive, Service Worker pentru caching resurse statice și funcționare fără conexiune pentru vizualizare catalog.
+  * [x] Configurare PWA: `manifest.json`, iconițe adaptive, Service Worker pentru caching resurse statice și funcționare fără conexiune pentru vizualizare catalog (NUT-33, ADR-013): `vite-plugin-pwa`, iconițe *maskable*, catalogul *NetworkFirst*, cache șters la deconectare. Instalarea pe iPhone se verifică pe dispozitiv fizic (cere HTTPS).
 * [ ] **Academic / Documentație:**
   * [ ] Redactare **Capitolul 5.3 (Dezvoltarea Interfeței cu Utilizatorul și Arhitectura Client PWA)**.
   * [ ] Capturi de ecran comparative Desktop vs. Mobile.
