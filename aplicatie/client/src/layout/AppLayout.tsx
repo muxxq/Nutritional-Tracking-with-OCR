@@ -4,7 +4,6 @@ import { NavLink, Outlet, useNavigate } from 'react-router'
 import { Navbar } from '@/components/Navbar'
 import { logout } from '@/auth/authApi'
 import { useSession } from '@/auth/session'
-import { useMockData } from '@/data/useMockData'
 import { AddEntryDialog } from '@/features/diary/AddEntryDialog'
 import { suggestedMeal } from '@/features/diary/labels'
 import { today } from '@/lib/dates'
@@ -17,7 +16,6 @@ export function AppLayout() {
   const user = useSession((s) => s.user)
   const [darkMode, setDarkMode] = useState(false)
   const [isScanModalOpen, setIsScanModalOpen] = useState(false)
-  const mock = useMockData()
 
   const toggleTheme = () => {
     const nextMode = !darkMode
@@ -43,7 +41,7 @@ export function AppLayout() {
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 pb-24 md:pb-10">
-        <Outlet context={{ mock }} />
+        <Outlet />
       </main>
 
       {/* The top bar's scan button: label photo → "Add food" form → today's diary */}

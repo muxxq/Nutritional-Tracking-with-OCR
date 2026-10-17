@@ -37,9 +37,31 @@ export function useGenerateShoppingList() {
 export const useAddShoppingItem = () =>
   useShoppingMutation(async (body: AddShoppingListItemRequest) => unwrap(await api.POST('/api/shopping-list/items', { body })))
 
-export const useSetPurchased = () =>
-  useShoppingMutation(async ({ id, isPurchased }: { id: string; isPurchased: boolean }) =>
-    unwrap(await api.PATCH('/api/shopping-list/items/{id}', { params: { path: { id } }, body: { isPurchased } })))
+/**
+ * Ticking is optimistic: in a shop with weak signal the box must react at once. The cached list is updated before
+ * the request and restored if it fails; the server's list is fetched afterwards either way.
+ */
+export function useSetPurchased() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, isPurchased }: { id: string; isPurchased: boolean }) =>
+      unwrap(await api.PATCH('/api/shopping-list/items/{id}', { params: { path: { id } }, body: { isPurchased } })),
+    onMutate: async ({ id, isPurchased }) => {
+      await queryClient.cancelQueries({ queryKey: shoppingKey })
+      const previous = queryClient.getQueryData<ShoppingListDto>(shoppingKey)
+      if (previous) {
+        queryClient.setQueryData<ShoppingListDto>(shoppingKey, {
+          ...previous,
+          purchasedCount: previous.purchasedCount + (isPurchased ? 1 : -1),
+          categories: previous.categories.map((c) => ({ ...c, items: c.items.map((i) => (i.id === id ? { ...i, isPurchased } : i)) })),
+        })
+      }
+      return { previous }
+    },
+    onError: (_error, _variables, context) => queryClient.setQueryData(shoppingKey, context?.previous),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: shoppingKey }),
+  })
+}
 
 export const useDeleteShoppingItem = () =>
   useShoppingMutation(async (id: string) => {
