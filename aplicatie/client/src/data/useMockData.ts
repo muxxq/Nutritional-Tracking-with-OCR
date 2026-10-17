@@ -1,10 +1,9 @@
 import { useState } from 'react'
-import type { DiaryEntry, FoodItem, MealType, PlannedMeal, Recipe, ShoppingItem } from '@/types/nutrition'
+import type { DiaryEntry, FoodItem, MealType, PlannedMeal, ShoppingItem } from '@/types/nutrition'
 import {
   INITIAL_DIARY_ENTRIES,
   INITIAL_FOOD_ITEMS,
   INITIAL_PLANNED_MEALS,
-  INITIAL_RECIPES,
   INITIAL_SHOPPING_ITEMS,
 } from './mockData'
 
@@ -15,7 +14,6 @@ import {
 export function useMockData(onShoppingListGenerated: () => void) {
   const [foodCatalog] = useState<FoodItem[]>(INITIAL_FOOD_ITEMS)
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>(INITIAL_DIARY_ENTRIES)
-  const [recipes, setRecipes] = useState<Recipe[]>(INITIAL_RECIPES)
   const [plannedMeals, setPlannedMeals] = useState<PlannedMeal[]>(INITIAL_PLANNED_MEALS)
   const [shoppingItems, setShoppingItems] = useState<ShoppingItem[]>(INITIAL_SHOPPING_ITEMS)
 
@@ -67,8 +65,6 @@ export function useMockData(onShoppingListGenerated: () => void) {
     onShoppingListGenerated()
   }
 
-  const createRecipe = (newRecipe: Recipe) => setRecipes([newRecipe, ...recipes])
-
   const toggleShoppingItem = (id: string) =>
     setShoppingItems(shoppingItems.map((item) => (item.id === id ? { ...item, isPurchased: !item.isPurchased } : item)))
 
@@ -78,9 +74,9 @@ export function useMockData(onShoppingListGenerated: () => void) {
   const clearPurchasedShoppingItems = () => setShoppingItems(shoppingItems.filter((item) => !item.isPurchased))
 
   return {
-    foodCatalog, diaryEntries, recipes, plannedMeals, shoppingItems,
+    foodCatalog, diaryEntries, plannedMeals, shoppingItems,
     addDiaryEntry, deleteDiaryEntry, addPlannedMeal, transferPlannedMealToDiary, generateShoppingListFromPlanner,
-    createRecipe, toggleShoppingItem, addShoppingItem, clearPurchasedShoppingItems,
+    toggleShoppingItem, addShoppingItem, clearPurchasedShoppingItems,
   }
 }
 

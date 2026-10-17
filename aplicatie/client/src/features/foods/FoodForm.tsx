@@ -5,7 +5,7 @@ import type { Schemas } from '@/api/types'
 import { Field, FormError, SelectField, SubmitButton } from '@/components/ui/form'
 import type { ScanFieldsDto } from '@/features/scan/scanApi'
 import { CATEGORY_LABELS } from './labels'
-import { useCreateFood, type FoodDto, type SaveFoodRequest } from './foodsApi'
+import { useCreateFood, useUpdateFood, type FoodDto, type SaveFoodRequest } from './foodsApi'
 
 type NutrientKey = keyof ScanFieldsDto
 
@@ -23,24 +23,31 @@ const NUTRIENTS: { key: NutrientKey; label: string; unit: string; required: bool
 const parse = (value: string) => (value.trim() === '' ? null : Number(value.replace(',', '.')))
 
 /**
- * "Add food" (NUT-47): the label's values per 100 g, typed by hand or prefilled from a scan. Fields the OCR is unsure
+ * "Add food" (NUT-47), also used to edit one's own food (`food`): the label's values per 100 g, typed by hand or prefilled from a scan. Fields the OCR is unsure
  * of (`needsReview`) are highlighted and must be confirmed, or edited, before the food can be saved (FR-05).
  */
 export function FoodForm({
-  prefill, onCreated, submitLabel = 'Salvează alimentul',
+  prefill, food, onCreated, submitLabel = 'Salvează alimentul',
 }: {
   prefill?: ScanFieldsDto
+  food?: FoodDto
   onCreated: (food: FoodDto) => void
   submitLabel?: string
 }) {
   const create = useCreateFood()
-  const [name, setName] = useState('')
-  const [brand, setBrand] = useState('')
-  const [servingSizeGrams, setServingSizeGrams] = useState('')
-  const [category, setCategory] = useState<Schemas['FoodCategory']>('other')
-  const [values, setValues] = useState<Record<NutrientKey, string>>(
-    () => Object.fromEntries(NUTRIENTS.map(({ key }) => [key, prefill?.[key] ? String(prefill[key]!.value) : ''])) as Record<NutrientKey, string>,
-  )
+  const update = useUpdateFood()
+  const save = food ? update : create
+  const [name, setName] = useState(food?.name ?? '')
+  const [brand, setBrand] = useState(food?.brand ?? '')
+  const [servingSizeGrams, setServingSizeGrams] = useState(food?.servingSizeGrams != null ? String(food.servingSizeGrams) : '')
+  const [category, setCategory] = useState<Schemas['FoodCategory']>(food?.category ?? 'other')
+  const [values, setValues] = useState<Record<NutrientKey, string>>(() => {
+    const initial = (key: NutrientKey) => {
+      const stored = food?.per100g[key]
+      return stored != null ? String(stored) : prefill?.[key] ? String(prefill[key]!.value) : ''
+    }
+    return Object.fromEntries(NUTRIENTS.map(({ key }) => [key, initial(key)])) as Record<NutrientKey, string>
+  })
   const [toConfirm, setToConfirm] = useState<Set<NutrientKey>>(
     () => new Set(NUTRIENTS.filter(({ key }) => prefill?.[key]?.needsReview).map(({ key }) => key)),
   )
@@ -51,8 +58,8 @@ export function FoodForm({
     setToConfirm(next)
   }
 
-  const errors = create.error ? fieldErrors(create.error) : {}
-  const generalError = create.error && !Object.keys(errors).length ? problemMessage(create.error, 'Alimentul nu a putut fi salvat.') : null
+  const errors = save.error ? fieldErrors(save.error) : {}
+  const generalError = save.error && !Object.keys(errors).length ? problemMessage(save.error, 'Alimentul nu a putut fi salvat.') : null
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
@@ -74,7 +81,11 @@ export function FoodForm({
       fiber: parse(values.fiber),
       saltGrams: parse(values.saltGrams),
     }
-    create.mutate(body, { onSuccess: onCreated })
+    if (food) {
+      update.mutate({ id: food.id, body }, { onSuccess: onCreated })
+    } else {
+      create.mutate(body, { onSuccess: onCreated })
+    }
   }
 
   return (
@@ -132,8 +143,8 @@ export function FoodForm({
         </div>
       </fieldset>
       <FormError message={generalError} />
-      <SubmitButton busy={create.isPending || toConfirm.size > 0}>
-        {toConfirm.size > 0 ? `Confirmă ${toConfirm.size === 1 ? 'câmpul marcat' : `cele ${toConfirm.size} câmpuri marcate`}` : create.isPending ? 'Se salvează…' : submitLabel}
+      <SubmitButton busy={save.isPending || toConfirm.size > 0}>
+        {toConfirm.size > 0 ? `Confirmă ${toConfirm.size === 1 ? 'câmpul marcat' : `cele ${toConfirm.size} câmpuri marcate`}` : save.isPending ? 'Se salvează…' : submitLabel}
       </SubmitButton>
     </form>
   )

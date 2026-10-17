@@ -14,11 +14,11 @@ export const foodKeys = {
 }
 
 /** Searches the catalog; the server ignores case and diacritics ("ovaz" finds "Ovăz"). */
-export function useFoodSearch(query: string) {
+export function useFoodSearch(query: string, scope: Schemas['FoodScope'] = 'all') {
   return useQuery({
-    queryKey: foodKeys.search(query),
+    queryKey: [...foodKeys.search(query), scope],
     queryFn: async () =>
-      unwrap(await api.GET('/api/foods', { params: { query: { query: query || undefined, pageSize: 20 } } })),
+      unwrap(await api.GET('/api/foods', { params: { query: { query: query || undefined, scope, pageSize: 20 } } })),
     placeholderData: keepPreviousData,
   })
 }
@@ -41,3 +41,25 @@ export function useCreateFood() {
     },
   })
 }
+
+/** Editing a food changes recipes and plans that use it (computed on read), not diary entries (snapshots, ADR-005). */
+function useFoodChange<TVariables, TResult>(mutationFn: (variables: TVariables) => Promise<TResult>) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn,
+    onSuccess: () =>
+      Promise.all(['foods', 'recipes', 'plan'].map((key) => queryClient.invalidateQueries({ queryKey: [key] }))),
+  })
+}
+
+export const useUpdateFood = () =>
+  useFoodChange(async ({ id, body }: { id: string; body: SaveFoodRequest }) =>
+    unwrap(await api.PUT('/api/foods/{id}', { params: { path: { id } }, body })))
+
+export const useArchiveFood = () =>
+  useFoodChange(async (id: string) => {
+    const { error, response } = await api.DELETE('/api/foods/{id}', { params: { path: { id } } })
+    if (!response.ok && response.status !== 404) {
+      throw { ...(error as object), status: response.status }
+    }
+  })

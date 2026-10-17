@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { AlertTriangle, Camera, Check, Clock, Loader2, Plus, Search, Utensils } from 'lucide-react'
+import { AlertTriangle, Camera, Clock, Loader2, Plus, Utensils } from 'lucide-react'
 import { problemMessage } from '@/api/problem'
 import { Dialog, PrimaryButton, SecondaryButton } from '@/components/ui/Dialog'
 import { FormError, SelectField } from '@/components/ui/form'
 import { FoodForm } from '@/features/foods/FoodForm'
-import { useFood, useFoodSearch, type FoodDto } from '@/features/foods/foodsApi'
+import { FoodSearch } from '@/features/foods/FoodSearch'
+import { useFood, type FoodDto } from '@/features/foods/foodsApi'
 import { ScanStep } from '@/features/scan/ScanStep'
 import type { ScanFieldsDto } from '@/features/scan/scanApi'
-import { useDebouncedValue } from '@/lib/useDebouncedValue'
 import { useAddEntry, useRecentFoods } from './diaryApi'
 import { MEAL_LABELS, type MealType } from './labels'
 
@@ -77,68 +77,33 @@ export function AddEntryDialog({
 }
 
 function PickFood({ onPick, onCreate, onScan }: { onPick: (foodId: string) => void; onCreate: () => void; onScan: () => void }) {
-  const [query, setQuery] = useState('')
-  const debounced = useDebouncedValue(query.trim(), 250)
-  const search = useFoodSearch(debounced)
   const recent = useRecentFoods()
-  const showRecent = debounced === '' && (recent.data?.length ?? 0) > 0
 
   return (
     <>
-      <div className="relative">
-        <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
-        <input
-          type="search"
-          value={query}
-          autoFocus
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Caută în catalog (ex: pui, ovăz, iaurt)…"
-          aria-label="Caută aliment"
-          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl pl-9 pr-3 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-        />
-      </div>
-
-      {showRecent && (
-        <div>
-          <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
-            <Clock className="w-3.5 h-3.5" /> Recente
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {recent.data!.map(({ food }) => (
-              <button
-                key={food.id}
-                onClick={() => onPick(food.id)}
-                className="px-3 py-1.5 rounded-full border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/40"
-              >
-                {food.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <ul className="max-h-64 overflow-y-auto border border-slate-200 dark:border-slate-700 rounded-xl divide-y divide-slate-100 dark:divide-slate-800" aria-label="Rezultate">
-        {search.data?.items.map((food) => (
-          <li key={food.id}>
-            <button onClick={() => onPick(food.id)} className="w-full text-left p-2.5 text-xs hover:bg-slate-50 dark:hover:bg-slate-800/40 text-slate-700 dark:text-slate-200">
-              <p className="font-bold flex items-center gap-1.5">
-                {food.name}
-                {food.brand && <span className="font-normal text-slate-500">· {food.brand}</span>}
-                {food.isVerified && <Check className="w-3.5 h-3.5 text-emerald-600" aria-label="verificat" />}
+      <FoodSearch
+        onPick={(food) => onPick(food.id)}
+        whenEmpty={
+          (recent.data?.length ?? 0) > 0 && (
+            <div>
+              <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                <Clock className="w-3.5 h-3.5" /> Recente
               </p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">
-                {food.calories} kcal / 100 g · P {food.proteins} g · C {food.carbohydrates} g · G {food.fats} g
-              </p>
-            </button>
-          </li>
-        ))}
-        {search.data && search.data.items.length === 0 && (
-          <li className="p-4 text-center text-xs text-slate-500">Niciun aliment găsit. Îl poți adăuga tu.</li>
-        )}
-        {search.isPending && (
-          <li className="p-4 flex justify-center"><Loader2 className="w-4 h-4 animate-spin text-emerald-600" /></li>
-        )}
-      </ul>
+              <div className="flex flex-wrap gap-2">
+                {recent.data!.map(({ food }) => (
+                  <button
+                    key={food.id}
+                    onClick={() => onPick(food.id)}
+                    className="px-3 py-1.5 rounded-full border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/40"
+                  >
+                    {food.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )
+        }
+      />
 
       <div className="grid grid-cols-2 gap-2">
         <button onClick={onCreate} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">
