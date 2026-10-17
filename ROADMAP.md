@@ -101,8 +101,8 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
 > **Obiectiv principal:** Conectarea clientului React la API-ul real, înlocuirea datelor mock și livrarea unei aplicații full-stack funcționale cu introducere manuală.
 
 * [ ] **Software:**
-  * [ ] Arhitectură frontend: Rutare (React Router / TanStack Router), State management (Zustand & TanStack Query pentru caching server-state).
-  * [ ] Înlocuire `mockData.ts` cu apeluri reale către API (client HTTP tipizat, interceptor JWT + refresh automat).
+  * [x] Arhitectură frontend: React Router 7, TanStack Query pentru server-state, Zustand pentru sesiune; tipuri generate din contractul OpenAPI salvat în repo (ADR-011, NUT-27).
+  * [ ] Înlocuire `mockData.ts` cu apeluri reale către API (client HTTP tipizat, interceptor JWT + refresh automat): clientul tipizat și refresh-ul unic în zbor sunt gata (NUT-46); ecranele trec pe API unul câte unul.
   * [ ] Design System & Layout adaptiv: Dark/Light mode, Desktop split layout vs. Mobile bottom navigation bar.
   * [ ] Ecrane de Onboarding & Autentificare: Login, Înregistrare, Formular configurare profil fizic și obiective.
   * [ ] Ecranul Principal (Dashboard & Jurnal): Inel caloric SVG interactiv, progress bars pentru macro-nutrienți, selector de date, listă mese zilnice.
