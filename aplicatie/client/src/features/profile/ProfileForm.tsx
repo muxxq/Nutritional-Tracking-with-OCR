@@ -44,8 +44,8 @@ export function ProfileForm({ profile, submitLabel, onSaved }: { profile: Profil
         <SelectField label="Sex" name="gender" value={form.gender} onChange={set('gender')} options={GENDER_LABELS} error={errors.gender} />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <Field label="Înălțime (cm)" name="heightCm" type="number" min={100} max={250} value={form.heightCm} onChange={set('heightCm')} error={errors.heightCm} />
-        <Field label="Greutate (kg)" name="weightKg" type="number" min={30} max={300} step="0.1" value={form.weightKg} onChange={set('weightKg')} error={errors.weightKg} />
+        <Field label="Înălțime (cm)" name="heightCm" type="number" hint="100–250 cm" value={form.heightCm} onChange={set('heightCm')} error={errors.heightCm} />
+        <Field label="Greutate (kg)" name="weightKg" type="number" hint="30–300 kg" value={form.weightKg} onChange={set('weightKg')} error={errors.weightKg} />
       </div>
       <SelectField label="Nivel de activitate" name="activityLevel" value={form.activityLevel} onChange={set('activityLevel')} options={ACTIVITY_LABELS} error={errors.activityLevel} />
       <SelectField label="Obiectiv" name="goal" value={form.goal} onChange={set('goal')} options={GOAL_LABELS} error={errors.goal} />

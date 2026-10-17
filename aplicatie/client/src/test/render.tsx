@@ -4,12 +4,15 @@ import { render } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { vi } from 'vitest'
 
-/** Renders a page at `path` with a fresh query cache; `routes` adds the pages it may navigate to. */
-export function renderPage(path: string, page: ReactElement, routes: Record<string, string> = {}) {
+/**
+ * Renders a page on route `path` with a fresh query cache; `routes` adds the pages it may navigate to,
+ * `url` is the starting address when it has a query string.
+ */
+export function renderPage(path: string, page: ReactElement, routes: Record<string, string> = {}, url = path) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[path]}>
+      <MemoryRouter initialEntries={[url]}>
         <Routes>
           <Route path={path} element={page} />
           {Object.entries(routes).map(([to, text]) => <Route key={to} path={to} element={<p>{text}</p>} />)}
