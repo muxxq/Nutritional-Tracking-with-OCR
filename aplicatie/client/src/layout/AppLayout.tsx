@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { NavLink, Outlet, useNavigate } from 'react-router'
 import { Navbar } from '@/components/Navbar'
-import { OcrScanModal } from '@/components/OcrScanModal'
 import { logout } from '@/auth/authApi'
 import { useSession } from '@/auth/session'
 import { useMockData } from '@/data/useMockData'
+import { AddEntryDialog } from '@/features/diary/AddEntryDialog'
+import { suggestedMeal } from '@/features/diary/labels'
+import { today } from '@/lib/dates'
 import { NAV_ITEMS } from './navigation'
 
 /** The signed-in shell: top bar, the current screen, the scan dialog and the mobile bottom bar. */
@@ -41,14 +43,13 @@ export function AppLayout() {
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 pb-24 md:pb-10">
-        <Outlet context={{ mock, openScanModal: () => setIsScanModalOpen(true) }} />
+        <Outlet context={{ mock }} />
       </main>
 
-      <OcrScanModal
-        isOpen={isScanModalOpen}
-        onClose={() => setIsScanModalOpen(false)}
-        onSaveToDiary={mock.addDiaryEntry}
-      />
+      {/* The top bar's scan button: label photo → "Add food" form → today's diary */}
+      {isScanModalOpen && (
+        <AddEntryDialog date={today()} meal={suggestedMeal()} startWithScan onClose={() => setIsScanModalOpen(false)} />
+      )}
 
       {/* Mobile Bottom Navigation Bar */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 shadow-lg">
