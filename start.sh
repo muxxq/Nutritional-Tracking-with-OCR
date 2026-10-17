@@ -55,7 +55,7 @@ set -a
 # shellcheck disable=SC1090
 source "$ENV_FILE"
 set +a
-export ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+export ConnectionStrings__DefaultConnection="Host=localhost;Port=${POSTGRES_PORT:-5432};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
 export Jwt__Secret="${JWT_SECRET}"
 
 # 1. Start Python OCR Service
