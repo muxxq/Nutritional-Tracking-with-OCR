@@ -14,8 +14,6 @@ interface OcrScanModalProps {
 }
 
 export function OcrScanModal({ isOpen, onClose, onSaveToDiary }: OcrScanModalProps) {
-  if (!isOpen) return null
-
   const [scanState, setScanState] = useState<'idle' | 'scanning' | 'success'>('success')
   const [targetMeal, setTargetMeal] = useState<MealType>('lunch')
 
@@ -26,6 +24,9 @@ export function OcrScanModal({ isOpen, onClose, onSaveToDiary }: OcrScanModalPro
   const [carbs, setCarbs] = useState('4.2')
   const [fats, setFats] = useState('1.5')
   const [servingGrams, setServingGrams] = useState('150')
+
+  // After every hook: React needs the same hooks in the same order on every render.
+  if (!isOpen) return null
 
   // Sample presets for demo testing
   const applyPreset = (name: string, cal: string, p: string, c: string, f: string) => {

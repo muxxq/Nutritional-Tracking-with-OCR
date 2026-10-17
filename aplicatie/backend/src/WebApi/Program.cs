@@ -99,6 +99,11 @@ builder.Services.AddSwaggerGen(c =>
         c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{assembly.GetName().Name}.xml"));
     }
 
+    // Nullability from the C# annotations; nullable DTO references become allOf + nullable (e.g. StatisticsDto.average)
+    c.SupportNonNullableReferenceTypes();
+    c.UseAllOfToExtendReferenceSchemas();
+    c.SchemaFilter<RequiredNotNullableSchemaFilter>();
+
     // JWT Security in Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
