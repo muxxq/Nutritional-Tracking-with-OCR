@@ -2,7 +2,8 @@ import { Navigate, Route, Routes } from 'react-router'
 import { RedirectIfSignedIn, RequireAuth } from '@/auth/RequireAuth'
 import { useSessionBootstrap } from '@/auth/useSessionBootstrap'
 import { AppLayout } from '@/layout/AppLayout'
-import { PlannerRoute, ShoppingRoute } from '@/layout/legacyRoutes'
+import { ShoppingRoute } from '@/layout/legacyRoutes'
+import { PlannerPage } from '@/features/planner/PlannerPage'
 import { RecipesPage } from '@/features/recipes/RecipesPage'
 import { DiaryPage } from '@/features/diary/DiaryPage'
 import { ProfilePage } from '@/features/profile/ProfilePage'
@@ -23,7 +24,7 @@ export function App() {
         <Route element={<AppLayout />}>
           <Route index element={<Navigate to="/diary" replace />} />
           <Route path="/diary" element={<DiaryPage />} />
-          <Route path="/planner" element={<PlannerRoute />} />
+          <Route path="/planner" element={<PlannerPage />} />
           <Route path="/recipes" element={<RecipesPage />} />
           <Route path="/shopping" element={<ShoppingRoute />} />
           <Route path="/profile" element={<ProfilePage />} />
