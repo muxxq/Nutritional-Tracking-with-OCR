@@ -82,6 +82,9 @@ services:
       - backend
     ports:
       - "3000:3000"
+    environment:
+      # Vite proxies /api to the backend over the internal network (same-origin API, ADR-011)
+      - VITE_API_PROXY_TARGET=http://backend:8080
     volumes:
       - ./client:/app
       - /app/node_modules
