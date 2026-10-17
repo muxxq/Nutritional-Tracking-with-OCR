@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { addDays, isIsoDate, mondayOf, today } from './dates'
+import { addDays, addMonths, isIsoDate, lastOfMonth, mondayOf, today } from './dates'
 
 describe('dates', () => {
   afterEach(() => vi.useRealTimers())
@@ -28,5 +28,11 @@ describe('dates', () => {
     expect(mondayOf('2026-10-17')).toBe('2026-10-12') // Saturday
     expect(mondayOf('2026-10-18')).toBe('2026-10-12') // Sunday
     expect(mondayOf('2026-10-19')).toBe('2026-10-19') // Monday
+  })
+
+  it('knows month lengths, February included', () => {
+    expect(lastOfMonth('2026-02-10')).toBe('2026-02-28')
+    expect(lastOfMonth('2028-02-10')).toBe('2028-02-29')
+    expect(addMonths('2026-12-15', 1)).toBe('2027-01-01')
   })
 })
