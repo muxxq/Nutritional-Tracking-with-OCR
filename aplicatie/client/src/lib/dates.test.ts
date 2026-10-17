@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { addDays, isIsoDate, today } from './dates'
+import { addDays, isIsoDate, mondayOf, today } from './dates'
 
 describe('dates', () => {
   afterEach(() => vi.useRealTimers())
@@ -22,5 +22,11 @@ describe('dates', () => {
     expect(isIsoDate('2026-10-17')).toBe(true)
     expect(isIsoDate('17.10.2026')).toBe(false)
     expect(isIsoDate(null)).toBe(false)
+  })
+
+  it('finds the Monday of a week, also from a Sunday', () => {
+    expect(mondayOf('2026-10-17')).toBe('2026-10-12') // Saturday
+    expect(mondayOf('2026-10-18')).toBe('2026-10-12') // Sunday
+    expect(mondayOf('2026-10-19')).toBe('2026-10-19') // Monday
   })
 })
