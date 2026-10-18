@@ -2,7 +2,7 @@
 
 * **Universitatea:** Universitatea din Craiova  
 * **Facultatea:** Facultatea de Automatică, Calculatoare și Electronică (ACE)  
-* **Departamentul:** Calculatoare și Tehnologia Informației  
+* **Departamentul:** Calculatoare
 * **Student:** Maximilian Andrei  
 * **Coordonator Științific:** Dr. Ing. Mocanu Lucian-Mihai  
 
