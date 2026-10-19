@@ -1,0 +1,4807 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "NutriScan Core API",
+    "description": "ASP.NET Core 8 Web API pentru monitorizare nutri\u021Bional\u0103 \u0219i integrare OCR",
+    "contact": {
+      "name": "Maximilian Andrei",
+      "email": "maximilianandrei2101@gmail.com"
+    },
+    "version": "v1"
+  },
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Creates an account and signs the user in.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RegisterRequest"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RegisterRequest"
+                  }
+                ]
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RegisterRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Signs in with email and password.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/LoginRequest"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/LoginRequest"
+                  }
+                ]
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/LoginRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Rotates the refresh cookie and issues a new access token.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Ends the session on this device. Always succeeds.",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Returns the signed-in user.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/diary/days/{date}": {
+      "get": {
+        "tags": [
+          "Diary"
+        ],
+        "summary": "The day\u0027s four meals with their entries, totals and the user\u0027s targets.",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiaryDayDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiaryDayDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiaryDayDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/diary/entries/{id}": {
+      "get": {
+        "tags": [
+          "Diary"
+        ],
+        "summary": "Returns one of the user\u0027s diary entries.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiaryEntryDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiaryEntryDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiaryEntryDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Diary"
+        ],
+        "summary": "Changes an entry\u0027s quantity, meal and date; nutrients are recalculated from the food\u0027s or recipe\u0027s current values.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateDiaryEntryRequest"
+                  }
+                ],
+                "description": "New quantity, meal and date of an entry; the food cannot change."
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateDiaryEntryRequest"
+                  }
+                ],
+                "description": "New quantity, meal and date of an entry; the food cannot change."
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateDiaryEntryRequest"
+                  }
+                ],
+                "description": "New quantity, meal and date of an entry; the food cannot change."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiaryEntryDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiaryEntryDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiaryEntryDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Diary"
+        ],
+        "summary": "Deletes one of the user\u0027s diary entries.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/diary/entries": {
+      "post": {
+        "tags": [
+          "Diary"
+        ],
+        "summary": "Logs a food (grams or servings) or a recipe (servings) at a meal, with a snapshot of its nutrients.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AddDiaryEntryRequest"
+                  }
+                ],
+                "description": "A food (in grams or servings) or a recipe (in servings) eaten at a meal; give exactly one of the two ids."
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AddDiaryEntryRequest"
+                  }
+                ],
+                "description": "A food (in grams or servings) or a recipe (in servings) eaten at a meal; give exactly one of the two ids."
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AddDiaryEntryRequest"
+                  }
+                ],
+                "description": "A food (in grams or servings) or a recipe (in servings) eaten at a meal; give exactly one of the two ids."
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiaryEntryDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiaryEntryDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiaryEntryDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/diary/recent-foods": {
+      "get": {
+        "tags": [
+          "Diary"
+        ],
+        "summary": "Foods the user logged lately, newest first, with the last quantity used.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RecentFoodDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RecentFoodDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RecentFoodDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/foods": {
+      "get": {
+        "tags": [
+          "Foods"
+        ],
+        "summary": "Searches the global catalog and the user\u0027s own foods (case- and diacritic-insensitive).",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/FoodScope"
+                }
+              ],
+              "default": "all"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/FoodSummaryDtoPagedResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FoodSummaryDtoPagedResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FoodSummaryDtoPagedResult"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Foods"
+        ],
+        "summary": "Adds a private food to the user\u0027s catalog.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveFoodRequest"
+                  }
+                ],
+                "description": "Food fields for create and update; nutrition values are per 100 g."
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveFoodRequest"
+                  }
+                ],
+                "description": "Food fields for create and update; nutrition values are per 100 g."
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveFoodRequest"
+                  }
+                ],
+                "description": "Food fields for create and update; nutrition values are per 100 g."
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/FoodDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FoodDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FoodDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/foods/{id}": {
+      "get": {
+        "tags": [
+          "Foods"
+        ],
+        "summary": "Returns a food visible to the user.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/FoodDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FoodDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FoodDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Foods"
+        ],
+        "summary": "Replaces all fields of the user\u0027s own food.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveFoodRequest"
+                  }
+                ],
+                "description": "Food fields for create and update; nutrition values are per 100 g."
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveFoodRequest"
+                  }
+                ],
+                "description": "Food fields for create and update; nutrition values are per 100 g."
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveFoodRequest"
+                  }
+                ],
+                "description": "Food fields for create and update; nutrition values are per 100 g."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/FoodDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FoodDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FoodDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Foods"
+        ],
+        "summary": "Archives the user\u0027s own food; diary history keeps referring to it.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/Health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Liveness probe for Docker health checks; needs no token.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/plan": {
+      "get": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "Every day of the range (at most 31) with its planned meals, totals and status against the calorie target.",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plan/items/{id}": {
+      "get": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "Returns one of the user\u0027s planned meals with its current values.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlannedMealDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlannedMealDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlannedMealDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "Changes a planned meal\u0027s date, meal and quantity.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdatePlannedMealRequest"
+                  }
+                ],
+                "description": "New date, meal and quantity of a planned meal; the food or recipe cannot change."
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdatePlannedMealRequest"
+                  }
+                ],
+                "description": "New date, meal and quantity of a planned meal; the food or recipe cannot change."
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdatePlannedMealRequest"
+                  }
+                ],
+                "description": "New date, meal and quantity of a planned meal; the food or recipe cannot change."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlannedMealDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlannedMealDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlannedMealDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "Deletes a planned meal; a diary entry logged from it stays.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plan/items": {
+      "post": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "Plans a food (grams or servings) or a recipe (servings) for a meal.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CreatePlannedMealRequest"
+                  }
+                ],
+                "description": "A food (in grams or servings) or a recipe (in servings) planned for a meal; give exactly one of the two ids."
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CreatePlannedMealRequest"
+                  }
+                ],
+                "description": "A food (in grams or servings) or a recipe (in servings) planned for a meal; give exactly one of the two ids."
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CreatePlannedMealRequest"
+                  }
+                ],
+                "description": "A food (in grams or servings) or a recipe (in servings) planned for a meal; give exactly one of the two ids."
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlannedMealDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlannedMealDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlannedMealDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plan/items/{id}/eat": {
+      "post": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "\u0022I ate this\u0022: logs the planned meal in the diary, on its planned day and meal.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiaryEntryDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiaryEntryDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiaryEntryDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profile": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Returns the signed-in user\u0027s profile and daily targets.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Replaces the physical profile; calculated targets follow it.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateProfileRequest"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateProfileRequest"
+                  }
+                ]
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateProfileRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profile/targets": {
+      "put": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Sets or clears manual target overrides.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateTargetsRequest"
+                  }
+                ],
+                "description": "Manual targets; null or missing means \u0022calculate from the profile\u0022."
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateTargetsRequest"
+                  }
+                ],
+                "description": "Manual targets; null or missing means \u0022calculate from the profile\u0022."
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateTargetsRequest"
+                  }
+                ],
+                "description": "Manual targets; null or missing means \u0022calculate from the profile\u0022."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recipes": {
+      "get": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "The user\u0027s recipes, optionally filtered by name (case- and diacritic-insensitive), with per-serving values.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipeSummaryDtoPagedResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipeSummaryDtoPagedResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipeSummaryDtoPagedResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "Saves a private recipe made from foods the user can see.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveRecipeRequest"
+                  }
+                ],
+                "description": "A whole recipe: the ingredient list replaces the existing one on update."
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveRecipeRequest"
+                  }
+                ],
+                "description": "A whole recipe: the ingredient list replaces the existing one on update."
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveRecipeRequest"
+                  }
+                ],
+                "description": "A whole recipe: the ingredient list replaces the existing one on update."
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipeDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipeDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipeDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recipes/{id}": {
+      "get": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "Returns one of the user\u0027s recipes with its ingredients, total and per-serving values.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipeDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipeDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipeDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "Replaces all fields and the whole ingredient list of the user\u0027s recipe.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveRecipeRequest"
+                  }
+                ],
+                "description": "A whole recipe: the ingredient list replaces the existing one on update."
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveRecipeRequest"
+                  }
+                ],
+                "description": "A whole recipe: the ingredient list replaces the existing one on update."
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveRecipeRequest"
+                  }
+                ],
+                "description": "A whole recipe: the ingredient list replaces the existing one on update."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipeDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipeDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipeDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "Archives the user\u0027s recipe; diary entries logged from it stay.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scans": {
+      "post": {
+        "tags": [
+          "Scans"
+        ],
+        "summary": "Reads a nutrition label photo (JPEG, PNG or WebP, at most 10 MB) into a prefilled food form, with the fields\r\nto confirm marked. The photo is processed in memory and not stored. Nothing is saved: the user confirms the\r\nvalues and creates the food through POST /api/foods.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanResultDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanResultDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanResultDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Content Too Large",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shopping-list": {
+      "get": {
+        "tags": [
+          "ShoppingList"
+        ],
+        "summary": "The user\u0027s shopping list, grouped by aisle.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShoppingListDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShoppingListDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShoppingListDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shopping-list/generate": {
+      "post": {
+        "tags": [
+          "ShoppingList"
+        ],
+        "summary": "Replaces the generated lines with what the meals planned in the range need; manual lines stay.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GenerateShoppingListRequest"
+                  }
+                ],
+                "description": "The range of plan days to buy for (at most 31)."
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GenerateShoppingListRequest"
+                  }
+                ],
+                "description": "The range of plan days to buy for (at most 31)."
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GenerateShoppingListRequest"
+                  }
+                ],
+                "description": "The range of plan days to buy for (at most 31)."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShoppingListDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShoppingListDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShoppingListDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shopping-list/items": {
+      "post": {
+        "tags": [
+          "ShoppingList"
+        ],
+        "summary": "Adds a line by hand.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AddShoppingListItemRequest"
+                  }
+                ],
+                "description": "A line added by hand: a name, an optional free-text quantity and an aisle."
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AddShoppingListItemRequest"
+                  }
+                ],
+                "description": "A line added by hand: a name, an optional free-text quantity and an aisle."
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AddShoppingListItemRequest"
+                  }
+                ],
+                "description": "A line added by hand: a name, an optional free-text quantity and an aisle."
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShoppingListItemDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShoppingListItemDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShoppingListItemDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shopping-list/items/{id}": {
+      "patch": {
+        "tags": [
+          "ShoppingList"
+        ],
+        "summary": "Checks or unchecks a line.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SetPurchasedRequest"
+                  }
+                ],
+                "description": "Checks or unchecks a line; the value is required."
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SetPurchasedRequest"
+                  }
+                ],
+                "description": "Checks or unchecks a line; the value is required."
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SetPurchasedRequest"
+                  }
+                ],
+                "description": "Checks or unchecks a line; the value is required."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShoppingListItemDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShoppingListItemDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShoppingListItemDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ShoppingList"
+        ],
+        "summary": "Removes a line.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shopping-list/purchased": {
+      "delete": {
+        "tags": [
+          "ShoppingList"
+        ],
+        "summary": "Removes every checked line.",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/stats": {
+      "get": {
+        "tags": [
+          "Statistics"
+        ],
+        "summary": "Every day of the range (at most 366) with its totals, plus the average and the deviation from the target\r\nover the logged days (FR-08). The client picks the week or month.",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatisticsDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatisticsDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatisticsDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActivityLevel": {
+        "enum": [
+          "sedentary",
+          "lightlyActive",
+          "moderatelyActive",
+          "veryActive",
+          "extremelyActive"
+        ],
+        "type": "string"
+      },
+      "AddDiaryEntryRequest": {
+        "required": [
+          "date",
+          "mealType"
+        ],
+        "type": "object",
+        "properties": {
+          "foodId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "recipeId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "mealType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MealType"
+              }
+            ]
+          },
+          "quantityGrams": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "servings": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "A food (in grams or servings) or a recipe (in servings) eaten at a meal; give exactly one of the two ids."
+      },
+      "AddShoppingListItemRequest": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string",
+            "nullable": true
+          },
+          "category": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FoodCategory"
+              }
+            ],
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "A line added by hand: a name, an optional free-text quantity and an aisle."
+      },
+      "AuthResponse": {
+        "required": [
+          "accessToken",
+          "accessTokenExpiresAtUtc",
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "accessTokenExpiresAtUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserDto"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "description": "Response body for successful authentication. The refresh token travels only in the HttpOnly cookie."
+      },
+      "CreatePlannedMealRequest": {
+        "required": [
+          "date",
+          "mealType"
+        ],
+        "type": "object",
+        "properties": {
+          "foodId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "recipeId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "mealType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MealType"
+              }
+            ]
+          },
+          "quantityGrams": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "servings": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "A food (in grams or servings) or a recipe (in servings) planned for a meal; give exactly one of the two ids."
+      },
+      "DayStatusCounts": {
+        "required": [
+          "over",
+          "under",
+          "within"
+        ],
+        "type": "object",
+        "properties": {
+          "under": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "within": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "over": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DiaryDayDto": {
+        "required": [
+          "date",
+          "isProfileComplete",
+          "meals",
+          "remaining",
+          "targets",
+          "totals"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "meals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DiaryMealDto"
+            }
+          },
+          "totals": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+          },
+          "targets": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+          },
+          "remaining": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+          },
+          "isProfileComplete": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DiaryEntryDto": {
+        "required": [
+          "date",
+          "id",
+          "kind",
+          "mealType",
+          "nutrients"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DiaryEntryKind"
+              }
+            ]
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "mealType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MealType"
+              }
+            ]
+          },
+          "quantityGrams": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "servings": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "food": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DiaryFoodDto"
+              }
+            ],
+            "nullable": true
+          },
+          "recipe": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DiaryRecipeDto"
+              }
+            ],
+            "nullable": true
+          },
+          "nutrients": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Exactly one of NutriScan.Application.Diary.Dtos.DiaryEntryDto.Food / NutriScan.Application.Diary.Dtos.DiaryEntryDto.Recipe is set, as NutriScan.Application.Diary.Dtos.DiaryEntryDto.Kind says."
+      },
+      "DiaryEntryKind": {
+        "enum": [
+          "food",
+          "recipe"
+        ],
+        "type": "string"
+      },
+      "DiaryFoodDto": {
+        "required": [
+          "id",
+          "isArchived",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "brand": {
+            "type": "string",
+            "nullable": true
+          },
+          "isArchived": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DiaryMealDto": {
+        "required": [
+          "entries",
+          "mealType",
+          "totals"
+        ],
+        "type": "object",
+        "properties": {
+          "mealType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MealType"
+              }
+            ]
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DiaryEntryDto"
+            }
+          },
+          "totals": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+          }
+        },
+        "additionalProperties": false
+      },
+      "DiaryRecipeDto": {
+        "required": [
+          "id",
+          "isArchived",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "isArchived": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FoodCategory": {
+        "enum": [
+          "fruitsVegetables",
+          "meatFish",
+          "dairy",
+          "grains",
+          "pantry",
+          "beverages",
+          "other"
+        ],
+        "type": "string"
+      },
+      "FoodDto": {
+        "required": [
+          "category",
+          "id",
+          "isOwn",
+          "isVerified",
+          "name",
+          "per100g"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "brand": {
+            "type": "string",
+            "nullable": true
+          },
+          "barcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "servingSizeGrams": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "per100g": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Per100gDto"
+              }
+            ]
+          },
+          "isVerified": {
+            "type": "boolean"
+          },
+          "isOwn": {
+            "type": "boolean"
+          },
+          "energyWarning": {
+            "type": "string",
+            "nullable": true
+          },
+          "category": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FoodCategory"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "FoodScope": {
+        "enum": [
+          "all",
+          "mine"
+        ],
+        "type": "string"
+      },
+      "FoodSummaryDto": {
+        "required": [
+          "calories",
+          "carbohydrates",
+          "fats",
+          "id",
+          "isOwn",
+          "isVerified",
+          "name",
+          "proteins"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "brand": {
+            "type": "string",
+            "nullable": true
+          },
+          "calories": {
+            "type": "number",
+            "format": "double"
+          },
+          "proteins": {
+            "type": "number",
+            "format": "double"
+          },
+          "carbohydrates": {
+            "type": "number",
+            "format": "double"
+          },
+          "fats": {
+            "type": "number",
+            "format": "double"
+          },
+          "isVerified": {
+            "type": "boolean"
+          },
+          "isOwn": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FoodSummaryDtoPagedResult": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FoodSummaryDto"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Gender": {
+        "enum": [
+          "male",
+          "female"
+        ],
+        "type": "string"
+      },
+      "GenerateShoppingListRequest": {
+        "required": [
+          "from",
+          "to"
+        ],
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "additionalProperties": false,
+        "description": "The range of plan days to buy for (at most 31)."
+      },
+      "LoginRequest": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MealType": {
+        "enum": [
+          "breakfast",
+          "lunch",
+          "dinner",
+          "snack"
+        ],
+        "type": "string"
+      },
+      "NutrientsDto": {
+        "required": [
+          "calories",
+          "carbs",
+          "fats",
+          "proteins"
+        ],
+        "type": "object",
+        "properties": {
+          "calories": {
+            "type": "number",
+            "format": "double"
+          },
+          "proteins": {
+            "type": "number",
+            "format": "double"
+          },
+          "carbs": {
+            "type": "number",
+            "format": "double"
+          },
+          "fats": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+      },
+      "NutritionGoal": {
+        "enum": [
+          "loseWeight",
+          "maintainWeight",
+          "gainMuscle"
+        ],
+        "type": "string"
+      },
+      "OcrStatus": {
+        "enum": [
+          "processed",
+          "unavailable"
+        ],
+        "type": "string"
+      },
+      "Per100gDto": {
+        "required": [
+          "calories",
+          "carbohydrates",
+          "fats",
+          "proteins"
+        ],
+        "type": "object",
+        "properties": {
+          "calories": {
+            "type": "number",
+            "format": "double"
+          },
+          "proteins": {
+            "type": "number",
+            "format": "double"
+          },
+          "carbohydrates": {
+            "type": "number",
+            "format": "double"
+          },
+          "sugars": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fats": {
+            "type": "number",
+            "format": "double"
+          },
+          "saturatedFats": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fiber": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "saltGrams": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PlanDayDto": {
+        "required": [
+          "date",
+          "meals",
+          "status",
+          "targets",
+          "totals"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "meals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanMealDto"
+            }
+          },
+          "totals": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+          },
+          "targets": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PlanDayStatus"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "description": "A planned day against the calorie target (FR-10); the status comes from the unrounded total."
+      },
+      "PlanDayStatus": {
+        "enum": [
+          "under",
+          "within",
+          "over"
+        ],
+        "type": "string"
+      },
+      "PlanDto": {
+        "required": [
+          "days",
+          "from",
+          "isProfileComplete",
+          "to"
+        ],
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanDayDto"
+            }
+          },
+          "isProfileComplete": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PlanMealDto": {
+        "required": [
+          "items",
+          "mealType",
+          "totals"
+        ],
+        "type": "object",
+        "properties": {
+          "mealType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MealType"
+              }
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlannedMealDto"
+            }
+          },
+          "totals": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+          }
+        },
+        "additionalProperties": false
+      },
+      "PlannedMealDto": {
+        "required": [
+          "date",
+          "id",
+          "kind",
+          "mealType",
+          "nutrients"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DiaryEntryKind"
+              }
+            ]
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "mealType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MealType"
+              }
+            ]
+          },
+          "quantityGrams": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "servings": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "food": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DiaryFoodDto"
+              }
+            ],
+            "nullable": true
+          },
+          "recipe": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DiaryRecipeDto"
+              }
+            ],
+            "nullable": true
+          },
+          "nutrients": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+          },
+          "diaryEntryId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Exactly one of NutriScan.Application.Planner.Dtos.PlannedMealDto.Food / NutriScan.Application.Planner.Dtos.PlannedMealDto.Recipe is set, as NutriScan.Application.Planner.Dtos.PlannedMealDto.Kind says; values are current."
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "ProfileDto": {
+        "required": [
+          "activityLevel",
+          "email",
+          "firstName",
+          "gender",
+          "goal",
+          "heightCm",
+          "isProfileComplete",
+          "lastName",
+          "targets",
+          "weightKg"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "age": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "heightCm": {
+            "type": "number",
+            "format": "double"
+          },
+          "weightKg": {
+            "type": "number",
+            "format": "double"
+          },
+          "gender": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          },
+          "activityLevel": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ActivityLevel"
+              }
+            ]
+          },
+          "goal": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutritionGoal"
+              }
+            ]
+          },
+          "isProfileComplete": {
+            "type": "boolean"
+          },
+          "bmr": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "tdee": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "targets": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TargetsDto"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "RecentFoodDto": {
+        "required": [
+          "food",
+          "lastQuantityGrams",
+          "lastUsedAtUtc"
+        ],
+        "type": "object",
+        "properties": {
+          "food": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DiaryFoodDto"
+              }
+            ]
+          },
+          "lastQuantityGrams": {
+            "type": "number",
+            "format": "double"
+          },
+          "lastServings": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "lastUsedAtUtc": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RecipeDto": {
+        "required": [
+          "id",
+          "ingredients",
+          "isArchived",
+          "name",
+          "perServing",
+          "servingsCount",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "instructions": {
+            "type": "string",
+            "nullable": true
+          },
+          "servingsCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "prepTimeMinutes": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "isArchived": {
+            "type": "boolean"
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecipeIngredientDto"
+            }
+          },
+          "total": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+          },
+          "perServing": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+          }
+        },
+        "additionalProperties": false
+      },
+      "RecipeFoodDto": {
+        "required": [
+          "id",
+          "isArchived",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "brand": {
+            "type": "string",
+            "nullable": true
+          },
+          "isArchived": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RecipeIngredientDto": {
+        "required": [
+          "food",
+          "nutrients",
+          "quantityGrams"
+        ],
+        "type": "object",
+        "properties": {
+          "food": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RecipeFoodDto"
+              }
+            ]
+          },
+          "quantityGrams": {
+            "type": "number",
+            "format": "double"
+          },
+          "nutrients": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+          }
+        },
+        "additionalProperties": false
+      },
+      "RecipeIngredientInput": {
+        "required": [
+          "foodId",
+          "quantityGrams"
+        ],
+        "type": "object",
+        "properties": {
+          "foodId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantityGrams": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RecipeSummaryDto": {
+        "required": [
+          "id",
+          "ingredientCount",
+          "name",
+          "perServing",
+          "servingsCount"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "servingsCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "prepTimeMinutes": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "ingredientCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "perServing": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+          }
+        },
+        "additionalProperties": false
+      },
+      "RecipeSummaryDtoPagedResult": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecipeSummaryDto"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RegisterRequest": {
+        "required": [
+          "email",
+          "firstName",
+          "lastName",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SaveFoodRequest": {
+        "required": [
+          "calories",
+          "carbohydrates",
+          "fats",
+          "name",
+          "proteins"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "brand": {
+            "type": "string",
+            "nullable": true
+          },
+          "barcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "servingSizeGrams": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "calories": {
+            "type": "number",
+            "format": "double"
+          },
+          "proteins": {
+            "type": "number",
+            "format": "double"
+          },
+          "carbohydrates": {
+            "type": "number",
+            "format": "double"
+          },
+          "sugars": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fats": {
+            "type": "number",
+            "format": "double"
+          },
+          "saturatedFats": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fiber": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "saltGrams": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "category": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FoodCategory"
+              }
+            ],
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Food fields for create and update; nutrition values are per 100 g."
+      },
+      "SaveRecipeRequest": {
+        "required": [
+          "ingredients",
+          "name",
+          "servingsCount"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "instructions": {
+            "type": "string",
+            "nullable": true
+          },
+          "servingsCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "prepTimeMinutes": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecipeIngredientInput"
+            }
+          }
+        },
+        "additionalProperties": false,
+        "description": "A whole recipe: the ingredient list replaces the existing one on update."
+      },
+      "ScanFieldDto": {
+        "required": [
+          "confidence",
+          "needsReview",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number",
+            "format": "double"
+          },
+          "confidence": {
+            "type": "number",
+            "format": "double"
+          },
+          "needsReview": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "description": "A prefilled form field; NutriScan.Application.Scans.Dtos.ScanFieldDto.NeedsReview asks the user to confirm it explicitly (FR-05)."
+      },
+      "ScanFieldsDto": {
+        "type": "object",
+        "properties": {
+          "calories": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ScanFieldDto"
+              }
+            ],
+            "description": "A prefilled form field; NutriScan.Application.Scans.Dtos.ScanFieldDto.NeedsReview asks the user to confirm it explicitly (FR-05).",
+            "nullable": true
+          },
+          "proteins": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ScanFieldDto"
+              }
+            ],
+            "description": "A prefilled form field; NutriScan.Application.Scans.Dtos.ScanFieldDto.NeedsReview asks the user to confirm it explicitly (FR-05).",
+            "nullable": true
+          },
+          "carbohydrates": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ScanFieldDto"
+              }
+            ],
+            "description": "A prefilled form field; NutriScan.Application.Scans.Dtos.ScanFieldDto.NeedsReview asks the user to confirm it explicitly (FR-05).",
+            "nullable": true
+          },
+          "sugars": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ScanFieldDto"
+              }
+            ],
+            "description": "A prefilled form field; NutriScan.Application.Scans.Dtos.ScanFieldDto.NeedsReview asks the user to confirm it explicitly (FR-05).",
+            "nullable": true
+          },
+          "fats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ScanFieldDto"
+              }
+            ],
+            "description": "A prefilled form field; NutriScan.Application.Scans.Dtos.ScanFieldDto.NeedsReview asks the user to confirm it explicitly (FR-05).",
+            "nullable": true
+          },
+          "saturatedFats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ScanFieldDto"
+              }
+            ],
+            "description": "A prefilled form field; NutriScan.Application.Scans.Dtos.ScanFieldDto.NeedsReview asks the user to confirm it explicitly (FR-05).",
+            "nullable": true
+          },
+          "fiber": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ScanFieldDto"
+              }
+            ],
+            "description": "A prefilled form field; NutriScan.Application.Scans.Dtos.ScanFieldDto.NeedsReview asks the user to confirm it explicitly (FR-05).",
+            "nullable": true
+          },
+          "saltGrams": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ScanFieldDto"
+              }
+            ],
+            "description": "A prefilled form field; NutriScan.Application.Scans.Dtos.ScanFieldDto.NeedsReview asks the user to confirm it explicitly (FR-05).",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ScanResultDto": {
+        "required": [
+          "fields",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OcrStatus"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "servingBase": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ServingBase"
+              }
+            ],
+            "nullable": true
+          },
+          "overallConfidence": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fields": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ScanFieldsDto"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "description": "The prefill for the \u0022Add food\u0022 form. With NutriScan.Application.Common.Models.OcrStatus.Unavailable every field is null and\r\nNutriScan.Application.Scans.Dtos.ScanResultDto.Message tells the user to fill the form by hand (NFR-12)."
+      },
+      "ServingBase": {
+        "enum": [
+          "per100g",
+          "perServing"
+        ],
+        "type": "string",
+        "description": "What the label\u0027s values refer to: 100 g/ml, or one serving."
+      },
+      "SetPurchasedRequest": {
+        "type": "object",
+        "properties": {
+          "isPurchased": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Checks or unchecks a line; the value is required."
+      },
+      "ShoppingCategoryDto": {
+        "required": [
+          "category",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "category": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FoodCategory"
+              }
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShoppingListItemDto"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "ShoppingListDto": {
+        "required": [
+          "categories",
+          "purchasedCount",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShoppingCategoryDto"
+            }
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "purchasedCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ShoppingListItemDto": {
+        "required": [
+          "category",
+          "id",
+          "isManual",
+          "isPurchased",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "quantityGrams": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "quantityText": {
+            "type": "string",
+            "nullable": true
+          },
+          "category": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FoodCategory"
+              }
+            ]
+          },
+          "isPurchased": {
+            "type": "boolean"
+          },
+          "isManual": {
+            "type": "boolean"
+          },
+          "foodId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StatisticsDayDto": {
+        "required": [
+          "date",
+          "isLogged",
+          "totals"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "isLogged": {
+            "type": "boolean"
+          },
+          "totals": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PlanDayStatus"
+              }
+            ],
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "A day of the range; NutriScan.Application.Statistics.Dtos.StatisticsDayDto.Status is null when nothing was logged that day."
+      },
+      "StatisticsDto": {
+        "required": [
+          "days",
+          "from",
+          "isProfileComplete",
+          "loggedDays",
+          "statusCounts",
+          "targets",
+          "to",
+          "totalDays"
+        ],
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "totalDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "loggedDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "targets": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display."
+          },
+          "average": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display.",
+            "nullable": true
+          },
+          "deviation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutrientsDto"
+              }
+            ],
+            "description": "Energy and macronutrients as the API shows them; built unrounded and rounded once, for display.",
+            "nullable": true
+          },
+          "caloriesDeviationPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "statusCounts": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DayStatusCounts"
+              }
+            ]
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StatisticsDayDto"
+            }
+          },
+          "isProfileComplete": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "description": "FR-08 over a range. NutriScan.Application.Statistics.Dtos.StatisticsDto.Average, NutriScan.Application.Statistics.Dtos.StatisticsDto.Deviation and NutriScan.Application.Statistics.Dtos.StatisticsDto.CaloriesDeviationPercent\r\ncover logged days only and are null when there are none (ADR-009 D2)."
+      },
+      "TargetDto": {
+        "required": [
+          "source",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number",
+            "format": "double"
+          },
+          "source": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TargetSource"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "TargetSource": {
+        "enum": [
+          "default",
+          "calculated",
+          "manual"
+        ],
+        "type": "string"
+      },
+      "TargetsDto": {
+        "required": [
+          "calories",
+          "carbsGrams",
+          "fatsGrams",
+          "proteinsGrams"
+        ],
+        "type": "object",
+        "properties": {
+          "calories": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TargetDto"
+              }
+            ]
+          },
+          "proteinsGrams": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TargetDto"
+              }
+            ]
+          },
+          "carbsGrams": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TargetDto"
+              }
+            ]
+          },
+          "fatsGrams": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TargetDto"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateDiaryEntryRequest": {
+        "required": [
+          "date",
+          "mealType"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "mealType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MealType"
+              }
+            ]
+          },
+          "quantityGrams": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "servings": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "New quantity, meal and date of an entry; the food cannot change."
+      },
+      "UpdatePlannedMealRequest": {
+        "required": [
+          "date",
+          "mealType"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "mealType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MealType"
+              }
+            ]
+          },
+          "quantityGrams": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "servings": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "New date, meal and quantity of a planned meal; the food or recipe cannot change."
+      },
+      "UpdateProfileRequest": {
+        "required": [
+          "activityLevel",
+          "birthDate",
+          "firstName",
+          "gender",
+          "goal",
+          "heightCm",
+          "lastName",
+          "weightKg"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "heightCm": {
+            "type": "number",
+            "format": "double"
+          },
+          "weightKg": {
+            "type": "number",
+            "format": "double"
+          },
+          "gender": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          },
+          "activityLevel": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ActivityLevel"
+              }
+            ]
+          },
+          "goal": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NutritionGoal"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateTargetsRequest": {
+        "type": "object",
+        "properties": {
+          "calories": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "proteinsGrams": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "carbsGrams": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fatsGrams": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Manual targets; null or missing means \u0022calculate from the profile\u0022."
+      },
+      "UserDto": {
+        "required": [
+          "email",
+          "firstName",
+          "id",
+          "isProfileComplete",
+          "lastName"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "isProfileComplete": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ValidationProblemDetails": {
+        "required": [
+          "errors"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "Introduce\u021Bi token-ul JWT sub forma: Bearer {token}",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ]
+}

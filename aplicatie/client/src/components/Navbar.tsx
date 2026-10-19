@@ -1,19 +1,21 @@
-import { Flame, Camera, Sun, Moon, Calendar, BookOpen, CalendarDays, UtensilsCrossed, ShoppingCart } from 'lucide-react'
+import { Flame, Camera, Sun, Moon, LogOut, UserRound } from 'lucide-react'
+import { NavLink } from 'react-router'
+import { NAV_ITEMS } from '@/layout/navigation'
 
 interface NavbarProps {
   darkMode: boolean
   onToggleTheme: () => void
-  activeTab: 'diary' | 'planner' | 'recipes' | 'shopping'
-  onSelectTab: (tab: 'diary' | 'planner' | 'recipes' | 'shopping') => void
+  userName: string
   onOpenScanModal: () => void
+  onLogout: () => void
 }
 
 export function Navbar({
   darkMode,
   onToggleTheme,
-  activeTab,
-  onSelectTab,
+  userName,
   onOpenScanModal,
+  onLogout,
 }: NavbarProps) {
   return (
     <header className="sticky top-0 z-40 w-full border-b backdrop-blur-md bg-white/95 dark:bg-slate-900/95 border-slate-200 dark:border-slate-800 shadow-xs">
@@ -39,61 +41,34 @@ export function Navbar({
 
         {/* Desktop Navigation Tabs */}
         <nav className="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
-          <button
-            onClick={() => onSelectTab('diary')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              activeTab === 'diary'
-                ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-            }`}
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>Jurnal</span>
-          </button>
-
-          <button
-            onClick={() => onSelectTab('planner')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              activeTab === 'planner'
-                ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-            }`}
-          >
-            <CalendarDays className="w-4 h-4" />
-            <span>Planificator Mese</span>
-          </button>
-
-          <button
-            onClick={() => onSelectTab('recipes')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              activeTab === 'recipes'
-                ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-            }`}
-          >
-            <UtensilsCrossed className="w-4 h-4" />
-            <span>Rețetar & Alimente</span>
-          </button>
-
-          <button
-            onClick={() => onSelectTab('shopping')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              activeTab === 'shopping'
-                ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-            }`}
-          >
-            <ShoppingCart className="w-4 h-4" />
-            <span>Cumpărături</span>
-          </button>
+          {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) =>
+                `flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  isActive
+                    ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`
+              }
+            >
+              <Icon className="w-4 h-4" />
+              <span>{label}</span>
+            </NavLink>
+          ))}
         </nav>
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
-          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300">
-            <Calendar className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>Astăzi, 14 Octombrie</span>
-          </div>
+          <NavLink
+            to="/profile"
+            title="Profil și ținte"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+          >
+            <UserRound className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <span className="hidden lg:inline">{userName}</span>
+          </NavLink>
 
           <button
             onClick={onToggleTheme}
@@ -113,6 +88,15 @@ export function Navbar({
           >
             <Camera className="w-4 h-4" />
             <span className="hidden sm:inline">Scanare OCR</span>
+          </button>
+
+          <button
+            onClick={onLogout}
+            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition"
+            title="Deconectare"
+            aria-label="Deconectare"
+          >
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
 

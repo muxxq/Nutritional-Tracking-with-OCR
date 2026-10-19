@@ -60,11 +60,15 @@ erDiagram
     USERS ||--o{ RECIPES : creates
     USERS ||--o{ PLANNED_MEALS : plans
     USERS ||--o{ SHOPPING_LIST_ITEMS : manages
+    USERS ||--o{ REFRESH_TOKENS : authenticates_with
     FOOD_ITEMS ||--o{ DIARY_ENTRIES : contains
     FOOD_ITEMS ||--o{ RECIPE_INGREDIENTS : used_in
     RECIPES ||--o{ RECIPE_INGREDIENTS : composed_of
+    RECIPES ||--o{ DIARY_ENTRIES : logged_as
     RECIPES ||--o{ PLANNED_MEALS : scheduled_in
     FOOD_ITEMS ||--o{ PLANNED_MEALS : scheduled_in
+    DIARY_ENTRIES |o--o| PLANNED_MEALS : eaten_as
+    FOOD_ITEMS ||--o{ SHOPPING_LIST_ITEMS : bought_as
 
     USERS {
         uuid Id PK
@@ -78,13 +82,24 @@ erDiagram
         int Gender
         int ActivityLevel
         int Goal
-        int TargetCalories
-        float TargetProteinsGrams
-        float TargetCarbsGrams
-        float TargetFatsGrams
-        string RefreshToken
-        timestamp RefreshTokenExpiryTime
+        int CaloriesOverride
+        float ProteinsGramsOverride
+        float CarbsGramsOverride
+        float FatsGramsOverride
+        int FailedLoginAttempts
+        timestamp LockoutEndUtc
         timestamp CreatedAtUtc
+    }
+
+    REFRESH_TOKENS {
+        uuid Id PK
+        uuid UserId FK
+        string TokenHash UK
+        uuid FamilyId
+        timestamp CreatedAtUtc
+        timestamp ExpiresAtUtc
+        timestamp RevokedAtUtc
+        uuid ReplacedByTokenId
     }
 
     FOOD_ITEMS {
@@ -93,29 +108,37 @@ erDiagram
         string Brand
         string Barcode
         float ServingSizeGrams
+        int Category
         float Calories
         float Proteins
         float Carbohydrates
         float Fats
+        float Sugars
+        float SaturatedFats
         float Fiber
-        float Sodium
+        float SaltGrams
+        string SearchText
         boolean IsVerified
         uuid CreatedByUserId FK
+        timestamp ArchivedAtUtc
         timestamp CreatedAtUtc
     }
 
     DIARY_ENTRIES {
         uuid Id PK
         uuid UserId FK
-        uuid FoodItemId FK
+        uuid FoodItemId FK "NULL la intrare-rețetă"
+        uuid RecipeId FK "NULL la intrare-aliment"
         date ConsumedDate
         int MealType
-        float QuantityGrams
+        float QuantityGrams "NULL la intrare-rețetă"
+        float Servings
         float CalculatedCalories
         float CalculatedProteins
         float CalculatedCarbs
         float CalculatedFats
         timestamp CreatedAtUtc
+        timestamp UpdatedAtUtc
     }
 
     RECIPES {
@@ -125,7 +148,11 @@ erDiagram
         string Description
         string Instructions
         int ServingsCount
+        int PrepTimeMinutes
+        string SearchText
+        timestamp ArchivedAtUtc
         timestamp CreatedAtUtc
+        timestamp UpdatedAtUtc
     }
 
     RECIPE_INGREDIENTS {
@@ -133,6 +160,7 @@ erDiagram
         uuid RecipeId FK
         uuid FoodItemId FK
         float QuantityGrams
+        int Position
     }
 
     PLANNED_MEALS {
@@ -140,20 +168,26 @@ erDiagram
         uuid UserId FK
         date PlanDate
         int MealType
-        uuid FoodItemId FK
-        uuid RecipeId FK
-        float QuantityGrams
-        boolean IsTransferredToDiary
+        uuid FoodItemId FK "NULL la masă-rețetă"
+        uuid RecipeId FK "NULL la masă-aliment"
+        float QuantityGrams "NULL la masă-rețetă"
+        float Servings
+        uuid DiaryEntryId FK "intrarea creată prin Am mâncat asta"
         timestamp CreatedAtUtc
+        timestamp UpdatedAtUtc
     }
 
     SHOPPING_LIST_ITEMS {
         uuid Id PK
         uuid UserId FK
+        uuid FoodItemId FK "NULL la articol manual"
         string ItemName
-        float QuantityGrams
+        float QuantityGrams "NULL la articol manual"
+        string QuantityText "doar la articol manual"
+        int Category
         boolean IsPurchased
         timestamp CreatedAtUtc
+        timestamp UpdatedAtUtc
     }
 ```
 
@@ -249,3 +283,221 @@ sequenceDiagram
   "processing_time_ms": 340.5
 }
 ```
+
+---
+
+## 5. Autentificare: JWT + Refresh Token Rotativ
+
+Decizia completă și alternativele respinse: [ADR-002](adr/ADR-002-authentication-strategy.md). Design detaliat: [spec](specs/2026-10-16-auth-jwt-design.md).
+
+### Contract `/api/auth`
+
+| Metodă și rută | Auth | Corp cerere | Succes | Erori |
+|---|---|---|---|---|
+| `POST /register` | — | `{ email, password, firstName, lastName }` | 201 `AuthResponse` + cookie | 400, 409, 429 |
+| `POST /login` | — | `{ email, password }` | 200 `AuthResponse` + cookie | 400, 401, 429 |
+| `POST /refresh` | cookie | — | 200 `AuthResponse` + cookie nou | 401 (+ cookie șters), 429 |
+| `POST /logout` | cookie (opțional) | — | 204 + cookie șters | 429 |
+| `GET /me` | Bearer | — | 200 `UserDto` | 401 |
+
+* **`AuthResponse`:** `{ accessToken, accessTokenExpiresAtUtc, user: { id, email, firstName, lastName, isProfileComplete } }`
+* **Access token:** JWT HS256, valabil 15 minute, păstrat de client **doar în memorie**.
+* **Refresh token:** cookie `nutriscan_rt; HttpOnly; Secure; SameSite=Strict; Path=/api/auth`, valabil 7 zile, rotit la fiecare folosire. În baza de date se salvează doar hash-ul SHA-256.
+* **Erori:** toate sunt `application/problem+json` (RFC 7807).
+
+### Diagrama de secvență: rotație și detectarea reutilizării
+
+```mermaid
+sequenceDiagram
+    participant C as Client PWA
+    participant A as AuthController
+    participant H as RefreshCommandHandler
+    participant DB as PostgreSQL
+    C->>A: POST /api/auth/refresh (cookie RT1)
+    A->>H: RefreshCommand(RT1)
+    H->>DB: SELECT RefreshToken WHERE TokenHash = sha256(RT1)
+    alt RT1 activ
+        H->>DB: INSERT RT2 (aceeași FamilyId), RT1.Revoke(replacedBy = RT2)
+        H-->>A: AuthResult(access token, RT2)
+        A-->>C: 200 + Set-Cookie RT2
+    else RT1 deja revocat (token copiat, reutilizat)
+        H->>DB: revocă toate tokenurile active din familie
+        H-->>A: UnauthorizedException
+        A-->>C: 401 + cookie șters
+    end
+```
+
+---
+
+## 6. Profil și Ținte Nutriționale
+
+Decizia și formulele: [ADR-003](adr/ADR-003-nutrition-target-calculation.md). Design: [spec](specs/2026-10-16-profile-targets-design.md).
+
+| Metodă și rută | Corp | Succes | Erori |
+|---|---|---|---|
+| `GET /api/profile` | — | 200 `ProfileDto` | 401 |
+| `PUT /api/profile` | `{ firstName, lastName, birthDate, heightCm, weightKg, gender, activityLevel, goal }` | 200 `ProfileDto` | 400, 401 |
+| `PUT /api/profile/targets` | `{ calories?, proteinsGrams?, carbsGrams?, fatsGrams? }` (`null` = calculat) | 200 `ProfileDto` | 400, 401 |
+
+* Toate rutele cer access token; id-ul utilizatorului vine **doar** din claim-ul `sub`.
+* Enum-urile circulă ca text camelCase: `gender` ∈ {`male`, `female`}, `activityLevel` ∈ {`sedentary`, `lightlyActive`, `moderatelyActive`, `veryActive`, `extremelyActive`}, `goal` ∈ {`loseWeight`, `maintainWeight`, `gainMuscle`}.
+* `ProfileDto` conține datele profilului, `age`, `isProfileComplete`, `bmr`, `tdee` (null dacă profilul e incomplet) și `targets.{calories, proteinsGrams, carbsGrams, fatsGrams}`, fiecare cu `{ value, source }`, unde `source` ∈ {`default`, `calculated`, `manual`}.
+
+```mermaid
+flowchart LR
+    P[Profil: greutate, înălțime, vârstă, sex] --> BMR[BMR Mifflin–St Jeor]
+    BMR --> TDEE[TDEE = BMR × activitate]
+    TDEE --> K[Calorii = TDEE × obiectiv, cu prag]
+    OK[Suprascriere calorii] -.înlocuiește.-> K
+    K --> G[Grăsimi = 25% din calorii]
+    P --> PR[Proteine = g/kg × greutate ≤ IMC 25]
+    OP[Suprascriere proteine] -.înlocuiește.-> PR
+    K --> C[Carbohidrați = restul energiei]
+    PR --> C
+    G --> C
+```
+
+---
+
+## 7. Catalogul de Alimente
+
+Decizii: [ADR-004](adr/ADR-004-food-catalog.md). Design: [spec](specs/2026-10-16-food-catalog-design.md).
+
+| Metodă și rută | Succes | Erori |
+|---|---|---|
+| `GET /api/foods?query=&scope=all\|mine&page=1&pageSize=20` | 200 `{ items, page, pageSize, totalCount }` | 400, 401 |
+| `GET /api/foods/{id}` | 200 `FoodDto` | 401, 404 |
+| `POST /api/foods` | 201 `FoodDto` | 400, 401 |
+| `PUT /api/foods/{id}` | 200 `FoodDto` | 400, 401, 403, 404 |
+| `DELETE /api/foods/{id}` (arhivare) | 204 | 401, 403, 404 |
+
+* **Corpul la creare/editare:** `{ name, brand?, barcode?, servingSizeGrams?, calories, proteins, carbohydrates, sugars?, fats, saturatedFats?, fiber?, saltGrams?, category? }`, valorile per 100 g. `category` ∈ `fruitsVegetables`, `meatFish`, `dairy`, `grains`, `pantry`, `beverages`, `other` (implicit), folosită la gruparea listei de cumpărături.
+* **`FoodDto`:** câmpurile de mai sus grupate în `per100g`, plus `isVerified`, `isOwn` și `energyWarning` (FR-06, null dacă valorile sunt coerente).
+* **Vizibilitate:** alimentele globale sunt văzute de toți și nu pot fi modificate (403); cele personale sunt văzute doar de autor (404 pentru alții).
+
+---
+
+## 8. Jurnalul Alimentar
+
+Decizii: [ADR-005](adr/ADR-005-food-diary.md). Design: [spec](specs/2026-10-16-food-diary-design.md).
+
+| Metodă și rută | Succes | Erori |
+|---|---|---|
+| `GET /api/diary/days/{yyyy-MM-dd}` | 200 `DiaryDayDto` | 400, 401 |
+| `GET /api/diary/entries/{id}` | 200 `DiaryEntryDto` | 401, 404 |
+| `POST /api/diary/entries` | 201 `DiaryEntryDto` | 400, 401, 404 |
+| `PUT /api/diary/entries/{id}` | 200 `DiaryEntryDto` | 400, 401, 404 |
+| `DELETE /api/diary/entries/{id}` | 204 | 401, 404 |
+| `GET /api/diary/recent-foods?limit=10` | 200 `RecentFoodDto[]` | 400, 401 |
+
+* **Corpul la adăugare:** `{ foodId?, recipeId?, date, mealType, quantityGrams?, servings? }`, cu exact unul dintre `foodId` / `recipeId`. Un aliment primește exact una dintre cantități; o rețetă primește doar `servings` (ADR-006 D3). La editare, aceleași câmpuri fără id-uri; tipul intrării nu se schimbă, iar la o intrare-rețetă `quantityGrams` trebuie să lipsească. `mealType` ∈ `breakfast`, `lunch`, `dinner`, `snack`.
+* **`DiaryEntryDto`:** `{ id, kind, date, mealType, quantityGrams, servings, food, recipe, nutrients: { calories, proteins, carbs, fats } }`. `kind` ∈ `food`, `recipe`; exact unul dintre `food: { id, name, brand, isArchived }` și `recipe: { id, name, isArchived }` este completat, celălalt e `null`. La o intrare-rețetă `quantityGrams` e `null`.
+* **`DiaryDayDto`:** `{ date, meals[4]: { mealType, entries[], totals }, totals, targets, remaining, isProfileComplete }`. Mesele apar mereu, în ordinea de mai sus; `remaining = targets − totals` poate fi negativ.
+* **Snapshot:** valorile nutriționale ale unei intrări se calculează la salvare și nu se schimbă când alimentul sau rețeta sunt editate ulterior; se recalculează doar la editarea intrării, din valorile curente (și dintr-o rețetă arhivată).
+
+---
+
+## 9. Rețetarul
+
+Decizii: [ADR-006](adr/ADR-006-recipes.md). Design: [spec](specs/2026-10-16-recipes-design.md).
+
+| Metodă și rută | Succes | Erori |
+|---|---|---|
+| `GET /api/recipes?q=&page=1&pageSize=20` | 200 `{ items: RecipeSummaryDto[], page, pageSize, totalCount }` | 400, 401 |
+| `GET /api/recipes/{id}` | 200 `RecipeDto` | 401, 404 |
+| `POST /api/recipes` | 201 `RecipeDto` | 400, 401, 404 |
+| `PUT /api/recipes/{id}` | 200 `RecipeDto` | 400, 401, 404 |
+| `DELETE /api/recipes/{id}` (arhivare) | 204 | 401, 404 |
+
+* **Corpul la creare/editare:** `{ name, description?, instructions?, servingsCount, prepTimeMinutes?, ingredients: [{ foodId, quantityGrams }] }`. `PUT` înlocuiește integral câmpurile și lista de ingrediente; ingredientele sunt returnate în ordinea în care au fost trimise la ultima salvare.
+* **`RecipeDto`:** `{ id, name, description, instructions, servingsCount, prepTimeMinutes, isArchived, ingredients: [{ food: { id, name, brand, isArchived }, quantityGrams, nutrients }], total, perServing }`.
+* **`RecipeSummaryDto`:** `{ id, name, servingsCount, prepTimeMinutes, ingredientCount, perServing }`, ordonate după nume.
+* **Calcul la citire:** `total = Σ aliment.per100g × grame / 100`, `perServing = total / servingsCount`, din valorile curente ale alimentelor. Exemplul SRS: 200 g ovăz (389 kcal/100 g), 4 porții → total 778 kcal, 194,5 kcal per porție.
+* **Validare:** nume 1–200 caractere; descriere ≤ 1000; instrucțiuni ≤ 10 000; `servingsCount` 1–50; `prepTimeMinutes` 0–1440; 1–50 ingrediente cu alimente distincte și `0 < quantityGrams ≤ 5000`.
+* **Vizibilitate:** rețetele sunt private (404 pentru alți utilizatori și pentru rețetele arhivate). Ingredientele trebuie să fie alimente vizibile, cu excepția unui aliment arhivat care era deja în rețetă.
+* **În jurnal:** `POST /api/diary/entries` cu `recipeId` și `servings` creează o intrare `kind = "recipe"` cu snapshot `perServing × servings` (1,5 porții → 291,75 kcal, afișat 291,8). Constrângerile `CHECK` din PostgreSQL garantează că intrarea are exact o cheie și, la rețetă, porții fără grame.
+
+---
+
+## 10. Planificatorul Săptămânal
+
+Decizii: [ADR-007](adr/ADR-007-meal-planner.md). Design: [spec](specs/2026-10-16-meal-planner-design.md).
+
+| Metodă și rută | Succes | Erori |
+|---|---|---|
+| `GET /api/plan?from=yyyy-MM-dd&to=yyyy-MM-dd` | 200 `PlanDto` | 400, 401 |
+| `GET /api/plan/items/{id}` | 200 `PlannedMealDto` | 401, 404 |
+| `POST /api/plan/items` | 201 `PlannedMealDto` | 400, 401, 404 |
+| `PUT /api/plan/items/{id}` | 200 `PlannedMealDto` | 400, 401, 404 |
+| `DELETE /api/plan/items/{id}` | 204 | 401, 404 |
+| `POST /api/plan/items/{id}/eat` („Am mâncat asta”) | 201 `DiaryEntryDto` | 400, 401, 404, 409 |
+
+* **Corpul la creare:** `{ foodId?, recipeId?, date, mealType, quantityGrams?, servings? }`, cu aceleași reguli ca intrarea de jurnal: exact unul dintre id-uri; aliment în grame sau porții, rețetă doar în porții. La editare, aceleași câmpuri fără id-uri. Data: între 01.01.2000 și azi + 366 de zile.
+* **`PlannedMealDto`:** `{ id, kind, date, mealType, quantityGrams, servings, food, recipe, nutrients, diaryEntryId }`, cu `food` / `recipe` ca în jurnal. Valorile sunt calculate din alimentele și rețetele curente.
+* **`PlanDto`:** `{ from, to, days[]: { date, meals[4]: { mealType, items[], totals }, totals, targets, status }, isProfileComplete }`. Toate zilele intervalului apar (cel mult 31). `status` ∈ `under`, `within`, `over`: sub 95%, între 95% și 105%, peste 105% din ținta calorică (pentru 1700 kcal: `within` între 1615 și 1785).
+* **„Am mâncat asta”:** creează o intrare de jurnal la data și masa planificate, cu aceeași cantitate și snapshot din valorile curente; masa primește `diaryEntryId`. Al doilea transfer: 409; după ștergerea intrării din jurnal, masa se poate transfera din nou. O masă pentru o zi de după ziua de mâine: 400.
+* **Vizibilitate:** mesele planificate sunt private (404). Se pot planifica doar alimente și rețete vizibile; o masă al cărei aliment sau rețetă a fost arhivat ulterior rămâne în plan (`isArchived = true`) și se poate edita, șterge și transfera.
+
+---
+
+## 11. Lista de Cumpărături
+
+Decizii: [ADR-008](adr/ADR-008-shopping-list.md). Design: [spec](specs/2026-10-16-shopping-list-design.md).
+
+| Metodă și rută | Succes | Erori |
+|---|---|---|
+| `GET /api/shopping-list` | 200 `ShoppingListDto` | 401 |
+| `POST /api/shopping-list/generate` | 200 `ShoppingListDto` | 400, 401 |
+| `POST /api/shopping-list/items` | 201 `ShoppingListItemDto` | 400, 401 |
+| `PATCH /api/shopping-list/items/{id}` | 200 `ShoppingListItemDto` | 400, 401, 404 |
+| `DELETE /api/shopping-list/items/{id}` | 204 | 401, 404 |
+| `DELETE /api/shopping-list/purchased` | 204 | 401 |
+
+* **Generare:** `{ from, to }` (cel mult 31 de zile). Intră mesele planificate nemâncate din interval; aceleași alimente se adună, rețetele se scalează la porțiile planificate (150 g + 250 g de piept de pui → 400 g; 200 g în 4 porții, planificat pentru 2 → 100 g). Articolele generate anterior sunt înlocuite, cele manuale rămân. Fără mese în interval: 400, lista rămâne neschimbată.
+* **Articol manual:** `{ name, quantity?, category? }`; nume 1–200 caractere, cantitate text ≤ 50. **Bifare:** `{ isPurchased }`, obligatoriu.
+* **`ShoppingListItemDto`:** `{ id, name, quantityGrams, quantityText, category, isPurchased, isManual, foodId }`; `quantityGrams` rotunjit în sus la gram întreg (33,3 → 34), `null` la articolele manuale.
+* **`ShoppingListDto`:** `{ categories[]: { category, items[] }, totalCount, purchasedCount }`; doar categoriile cu articole, în ordinea raioanelor, articolele după nume.
+
+---
+
+## 12. Statistici (FR-08)
+
+Decizii: [ADR-009](adr/ADR-009-statistics.md). Design: [spec](specs/2026-10-17-statistics-design.md).
+
+| Metodă și rută | Succes | Erori |
+|---|---|---|
+| `GET /api/stats?from=yyyy-MM-dd&to=yyyy-MM-dd` | 200 `StatisticsDto` | 400, 401 |
+
+* **Interval:** cel mult 366 de zile, `from ≤ to`, date între 01.01.2000 și azi + 366. Clientul alege săptămâna sau luna.
+* **`StatisticsDto`:** `{ from, to, totalDays, loggedDays, targets, average, deviation, caloriesDeviationPercent, statusCounts: { under, within, over }, days[]: { date, isLogged, totals, status }, isProfileComplete }`.
+* **Media** se face doar pe zilele cu cel puțin o intrare; `average`, `deviation` și `caloriesDeviationPercent` sunt `null` dacă nu există niciuna. `deviation = average − targets`, din valorile afișate.
+* **Starea zilei:** aceeași regulă ca planul (±5% din ținta calorică); `null` la zilele necompletate.
+* **Agregare:** `GROUP BY ConsumedDate` în PostgreSQL, pe indexul `(UserId, ConsumedDate)`.
+
+---
+
+## 13. Scanarea Etichetei (contract backend, OCR stub)
+
+Decizii: [ADR-010](adr/ADR-010-ocr-port-and-stub.md). Design: [spec](specs/2026-10-17-ocr-contract-design.md).
+
+| Metodă și rută | Succes | Erori |
+|---|---|---|
+| `POST /api/scans` (`multipart/form-data`, câmp `file`) | 200 `ScanResultDto` | 400, 401, 413 |
+
+* **Fișier:** JPEG, PNG sau WebP, verificat după semnătura binară; cel mult 10 MB (413 peste). Imaginea nu este stocată.
+* **`ScanResultDto`:** `{ status, message, servingBase, overallConfidence, fields: { calories, proteins, carbohydrates, sugars, fats, saturatedFats, fiber, saltGrams } }`; fiecare câmp este `null` sau `{ value, confidence, needsReview }`. `status` ∈ `processed`, `unavailable`; `servingBase` ∈ `per100g`, `perServing`.
+* **`needsReview`:** `true` sub încrederea 0,80 (FR-05).
+* **Până în Faza 4** răspunsul este mereu `status = "unavailable"` cu un mesaj, iar clientul afișează formularul „Adaugă aliment” gol. Alimentul confirmat se salvează cu `POST /api/foods`.
+
+---
+
+## 14. Clientul PWA: Arhitectură
+
+Decizii: [ADR-011](adr/ADR-011-client-architecture.md).
+
+* **Contract:** `backend/openapi.json` (verificat de `SwaggerTests`) → `npm run api:types` → `client/src/api/schema.d.ts` → `api` (`openapi-fetch`), tipizat pe rute, parametri și corpuri.
+* **Stare:** date de la server în TanStack Query; sesiunea (access token, utilizator) în Zustand, doar în memorie.
+* **Autentificare:** `authFetch` adaugă `Authorization: Bearer`; la 401 face un singur `POST /api/auth/refresh` pentru toate cererile concurente și le reia o dată; la eșec, sesiunea se închide. La pornire, un refresh restaurează sesiunea din cookie.
+* **Rute:** `/login`, `/register` (redirecționează un utilizator autentificat), apoi, protejate de `RequireAuth`: `/diary`, `/planner`, `/recipes`, `/shopping`.
+* **Dezvoltare:** Vite face proxy pentru `/api` către `VITE_API_PROXY_TARGET` (implicit `http://localhost:5000`; în Docker, `http://backend:8080`).
+

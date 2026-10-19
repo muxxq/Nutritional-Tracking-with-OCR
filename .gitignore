@@ -40,8 +40,9 @@ develop-eggs/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+# Python packaging dirs, only in the OCR service: a bare "lib/" also hid client/src/lib
+aplicatie/ocr-service/**/lib/
+aplicatie/ocr-service/**/lib64/
 parts/
 sdist/
 var/
@@ -56,3 +57,6 @@ postgres_data/
 # Unelte AI / analiză locală
 .ua/
 **/.superpowers/
+
+# Test coverage reports (Coverlet / CI)
+aplicatie/backend/coverage/
