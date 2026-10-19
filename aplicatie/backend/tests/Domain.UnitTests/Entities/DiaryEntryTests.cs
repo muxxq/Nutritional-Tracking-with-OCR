@@ -7,34 +7,56 @@ namespace NutriScan.Domain.UnitTests.Entities;
 
 public class DiaryEntryTests
 {
+    private static FoodItem Oats() => new()
+    {
+        Name = "Fulgi de ovăz",
+        Calories = 389.0,
+        Proteins = 16.9,
+        Carbohydrates = 66.3,
+        Fats = 6.9
+    };
+
     [Fact]
-    public void RecalculateNutrients_ShouldScaleValuesLinearly_BasedOn100gReference()
+    public void RecalculateNutrients_ScalesPer100g()
     {
         // Arrange
-        var food = new FoodItem
-        {
-            Name = "Rolled Oats",
-            Calories = 389.0,
-            Proteins = 16.9,
-            Carbohydrates = 66.3,
-            Fats = 6.9
-        };
-
-        var entry = new DiaryEntry
-        {
-            FoodItem = food,
-            QuantityGrams = 200.0,
-            MealType = MealType.Breakfast,
-            ConsumedDate = DateOnly.FromDateTime(DateTime.UtcNow)
-        };
+        var entry = new DiaryEntry { QuantityGrams = 60, MealType = MealType.Breakfast };
 
         // Act
-        entry.RecalculateNutrients();
+        entry.RecalculateNutrients(Oats());
+
+        // Assert: values are kept unrounded, rounding happens only for display
+        entry.CalculatedCalories.Should().BeApproximately(233.4, 1e-9);
+        entry.CalculatedProteins.Should().BeApproximately(10.14, 1e-9);
+        entry.CalculatedCarbs.Should().BeApproximately(39.78, 1e-9);
+        entry.CalculatedFats.Should().BeApproximately(4.14, 1e-9);
+    }
+
+    [Fact]
+    public void RecalculateNutrients_UsesGivenFood_NotNavigation()
+    {
+        // Arrange
+        var entry = new DiaryEntry { QuantityGrams = 200 };
+
+        // Act
+        entry.RecalculateNutrients(Oats());
 
         // Assert
-        entry.CalculatedCalories.Should().Be(778.0);
-        entry.CalculatedProteins.Should().Be(33.8);
-        entry.CalculatedCarbs.Should().Be(132.6);
-        entry.CalculatedFats.Should().Be(13.8);
+        entry.FoodItem.Should().BeNull();
+        entry.CalculatedCalories.Should().BeApproximately(778.0, 1e-9);
+    }
+
+    [Fact]
+    public void RecalculateNutrients_Recipe_UsesPerServingTimesServings()
+    {
+        // Arrange: FR-09 recipe (194.5 kcal per serving), 1.5 servings
+        var entry = new DiaryEntry { Servings = 1.5 };
+
+        // Act
+        entry.RecalculateNutrients(NutriScan.Domain.UnitTests.Nutrition.RecipeTestData.SrsRecipe());
+
+        // Assert: unrounded snapshot
+        entry.CalculatedCalories.Should().Be(291.75);
+        entry.CalculatedProteins.Should().BeApproximately(12.675, 1e-9);
     }
 }

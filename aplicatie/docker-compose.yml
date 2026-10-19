@@ -11,7 +11,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-nutriscan_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Setați POSTGRES_PASSWORD în aplicatie/.env (vezi .env.example)}
     ports:
-      - "5432:5432"
+      # Host port configurable (POSTGRES_PORT in .env), so NutriScan can run next to another project's PostgreSQL
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -82,6 +83,9 @@ services:
       - backend
     ports:
       - "3000:3000"
+    environment:
+      # Vite proxies /api to the backend over the internal network (same-origin API, ADR-011)
+      - VITE_API_PROXY_TARGET=http://backend:8080
     volumes:
       - ./client:/app
       - /app/node_modules

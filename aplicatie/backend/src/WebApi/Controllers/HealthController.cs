@@ -6,6 +6,7 @@ namespace NutriScan.WebApi.Controllers;
 [Route("api/v1/[controller]")]
 public class HealthController : ControllerBase
 {
+    /// <summary>Liveness probe for Docker health checks; needs no token.</summary>
     [HttpGet]
     public IActionResult Get()
     {

@@ -1,0 +1,50 @@
+# NFR-17: the backend's tests run on every push, and Domain/Application unit-test coverage must stay >= 70%.
+name: Backend CI
+
+on:
+  push:
+    paths: ["aplicatie/backend/**", ".github/workflows/backend-ci.yml"]
+  pull_request:
+    paths: ["aplicatie/backend/**", ".github/workflows/backend-ci.yml"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: aplicatie/backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -c Release
+
+      - name: Unit tests with coverage
+        run: |
+          for project in Domain.UnitTests Application.UnitTests Infrastructure.UnitTests; do
+            dotnet test tests/$project --no-build -c Release \
+              --collect:"XPlat Code Coverage" --results-directory coverage/unit
+          done
+
+      # Testcontainers starts a throwaway PostgreSQL 16 through the runner's Docker engine.
+      - name: Integration tests (PostgreSQL via Testcontainers)
+        run: |
+          dotnet test tests/WebApi.IntegrationTests --no-build -c Release \
+            --collect:"XPlat Code Coverage" --results-directory coverage/integration
+
+      - name: Coverage report and NFR-17 gate
+        run: python3 scripts/coverage_report.py coverage/unit coverage
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-cobertura
+          path: aplicatie/backend/coverage/**/coverage.cobertura.xml
