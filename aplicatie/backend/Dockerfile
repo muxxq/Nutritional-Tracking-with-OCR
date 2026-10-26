@@ -2,16 +2,13 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy solution and project files for caching restore layer
-COPY NutriScan.sln ./
+# Copy project files for caching restore layer (only the WebApi project graph; tests are not part of the image)
 COPY src/Domain/NutriScan.Domain.csproj src/Domain/
 COPY src/Application/NutriScan.Application.csproj src/Application/
 COPY src/Infrastructure/NutriScan.Infrastructure.csproj src/Infrastructure/
 COPY src/WebApi/NutriScan.WebApi.csproj src/WebApi/
-COPY tests/Domain.UnitTests/NutriScan.Domain.UnitTests.csproj tests/Domain.UnitTests/
-COPY tests/Application.UnitTests/NutriScan.Application.UnitTests.csproj tests/Application.UnitTests/
 
-RUN dotnet restore
+RUN dotnet restore src/WebApi/NutriScan.WebApi.csproj
 
 # Copy full source and publish
 COPY . .
