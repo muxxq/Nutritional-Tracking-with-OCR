@@ -37,8 +37,6 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - APP_ENV=development
-    volumes:
-      - ./ocr-service:/app
     networks:
       - nutriscan-network
 
@@ -65,8 +63,6 @@ services:
       - Jwt__Secret=${JWT_SECRET:?Setați JWT_SECRET în aplicatie/.env (vezi .env.example)}
       - Jwt__Issuer=NutriScanApi
       - Jwt__Audience=NutriScanClient
-    volumes:
-      - ./backend:/app
     networks:
       - nutriscan-network
 
@@ -86,9 +82,6 @@ services:
     environment:
       # Vite proxies /api to the backend over the internal network (same-origin API, ADR-011)
       - VITE_API_PROXY_TARGET=http://backend:8080
-    volumes:
-      - ./client:/app
-      - /app/node_modules
     networks:
       - nutriscan-network
 
