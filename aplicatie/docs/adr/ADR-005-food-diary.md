@@ -2,8 +2,7 @@
 
 * **Status:** Acceptat (Accepted)
 * **Data:** 2026-10-16
-* **Autor:** Maximilian Andrei (Student)
-* **Coordonator:** Dr. Ing. Mocanu Lucian-Mihai
+* **Autor:** Maximilian Andrei
 * **Cerințe SRS:** UC02, FR-07; FR-08 (parțial: totalurile zilnice)
 * **Spec:** [2026-10-16-food-diary-design.md](../specs/2026-10-16-food-diary-design.md)
 

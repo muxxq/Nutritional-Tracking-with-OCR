@@ -66,8 +66,8 @@ Inițializarea completă a scheletului arhitectural pe toate cele 3 subsisteme s
 ### 6. [NUT-12] Contract API & Diagrame de Arhitectură (UML & ERD) — ✅ Finalizat
 * **Commit:** `2f05cb5`
 * **Realizări:**
-  * Înregistrată decizia de arhitectură [ADR-001](file:///home/Max/Documents/Obsidian%20Vault.linux-backup/College/Licenta/aplicatie/docs/adr/ADR-001-clean-architecture-and-ocr-decoupling.md).
-  * Generat documentul tehnic complet [architecture_and_contracts.md](file:///home/Max/Documents/Obsidian%20Vault.linux-backup/College/Licenta/aplicatie/docs/architecture_and_contracts.md) cu diagrame Mermaid (Componente, ERD, Secvență OCR HitL) și contract OpenAPI înghețat.
+  * Înregistrată decizia de arhitectură [ADR-001](../adr/ADR-001-clean-architecture-and-ocr-decoupling.md).
+  * Generat documentul tehnic complet [architecture_and_contracts.md](../architecture_and_contracts.md) cu diagrame Mermaid (Componente, ERD, Secvență OCR HitL) și contract OpenAPI înghețat.
 
 ---
 

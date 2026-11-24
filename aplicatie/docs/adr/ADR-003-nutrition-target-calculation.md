@@ -2,8 +2,7 @@
 
 * **Status:** Acceptat (Accepted)
 * **Data:** 2026-10-16
-* **Autor:** Maximilian Andrei (Student)
-* **Coordonator:** Dr. Ing. Mocanu Lucian-Mihai
+* **Autor:** Maximilian Andrei
 * **Cerință SRS:** FR-02 „Profil și Calculul Targetului Nutrițional”
 * **Spec:** [2026-10-16-profile-targets-design.md](../specs/2026-10-16-profile-targets-design.md)
 
@@ -45,7 +44,7 @@ Suprascrierile sunt **intrări** ale calculului, nu înlocuiri la final. Diferen
 ### Pozitive:
 * **Țintele nu se pot desincroniza de profil:** valoarea calculată nu este stocată.
 * **Testabilitate completă:** 5 cazuri de referință (R1–R5), calculate de mână, sunt verificate exact de teste. Totalul suitei backend: 165 de teste.
-* **Transparență pentru utilizator și comisie:** API-ul expune BMR, TDEE și sursa fiecărei ținte.
+* **Transparență pentru utilizator:** API-ul expune BMR, TDEE și sursa fiecărei ținte.
 * **Refolosire:** jurnalul și statisticile (FR-07) vor apela același calculator.
 
 ### Riscuri asumate:

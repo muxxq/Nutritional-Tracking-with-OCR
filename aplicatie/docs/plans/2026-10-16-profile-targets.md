@@ -27,7 +27,7 @@
   - vârstă 18–100, înălțime 100–250 cm, greutate 30–300 kg;
   - calorii 1000–6000; proteine 0–500, carbohidrați 0–1000, grăsimi 0–300 g.
 - Timpul curent vine **numai** din `IDateTimeProvider` (`DateOnly.FromDateTime(clock.UtcNow)`).
-- Fișierul `documentatie/pregatire_sustinere/intrebari_comisie.md` nu se adaugă în git.
+- Fișierul `documentatie/notite/notite_locale.md` nu se adaugă în git.
 
 ## Review Focus
 
@@ -196,5 +196,5 @@
   - `sprint-02.md`: story-ul Profil, cu tabelul AC → teste;
   - `ROADMAP.md`: bifele pentru autentificare (JWT, PBKDF2, brute-force) și profil;
   - fișierul local de întrebări: secțiunea de calcul al țintelor (doar pe disc).
-- [ ] **Step 2: Verificare:** `dotnet build && dotnet test` (toate trec); `git status --short | grep intrebari_comisie` nu afișează nimic.
+- [ ] **Step 2: Verificare:** `dotnet build && dotnet test` (toate trec); `git status --short | grep notite_locale` nu afișează nimic.
 - [ ] **Step 3: Commit** `docs: add ADR-003, profile contract and roadmap progress`

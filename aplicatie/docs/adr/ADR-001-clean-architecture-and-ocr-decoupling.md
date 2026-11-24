@@ -2,8 +2,7 @@
 
 * **Status:** Acceptat (Accepted)
 * **Data:** 2026-10-14
-* **Autor:** Maximilian Andrei (Student)
-* **Coordonator:** Dr. Ing. Mocanu Lucian-Mihai
+* **Autor:** Maximilian Andrei
 * **Tichet asociat:** [NUT-12](https://maximilianandrei2101.atlassian.net/browse/NUT-12)
 
 ---
@@ -29,13 +28,12 @@ Dacă am fi inclus procesarea de imagini direct în monolit .NET, am fi întâmp
 
 ---
 
-## 3. Consecințe și Beneficii pentru Teza de Licență
+## 3. Consecințe și Beneficii
 
 ### Pozitive:
 * **Separarea responsabilităților (Separation of Concerns):** Logica de business nu cunoaște detaliile de Computer Vision, ci primește doar un DTO structurat cu valorile nutriționale și gradul de încredere (*confidence score*).
 * **Scalabilitate independentă:** Microserviciul OCR poate fi replicat sau mutat pe mașini virtuale cu accelerare GPU fără a modifica backend-ul.
 * **Degradare grațioasă (Graceful Degradation):** Dacă containerul OCR este temporar oprit sau supraîncărcat, utilizatorii pot continua să folosească jurnalul alimentar manual, fără crash al întregului sistem.
-* **Valoare academică:** Demonstrează competențe avansate de inginerie software, respectarea standardelor IEEE și arhitectură enterprise.
 
 ### Riscuri asumate și atenuare:
 * *Latență de rețea între containere:* Rețeaua bridge Docker Compose (`nutriscan-network`) funcționează pe loopback virtual cu latențe sub 1ms, impactul fiind neglijabil în raport cu timpul de inferență OCR.

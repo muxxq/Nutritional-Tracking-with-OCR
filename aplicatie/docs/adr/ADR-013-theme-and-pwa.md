@@ -2,8 +2,7 @@
 
 * **Status:** Acceptat (Accepted)
 * **Data:** 2026-10-17
-* **Autor:** Maximilian Andrei (Student)
-* **Coordonator:** Dr. Ing. Mocanu Lucian-Mihai
+* **Autor:** Maximilian Andrei
 * **Cerințe SRS:** NFR-04 (încărcare din cache), NFR-14 (instalare PWA), NFR-15 (utilizabilitate)
 * **Jira:** NUT-28 (design system și layout), NUT-33 (PWA)
 

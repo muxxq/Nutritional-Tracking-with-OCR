@@ -249,4 +249,4 @@ Toate testele urmează tiparul Arrange-Act-Assert și numirea `Metoda_Scenariu_R
 - `aplicatie/docs/adr/ADR-002-authentication-strategy.md`: deciziile D1–D7, alternativele respinse și datoria tehnică (curățarea tokenurilor expirate, concurența la refresh).
 - `aplicatie/docs/architecture_and_contracts.md`: diagrama de secvență din 5.3 și `RefreshToken` în ERD; secțiunea de auth actualizată cu contractul din 4.
 - `aplicatie/docs/sprints/sprint-02.md`: pornit în stilul Sprint 1.
-- Fișierul local de întrebări pentru comisie: actualizat pe disc, **fără commit**.
+- Fișierul local de notițe: actualizat pe disc, **fără commit**.

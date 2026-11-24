@@ -2,8 +2,7 @@
 
 * **Status:** Acceptat (Accepted)
 * **Data:** 2026-10-16
-* **Autor:** Maximilian Andrei (Student)
-* **Coordonator:** Dr. Ing. Mocanu Lucian-Mihai
+* **Autor:** Maximilian Andrei
 * **Cerințe SRS:** UC04, FR-10, FR-11
 * **Spec:** [2026-10-16-meal-planner-design.md](../specs/2026-10-16-meal-planner-design.md)
 

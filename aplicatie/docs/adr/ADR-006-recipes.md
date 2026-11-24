@@ -2,8 +2,7 @@
 
 * **Status:** Acceptat (Accepted)
 * **Data:** 2026-10-16
-* **Autor:** Maximilian Andrei (Student)
-* **Coordonator:** Dr. Ing. Mocanu Lucian-Mihai
+* **Autor:** Maximilian Andrei
 * **Cerințe SRS:** FR-09; FR-07 (partea „aliment sau rețetă”)
 * **Spec:** [2026-10-16-recipes-design.md](../specs/2026-10-16-recipes-design.md)
 

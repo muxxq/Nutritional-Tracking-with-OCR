@@ -216,4 +216,4 @@ Toate rutele sunt `[Authorize]`. Id-ul utilizatorului se citește din claim-ul `
 - `aplicatie/docs/adr/ADR-003-nutrition-target-calculation.md`: deciziile D1–D6 și sursele (Mifflin et al. 1990; Frankenfield et al. 2005; Jäger et al. 2017, ISSN Position Stand; IOM AMDR 2005).
 - `architecture_and_contracts.md`: secțiunea `/api/profile`; ERD actualizat pentru `USERS`.
 - `sprint-02.md`: story-ul Profil; `ROADMAP.md`: bifă la autentificare și profil.
-- Fișierul local de întrebări pentru comisie: secțiune nouă despre calculul țintelor, **fără commit**.
+- Fișierul local de notițe: secțiune nouă despre calculul țintelor, **fără commit**.
