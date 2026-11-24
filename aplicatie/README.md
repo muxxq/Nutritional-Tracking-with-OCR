@@ -1,8 +1,6 @@
 # NutriScan — Aplicație Full Stack Tracking Nutrițional cu OCR
 
-Proiect de Lucrare de Licență — **Universitatea din Craiova, Facultatea ACE**  
-**Student:** Maximilian Andrei  
-**Coordonator:** Dr. Ing. Mocanu Lucian-Mihai  
+**Autor:** Maximilian Andrei  
 
 ---
 

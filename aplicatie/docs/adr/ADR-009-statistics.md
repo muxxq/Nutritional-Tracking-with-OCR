@@ -2,8 +2,7 @@
 
 * **Status:** Acceptat (Accepted)
 * **Data:** 2026-10-17
-* **Autor:** Maximilian Andrei (Student)
-* **Coordonator:** Dr. Ing. Mocanu Lucian-Mihai
+* **Autor:** Maximilian Andrei
 * **Cerințe SRS:** UC06, FR-08, NFR-03
 * **Spec:** [2026-10-17-statistics-design.md](../specs/2026-10-17-statistics-design.md)
 

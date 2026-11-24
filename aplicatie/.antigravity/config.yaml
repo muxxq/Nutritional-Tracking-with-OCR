@@ -1,5 +1,5 @@
 agent:
-  name: "thesis-enterprise-lead"
+  name: "enterprise-lead"
   instructions_file: "AGENTS.md"
   language: "ro"
   code_language: "en"

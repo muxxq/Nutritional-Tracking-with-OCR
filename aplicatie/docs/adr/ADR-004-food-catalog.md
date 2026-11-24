@@ -2,8 +2,7 @@
 
 * **Status:** Acceptat (Accepted)
 * **Data:** 2026-10-16
-* **Autor:** Maximilian Andrei (Student)
-* **Coordonator:** Dr. Ing. Mocanu Lucian-Mihai
+* **Autor:** Maximilian Andrei
 * **Cerințe SRS:** UC01, FR-05, FR-06, FR-13 (parțial)
 * **Spec:** [2026-10-16-food-catalog-design.md](../specs/2026-10-16-food-catalog-design.md)
 

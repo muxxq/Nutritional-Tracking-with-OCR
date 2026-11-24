@@ -238,5 +238,5 @@
   - `architecture_and_contracts.md`: secțiunea 8 „Jurnalul alimentar” (tabelul de rute din §5, forma `DiaryDayDto`) și ERD-ul `DIARY_ENTRIES` (`Servings`, `UpdatedAtUtc`); fluxul din diagrama de secvență folosește deja `POST /api/diary/entries`;
   - `sprint-02.md` (story + tabel AC → teste, numărul nou de teste); `ROADMAP.md` (bifa „Modul Jurnal Alimentar”; bifa „Reguli de validare energetică” rămâne cum este);
   - fișierul local de întrebări: întrebări noi despre snapshot, rotunjire și țintele zilelor trecute (doar pe disc).
-- [ ] **Step 2: Verificare:** `dotnet build && dotnet test` (toate trec); `git status --short | grep intrebari_comisie` nu afișează nimic.
+- [ ] **Step 2: Verificare:** `dotnet build && dotnet test` (toate trec); `git status --short | grep notite_locale` nu afișează nimic.
 - [ ] **Step 3: Commit** `docs: add ADR-005, diary contract and roadmap progress`

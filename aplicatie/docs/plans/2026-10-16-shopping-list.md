@@ -191,5 +191,5 @@
 - Modify: `ROADMAP.md` (bifează lista de cumpărături; pasul următor: stub `IOcrService`, raport de acoperire, apoi Faza 3)
 
 - [ ] **Step 1: Write the documents** (cifre din spec: 150 + 250 = 400 g; 200 × 2 / 4 = 100 g; 33,3 → 34 g; numărul final de teste din Task 5).
-- [ ] **Step 2: Check** `git ls-files | grep intrebari_comisie` → no output.
+- [ ] **Step 2: Check** `git ls-files | grep notite_locale` → no output.
 - [ ] **Step 3: Commit** `docs: add ADR-008, shopping list contract and roadmap progress`

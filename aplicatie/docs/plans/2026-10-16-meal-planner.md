@@ -221,5 +221,5 @@
 - Modify: `ROADMAP.md` (bifează „Rețetar & Planificator”; pasul următor: lista de cumpărături FR-12)
 
 - [ ] **Step 1: Write the documents**; every number from the spec (1615 / 1785 pentru ținta 1700; 389 kcal pentru 2 porții) and the final test counts from the Task 5 run.
-- [ ] **Step 2: Check** `git ls-files | grep intrebari_comisie` → no output.
+- [ ] **Step 2: Check** `git ls-files | grep notite_locale` → no output.
 - [ ] **Step 3: Commit** `docs: add ADR-007, planner contract and roadmap progress`

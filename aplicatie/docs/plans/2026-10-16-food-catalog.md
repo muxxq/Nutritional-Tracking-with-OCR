@@ -206,5 +206,5 @@
   - `architecture_and_contracts.md`: secțiunea 7 „Catalog” și ERD-ul `FOOD_ITEMS` (`SaltGrams`, `ArchivedAtUtc`, `SearchText`);
   - `sprint-02.md` (story + tabel AC → teste); `ROADMAP.md` (bifă Catalog);
   - fișierul local de întrebări: punctul slab #2 rezolvat în backend și întrebări noi (doar pe disc).
-- [ ] **Step 2: Verificare:** `dotnet build && dotnet test` (toate trec); `git status --short | grep intrebari_comisie` nu afișează nimic.
+- [ ] **Step 2: Verificare:** `dotnet build && dotnet test` (toate trec); `git status --short | grep notite_locale` nu afișează nimic.
 - [ ] **Step 3: Commit** `docs: add ADR-004, catalog contract and roadmap progress`

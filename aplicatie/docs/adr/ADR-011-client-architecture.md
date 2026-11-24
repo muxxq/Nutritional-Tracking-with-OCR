@@ -2,8 +2,7 @@
 
 * **Status:** Acceptat (Accepted)
 * **Data:** 2026-10-17
-* **Autor:** Maximilian Andrei (Student)
-* **Coordonator:** Dr. Ing. Mocanu Lucian-Mihai
+* **Autor:** Maximilian Andrei
 * **Cerințe SRS:** FR-01 (sesiune), NFR-06 (JWT + refresh), NFR-15 (utilizabilitate)
 * **Jira:** NUT-27 (arhitectura clientului), NUT-46 (client HTTP și autentificare)
 * **Legat de:** [ADR-002](ADR-002-authentication-strategy.md) (JWT + refresh token rotativ)

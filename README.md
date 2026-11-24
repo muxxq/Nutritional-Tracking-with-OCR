@@ -43,13 +43,6 @@ Majoritatea aplicațiilor de nutriție cer introducerea manuală a valorilor de 
 
 În jurul acestui flux, aplicația oferă tot ce e necesar pentru urmărirea zilnică a alimentației: ținte calorice calculate din profilul fizic, jurnal pe mese, rețete cu valori calculate automat, planificare săptămânală și statistici.
 
-| | |
-|---|---|
-| **Universitatea** | Universitatea din Craiova |
-| **Facultatea** | Automatică, Calculatoare și Electronică (ACE), Departamentul Calculatoare |
-| **Student** | Maximilian Andrei |
-| **Coordonator științific** | Dr. Ing. Mocanu Lucian-Mihai |
-
 ---
 
 ## ✨ Funcționalități
@@ -260,7 +253,6 @@ flowchart LR
 | Backend API | ✅ Funcțional: autentificare, profil și ținte, catalog, jurnal, rețete, planificator, listă de cumpărături, statistici |
 | Client PWA | ✅ Funcțional pe API-ul real; toate ecranele de mai sus, temă dark / light, instalabil |
 | Serviciu OCR | 🚧 Schelet funcțional; pipeline-ul de recunoaștere este în lucru (Faza 4) |
-| Lucrarea scrisă | 🚧 SRS finalizat; capitolele în redactare |
 
 Până la finalizarea OCR-ului, butonul **Scanează eticheta** răspunde „OCR indisponibil” și deschide formularul de adăugare manuală, exact comportamentul proiectat pentru cazul în care serviciul OCR nu este disponibil. Planul complet: [ROADMAP.md](ROADMAP.md).
 
@@ -288,12 +280,12 @@ Până la finalizarea OCR-ului, butonul **Scanează eticheta** răspunde „OCR 
 │   ├── ocr-service/           # microserviciu Python (FastAPI + OpenCV)
 │   ├── scripts/seed_demo.py   # populează un cont demo
 │   └── docs/                  # ADR-uri, specificații, rezumate de sprint
-├── documentatie/              # materiale academice (SRS, prototip vizual)
+├── documentatie/              # specificații și prototip vizual (SRS)
 └── ROADMAP.md
 ```
 
 ---
 
 <div align="center">
-<sub>Lucrare de licență · Universitatea din Craiova, Facultatea ACE · 2026</sub>
+<sub>Maximilian Andrei · 2026</sub>
 </div>
