@@ -1,6 +1,6 @@
 # 🏛️ Arhitectura Sistemului, Diagrame Tehnice & Contracte API
-**Documentație Tehnică de Proiectare — Lucrare de Licență NutriScan**  
-**Corelat cu:** [NUT-12](https://maximilianandrei2101.atlassian.net/browse/NUT-12) & Capitolele 3 și 4 din Teză
+**Documentație Tehnică de Proiectare — NutriScan**  
+**Corelat cu:** [NUT-12](https://maximilianandrei2101.atlassian.net/browse/NUT-12)
 
 ---
 

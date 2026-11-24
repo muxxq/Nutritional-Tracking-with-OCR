@@ -2,8 +2,7 @@
 
 * **Status:** Acceptat (Accepted)
 * **Data:** 2026-10-17
-* **Autor:** Maximilian Andrei (Student)
-* **Coordonator:** Dr. Ing. Mocanu Lucian-Mihai
+* **Autor:** Maximilian Andrei
 * **Cerințe SRS:** FR-03, FR-05, FR-07, FR-08 (partea zilnică), NFR-12
 * **Jira:** NUT-30 (jurnal), NUT-47 (formularul „Adaugă aliment”)
 * **Legat de:** [ADR-005](ADR-005-food-diary.md), [ADR-010](ADR-010-ocr-port-and-stub.md), [ADR-011](ADR-011-client-architecture.md)

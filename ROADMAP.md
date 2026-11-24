@@ -1,8 +1,4 @@
-# 🗺️ Master Roadmap — Lucrare de Licență NutriScan
-**Universitatea din Craiova | Facultatea de Automatică, Calculatoare și Electronică (ACE)**  
-**Domeniul:** Calculatoare și Tehnologia Informației (CTI)  
-**Student:** Maximilian Andrei  
-**Coordonator Științific:** Dr. Ing. Mocanu Lucian-Mihai  
+# 🗺️ Roadmap NutriScan
 **Titlu Proiect:** *Sistem de Monitorizare Nutrițională cu Extragere Automată a Datelor prin OCR*
 
 ---
@@ -11,7 +7,7 @@
 
 Dezvoltarea unei soluții complete end-to-end compuse din:
 1. **Produs Software Enterprise (NutriScan)**: Arhitectură decuplată (PWA React + Backend ASP.NET Core 8 Clean Architecture + Microserviciu Python OCR + PostgreSQL), axat pe detecția automată a etichetelor nutriționale și jurnalizare inteligentă cu asistență umană (*Human-in-the-Loop*).
-2. **Lucrare Scrisă Academică (Teză de Licență)**: Document de nivel înalt structurat conform standardelor IEEE și metodologiei Facultății ACE, documentând riguros stadiul actual, proiectarea matematică/arhitecturală, inovația Computer Vision și validarea experimentală.
+2. **Documentație tehnică**: specificația cerințelor (SRS, IEEE 830), deciziile de arhitectură (ADR), diagramele de proiectare și rapoartele de evaluare experimentală.
 
 ---
 
@@ -20,30 +16,26 @@ Dezvoltarea unei soluții complete end-to-end compuse din:
 **Decizie:** Subsistemul OCR (fosta Fază 2) se mută după integrarea completă Backend ↔ Client. Până la implementarea OCR, utilizatorul introduce manual alimentele și valorile nutriționale.
 
 **Motivație:**
-* Este necesară devreme o aplicație full-stack funcțională (autentificare, jurnal, rețete, planificator, listă de cumpărături), utilizabilă și la alte discipline din facultate.
+* Este necesară devreme o aplicație full-stack funcțională (autentificare, jurnal, rețete, planificator, listă de cumpărături).
 * OCR-ul este componenta cu cel mai mare risc și cea mai lungă durată de dezvoltare; dacă ar fi rămas primul, aplicația ar fi devenit funcțională foarte târziu.
 * Formularul manual „Adaugă aliment” este reutilizat ca ecran *Human-in-the-Loop*: OCR-ul doar îl precompletează și marchează câmpurile cu încredere redusă. Nu se pierde muncă.
 * Contractul `IOcrService` este definit din faza Backend (cu implementare stub), deci integrarea ulterioară înlocuiește doar implementarea (principiul inversării dependențelor).
 
-**Măsuri de control al riscului** (OCR-ul rămâne contribuția științifică principală a tezei):
+**Măsuri de control al riscului** (OCR-ul rămâne componenta centrală a proiectului):
 * ⏰ Implementarea OCR începe **cel târziu în Săptămâna 11**, indiferent de stadiul finisajelor din client.
 * 📸 Colectarea dataset-ului de etichete (≥ 100 fotografii) începe **imediat, în paralel** (3–5 fotografii/zi).
 
 ---
 
-## 📊 Strategia de Dezvoltare pe Două Piste (Dual-Track)
-
-Fiecare etapă practică din software alimentează direct capitolele și anexele lucrării de licență:
+## 📊 Fazele de Dezvoltare
 
 ```text
-               TRACK SOFTWARE (Implementare)                 TRACK ACADEMIC (Redactare Teză)
-               ─────────────────────────────                 ───────────────────────────────
-Faza 1 ──► Scaffold & Arhitectură (Clean Arch, Docker) ──► Cap 3: SRS & Analiză Cerințe (UML, ERD)
-Faza 2 ──► Backend API (.NET 8, CQRS, MediatR, JWT)    ──► Cap 4: Arhitectură Sistem & Cap 5.1: Backend
-Faza 3 ──► Client PWA integrat (React, API real)       ──► Cap 5.3: Interfață & Experiență Utilizator
-Faza 4 ──► Pipeline OCR (OpenCV, EasyOCR/Tesseract)    ──► Cap 5.2: Subsistem Computer Vision & AI
-Faza 5 ──► Testare, Securitate & Benchmarks OCR/Load   ──► Cap 6: Testare, Evaluare & Rezultate
-Faza 6 ──► Polish, Deployment & Demo Pregătire         ──► Cap 1, 2, 7: Introducere, Stadiu Actual, Concluzii
+Faza 1 ──► Scaffold & Arhitectură (Clean Arch, Docker)
+Faza 2 ──► Backend API (.NET 8, CQRS, MediatR, JWT)
+Faza 3 ──► Client PWA integrat (React, API real)
+Faza 4 ──► Pipeline OCR (OpenCV, EasyOCR/Tesseract)
+Faza 5 ──► Testare, Securitate & Benchmarks OCR/Load
+Faza 6 ──► Polish, Deployment & Demo
 
 Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutriționale pentru Faza 4
 ```
@@ -65,7 +57,7 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
   * [x] Modelare entități EF Core (`User`, `FoodItem`, `DiaryEntry`, `MealType`, `Recipe`, `RecipeIngredient`, `PlannedMeal`, `ShoppingListItem`).
   * [x] Rulare migrare inițială EF Core pe PostgreSQL și script seed date de test.
   * [x] Contract OpenAPI între Backend și Serviciul OCR.
-* [x] **Academic / Documentație:**
+* [x] **Documentație:**
   * [x] Finalizare document SRS (Specificația Cerințelor Software v2).
   * [x] Diagrame UML: Cazuri de Utilizare generale (UC01–UC08), Diagrama de Componente a sistemului.
   * [x] Diagrama Entitate-Relație (ERD) detaliată pentru capitolul de proiectare a bazei de date.
@@ -90,9 +82,8 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
   * [x] Teste unitare (xUnit, FluentAssertions, Moq) pentru Handlers & Domain Rules; Teste de integrare cu Testcontainers Postgres: 558 de teste; acoperire din teste unitare 87,8% Domain și 95,9% Application (Coverlet).
   * [x] CI GitHub Actions (NFR-17): build și toate testele la fiecare push, cu prag de acoperire de 70% pentru Domain și Application; Swagger documentat integral din comentariile XML, verificat de un test.
   * Amânat conștient: catalogul global administrat (FR-13, P3) și istoricul țintelor nutriționale.
-* [ ] **Academic / Documentație:**
-  * [ ] Redactare **Capitolul 4 (Arhitectura și Proiectarea Sistemului)**: Diagrame de secvență pentru fluxul de autentificare și jurnal, schema CQRS, decizii de design patterns.
-  * [ ] Redactare **Capitolul 5.1 (Implementarea Backend-ului ASP.NET Core)**.
+* [ ] **Documentație:**
+  * [ ] Diagrame de secvență pentru fluxul de autentificare și jurnal, schema CQRS, decizii de design patterns.
 * 🏁 **Milestone M2 (atins pe partea software, 17.10.2026):** *API-ul acoperă toate cerințele funcționale P1 (fără OCR), documentat 100% în Swagger, acoperire teste unitare ≥ 70%.*
 
 ---
@@ -111,8 +102,7 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
   * [x] Ecranul Listă de Cumpărături: articole agregate, marcare interactivă checkbox, ștergere elemente bifate (NUT-32): grupare pe raioane, bifare optimistă cu revenire la eroare, articole manuale, generare din planul săptămânii.
   * [x] Ecranul Statistici (FR-08, NUT-48): săptămână sau lună calendaristică, media pe zilele notate, abaterea față de țintă, zilele sub / în / peste țintă, calorii pe zi față de țintă (zilele nenotate fără coloană), cu tooltip și vedere tabelară.
   * [x] Configurare PWA: `manifest.json`, iconițe adaptive, Service Worker pentru caching resurse statice și funcționare fără conexiune pentru vizualizare catalog (NUT-33, ADR-013): `vite-plugin-pwa`, iconițe *maskable*, catalogul *NetworkFirst*, cache șters la deconectare. Instalarea pe iPhone se verifică pe dispozitiv fizic (cere HTTPS).
-* [ ] **Academic / Documentație:**
-  * [ ] Redactare **Capitolul 5.3 (Dezvoltarea Interfeței cu Utilizatorul și Arhitectura Client PWA)**.
+* [ ] **Documentație:**
   * [ ] Capturi de ecran comparative Desktop vs. Mobile.
 * 🏁 **Milestone M3 (atins pe partea software, 17.10.2026; instalarea pe iPhone de verificat pe dispozitiv):** *Aplicație full-stack funcțională (fără OCR): înregistrare, profil, jurnal, rețete, planificator și listă de cumpărături pe date reale; instalabilă ca PWA pe telefon.*
 
@@ -135,8 +125,7 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
     * [ ] Acces la camera dispozitivului cu ghidaj vizual (overlay dreptunghiular pentru etichetă).
     * [ ] Animație de scanare în timp ce microserviciul procesează imaginea.
     * [ ] Ecran de Validare Asistată (*Human-in-the-Loop*): formularul „Adaugă aliment” precompletat, câmpurile cu încredere redusă evidențiate în galben/roșu.
-* [ ] **Academic / Documentație:**
-  * [ ] Redactare **Capitolul 5.2 (Subsistemul de Procesare a Imaginii și Recunoaștere Optică a Caracterelor)**.
+* [ ] **Documentație:**
   * [ ] Documentarea algoritmilor de preprocesare OpenCV cu imagini „înainte și după”.
   * [ ] Diagrame de stare/secvență pentru fluxul de scanare OCR; actualizare `docs/adr/ADR-001-ocr-engine-selection.md` cu rezultatele comparației.
 * 🏁 **Milestone M4:** *O imagine de etichetă este procesată în < 3 secunde, iar valorile apar precompletate în ecranul HitL; MVP complet testat pe dispozitiv fizic.*
@@ -144,7 +133,7 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
 ---
 
 ### 🔹 Faza 5: Testare E2E, Evaluare Experimentală & Securitate (Săpt. 15 – 17)
-> **Obiectiv principal:** Validarea riguroasă a sistemului, benchmark-uri științifice pentru lucrarea de licență și audit de securitate.
+> **Obiectiv principal:** Validarea riguroasă a sistemului, benchmark-uri de acuratețe și performanță și audit de securitate.
 
 * [ ] **Software & QA:**
   * [ ] Testare automată End-to-End cu **Playwright**: flux complet Înregistrare ➡️ Fotografiere etichetă ➡️ Validare HitL ➡️ Salvare în Jurnal ➡️ Verificare recalculare total zilnic.
@@ -158,46 +147,25 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
     * [ ] Verificare Cross-Site Scripting (XSS) și sanitizare input-uri.
     * [ ] Audit Cross-Site Request Forgery (CSRF) și securitate antete HTTP (CORS, CSP).
     * [ ] Verificare izolare date utilizatori (acces neautorizat pe ID străin ➡️ 404/403).
-* [ ] **Academic / Documentație:**
-  * [ ] Redactare **Capitolul 6 (Testare, Evaluare Experimentală și Analiza Performanței)**:
+* [ ] **Documentație:**
+  * [ ] Raport de testare, evaluare experimentală și analiza performanței:
     * [ ] Grafice și tabele comparative pentru acuratețea OCR.
     * [ ] Grafice de încărcare și latență API din rapoartele Locust/k6.
     * [ ] Matricea de trasabilitate a cerințelor (verificarea fiecărui FR și NFR din SRS).
-* 🏁 **Milestone M5:** *Toate testele trec, raportul experimental de acuratețe și performanță este generat și inclus în teză.*
+* 🏁 **Milestone M5:** *Toate testele trec, raportul experimental de acuratețe și performanță este generat și inclus în documentație.*
 
 ---
 
-### 🔹 Faza 6: Redactare Finală a Tezei, Polish & Pregătirea Susținerii (Săpt. 18 – 20)
-> **Obiectiv principal:** Finalizarea tezei de licență, formatare academică impecabilă și pregătirea discursului și a demonstrației practice.
+### 🔹 Faza 6: Polish, Documentație Finală & Demo (Săpt. 18 – 20)
+> **Obiectiv principal:** Finisarea aplicației, completarea documentației și pregătirea unei demonstrații practice.
 
-* [ ] **Academic & Lucrare Scrisă:**
-  * [ ] Redactare **Capitolul 1 (Introducere)**: Context general, obezitate & stil de viață modern, importanța monitorizării nutriționale, obiectivele proiectului.
-  * [ ] Redactare **Capitolul 2 (Stadiul Actual al Tehnologiei)**: Analiză comparativă a aplicațiilor existente (MyFitnessPal, Cronometer, Yuka, MacroFactor) și analiza stadiului tehnologiilor OCR aplicate pe etichete nutritionale.
-  * [ ] Redactare **Capitolul 7 (Concluzii, Contribuții Proprii și Dezvoltări Viitoare)**.
-  * [ ] Colectare și formatare referințe bibliografice conform standardului IEEE/APA (cărți, articole științifice IEEE/ACM, documentații oficiale).
-  * [ ] Formatare finală a documentului conform ghidului de redactare al Facultății ACE (font, margini, numerotare ecuații, figuri, tabele).
-  * [ ] Verificare anti-plagiat și corectură gramaticală/stilistică.
-* [ ] **Prezentare & Susținere:**
-  * [ ] Creare set de slide-uri pentru susținere (15–20 slide-uri concentrate pe arhitectură, inovație OCR, contribuții originale și rezultate experimentale).
+* [ ] **Documentație:**
+  * [ ] Analiză comparativă a aplicațiilor existente (MyFitnessPal, Cronometer, Yuka, MacroFactor) și a tehnologiilor OCR aplicate pe etichete nutriționale.
+  * [ ] Limitări cunoscute și direcții de dezvoltare viitoare.
+* [ ] **Demo:**
   * [ ] Pregătire scenariu de demonstrație LIVE cu telefonul fizic și mostre reale de produse alimentare.
-  * [ ] Înregistrare video demonstrativ de rezervă (backup video în caz de probleme tehnice la videoproiector/rețea).
-* 🏁 **Milestone M6:** *Lucrare predată oficial la secretariat / coordonator + slide-uri și demo pregătite pentru susținere.*
-
----
-
-## 📈 Matrice de Sincronizare: Capitole Licență vs. Module Software
-
-| Capitol Lucrare Licență | Denumire Capitol | Modul Software / Artefact Corelat | Stadiu |
-|---|---|---|:---:|
-| **Cap. 1** | Introducere și Motivarea Temei | Viziune generală, context de domeniu | 📝 În plan |
-| **Cap. 2** | Stadiul Actual al Domeniului | Analiză comparativă (MyFitnessPal, Yuka etc.) | 📝 În plan |
-| **Cap. 3** | Analiza Cerințelor și Proiectarea Conceptuală | Document SRS IEEE 830, Diagrame Use Case & ERD | ✅ SRS + diagrame finalizate |
-| **Cap. 4** | Arhitectura Generală a Sistemului | Clean Architecture, CQRS, Diagrame Componente/Secvență | 📝 În plan |
-| **Cap. 5.1** | Implementare: Backend API (.NET 8) | Cod sursă `aplicatie/backend/`, MediatR, EF Core | 🟡 Cod finalizat, redactare în curs |
-| **Cap. 5.2** | Implementare: Serviciul Computer Vision (OCR) | Cod sursă `aplicatie/ocr-service/`, OpenCV, EasyOCR | 📝 Faza 4 (schelet existent) |
-| **Cap. 5.3** | Implementare: Interfața Client PWA (React) | Cod sursă `aplicatie/client/`, Tailwind, TanStack Query | 🟡 Cod finalizat pe API-ul real, redactare în curs |
-| **Cap. 6** | Testare, Verificare și Evaluare Experimentală | Teste xUnit/Pytest/Playwright, Benchmarks OCR & Locust | 📝 În plan |
-| **Cap. 7** | Concluzii, Contribuții Proprii și Perspective | Raport final, limitări asumate, dezvoltări viitoare | 📝 În plan |
+  * [ ] Înregistrare video demonstrativ de rezervă.
+* 🏁 **Milestone M6:** *Versiune finală livrată, documentație completă și demo pregătit.*
 
 ---
 
@@ -205,11 +173,10 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
 
 | Risc Identificat | Probabilitate | Impact | Plan de Atenuare (Mitigation Strategy) |
 |---|:---:|:---:|---|
-| **Acuratețea OCR este scăzută pe ambalaje lucioase/curbate** | Ridicată | Ridicat | Fluxul **Human-in-the-Loop** permite corecția în 2 secunde; utilizarea filtrelor adaptive OpenCV; raportare onestă în teză ca subiect de cercetare. |
+| **Acuratețea OCR este scăzută pe ambalaje lucioase/curbate** | Ridicată | Ridicat | Fluxul **Human-in-the-Loop** permite corecția în 2 secunde; utilizarea filtrelor adaptive OpenCV; raportarea transparentă a limitărilor. |
 | **Comportament diferit al camerei pe iOS Safari PWA** | Medie | Mediu | Testare pe dispozitiv fizic iPhone încă din Săptămâna 10; implementare fallback `input type="file" capture="environment"`. |
 | **Complexitatea CQRS încetinește implementarea frontend-ului** | Medie | Mediu | Generare contracte DTO/OpenAPI din timp; folosire mock API sau stub-uri în frontend pentru dezvoltare paralelă. |
 | **Implementarea OCR întârzie din cauza mutării după integrarea full-stack** | Medie | Critic | Termen ferm: OCR începe cel târziu în Săpt. 11; dataset-ul se colectează în paralel din Săpt. 3; contractul `IOcrService` + stub există din Faza 2; finisajele UI se amână înaintea OCR. |
-| **Timp insuficient pentru redactarea lucrării scrise** | Medie | Critic | Abordare continuă (*Dual-Track*): fiecare sprint tehnic include obligatoriu redactarea secțiunii corespunzătoare din teză. |
 
 ---
 
@@ -217,4 +184,4 @@ Pistă paralelă (Săpt. 3 – 11): 📸 colectare dataset etichete nutrițional
 Fazele 2 și 3 sunt gata pe partea software: API-ul complet (ADR-002 – ADR-010) și clientul PWA pe date reale (ADR-011 – ADR-013), fără date mock.
 1. **Dataset-ul de etichete (NUT-13), neînceput:** fotografiile trebuie strânse acum (≥ 100), înaintea pipeline-ului OCR.
 2. **Faza 4:** preprocesare OpenCV, motoare OCR, parser, scor de încredere; apoi adaptorul `OcrServiceClient` cu Polly în locul stub-ului și ecranul de scanare cu cameră.
-3. **Academic:** Capitolele 4, 5.1 și 5.3, din ADR-uri; capturi Desktop vs. Mobile.
+3. **Documentație:** diagrame de secvență pe baza ADR-urilor; capturi Desktop vs. Mobile.

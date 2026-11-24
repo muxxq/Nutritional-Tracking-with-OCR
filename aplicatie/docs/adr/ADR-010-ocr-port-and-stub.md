@@ -2,8 +2,7 @@
 
 * **Status:** Acceptat (Accepted)
 * **Data:** 2026-10-17
-* **Autor:** Maximilian Andrei (Student)
-* **Coordonator:** Dr. Ing. Mocanu Lucian-Mihai
+* **Autor:** Maximilian Andrei
 * **Cerințe SRS:** UC01, FR-03, FR-05, NFR-09, NFR-12
 * **Spec:** [2026-10-17-ocr-contract-design.md](../specs/2026-10-17-ocr-contract-design.md)
 * **Legat de:** [ADR-001](ADR-001-clean-architecture-and-ocr-decoupling.md) (decuplarea OCR), replanificarea din 16.10.2026 (OCR în Faza 4)

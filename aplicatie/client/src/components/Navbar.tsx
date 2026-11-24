@@ -32,7 +32,7 @@ export function Navbar({
                 NutriScan
               </span>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800">
-                Licență 2026
+                PWA
               </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Tracking Nutrițional & OCR</p>
